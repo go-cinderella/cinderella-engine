@@ -1,0 +1,22 @@
+package factory
+
+import (
+	. "github.com/go-cinderella/cinderella-engine/engine/impl/behavior"
+	. "github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
+)
+
+type ActivityBehaviorFactory interface {
+	CreateUserTaskActivityBehavior(userTask UserTask, key string) UserTaskActivityBehavior
+
+	CreateAutoUserTaskActivityBehavior(userTask UserTask, key string) UserAutoTaskActivityBehavior
+
+	CreateExclusiveGatewayActivityBehavior(exclusiveGateway ExclusiveGateway) ExclusiveGatewayActivityBehavior
+
+	CreateInclusiveGatewayActivityBehavior(inclusiveGateway InclusiveGateway) InclusiveGatewayActivityBehavior
+
+	CreateParallelGatewayActivityBehavior(inclusiveGateway ParallelGateway) ParallelGatewayActivityBehavior
+
+	CreateIntermediateCatchConditionalEventActivityBehavior(conditionalEventDefinition ConditionalEventDefinition) IntermediateCatchConditionalEventActivityBehavior
+
+	CreateIntermediateCatchEventActivityBehavior(intermediateCatchEvent IntermediateCatchEvent) IntermediateCatchEventActivityBehavior
+}
