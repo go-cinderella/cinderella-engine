@@ -120,7 +120,7 @@ func (taskManager TaskDataManager) List(listRequest task.ListRequest) ([]model.A
 				linkQuery.Type.Eq("candidate"),
 				linkQuery.UserID.Eq(listRequest.CandidateOrAssigned),
 			)
-			do = do.Where(do.Where(taskQuery.Assignee.Eq(listRequest.CandidateOrAssigned)).Or(do.Where(gormgen.Exists(subQuery))))
+			do = do.Where(taskQuery.Where(taskQuery.Assignee.Eq(listRequest.CandidateOrAssigned)).Or(taskQuery.Where(gormgen.Exists(subQuery))))
 		}
 
 		if len(listRequest.CandidateGroupIn) > 0 {
