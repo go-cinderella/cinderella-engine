@@ -5,7 +5,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/spf13/cast"
 	"reflect"
-	"strings"
 )
 
 var _ delegate.BaseHandlerType = (*UserTask)(nil)
@@ -37,47 +36,6 @@ func (user UserTask) GetCandidateGroups() *string {
 
 func (user UserTask) GetAssignee() *string {
 	return user.Assignee
-}
-
-func (user UserTask) String() string {
-	var sb strings.Builder
-	sb.WriteString("UserTask")
-	sb.WriteString("{")
-	sb.WriteString("FlowNode: ")
-	sb.WriteString(user.FlowNode.String())
-
-	if user.Assignee != nil {
-		sb.WriteString(", ")
-		sb.WriteString("Assignee: ")
-		sb.WriteString(*user.Assignee)
-	}
-	if user.CandidateUsers != nil {
-		sb.WriteString(", ")
-		sb.WriteString("CandidateUsers: ")
-		sb.WriteString(*user.CandidateUsers)
-	}
-	if user.CandidateGroups != nil {
-		sb.WriteString(", ")
-		sb.WriteString("CandidateGroups: ")
-		sb.WriteString(*user.CandidateGroups)
-	}
-	if user.DueDate != nil {
-		sb.WriteString(", ")
-		sb.WriteString("DueDate: ")
-		sb.WriteString(*user.DueDate)
-	}
-	if user.MultiInstance != nil {
-		sb.WriteString(", ")
-		sb.WriteString("MultiInstance: ")
-		sb.WriteString(user.MultiInstance.String())
-	}
-	if user.ExtensionElements != nil {
-		sb.WriteString(", ")
-		sb.WriteString("ExtensionElements: ")
-		sb.WriteString(user.ExtensionElements.String())
-	}
-	sb.WriteString("}")
-	return sb.String()
 }
 
 func (user *UserTask) Equal(otherUser interface{}) bool {

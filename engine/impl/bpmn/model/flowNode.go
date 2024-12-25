@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"strings"
 )
 
 var _ delegate.BaseElement = (*FlowNode)(nil)
@@ -65,14 +64,4 @@ func (flow *FlowNode) SetBehavior(behavior delegate.ActivityBehavior) {
 
 func (flow *FlowNode) GetHandlerType() string {
 	return flow.BaseHandlerType.GetType()
-}
-
-func (flow FlowNode) String() string {
-	var sb strings.Builder
-	sb.WriteString("FlowNode")
-	sb.WriteString("{")
-	sb.WriteString("DefaultBaseElement: ")
-	sb.WriteString(flow.DefaultBaseElement.String())
-	sb.WriteString("}")
-	return sb.String()
 }
