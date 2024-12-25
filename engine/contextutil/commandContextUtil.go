@@ -6,6 +6,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/db"
 	"github.com/go-cinderella/cinderella-engine/engine/idgenerator"
 	"github.com/go-cinderella/cinderella-engine/engine/query"
+	"github.com/go-resty/resty/v2"
 )
 
 func GetCommandExecutor(context engine.Context) engine.Executor {
@@ -37,5 +38,9 @@ func GetBpmnDeployer() engine.Deployer {
 }
 
 func GetExpressionManager() engine.ExpressionManager {
-	return MustGetCommandContext().GetProcessEngineConfiguration().GetExpressionManager()
+	return MustGetCommandContext().GetProcessEngineConfiguration().GetExpressionManagerFactory()()
+}
+
+func GetHttpClient() *resty.Client {
+	return MustGetCommandContext().GetProcessEngineConfiguration().GetHttpClient()
 }

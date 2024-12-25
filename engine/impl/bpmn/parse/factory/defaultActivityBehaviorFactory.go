@@ -10,6 +10,14 @@ var _ ActivityBehaviorFactory = (*DefaultActivityBehaviorFactory)(nil)
 type DefaultActivityBehaviorFactory struct {
 }
 
+func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateHttpActivityBehavior(serviceTask ServiceTask, key string) HttpServiceTaskActivityBehavior {
+	return HttpServiceTaskActivityBehavior{ServiceTask: serviceTask, ProcessKey: key}
+}
+
+func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreatePipelineActivityBehavior(serviceTask ServiceTask, key string) PipelineServiceTaskActivityBehavior {
+	return PipelineServiceTaskActivityBehavior{ServiceTask: serviceTask, ProcessKey: key}
+}
+
 func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateIntermediateCatchEventActivityBehavior(intermediateCatchEvent IntermediateCatchEvent) IntermediateCatchEventActivityBehavior {
 	return IntermediateCatchEventActivityBehavior{}
 }

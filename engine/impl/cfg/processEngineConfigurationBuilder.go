@@ -8,7 +8,9 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/parse/factory"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/expr"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/interceptor"
+	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/go-cinderella/cinderella-engine/engine/uuidgenerator"
+	"github.com/go-resty/resty/v2"
 )
 
 type ProcessEngineConfigurationBuilder struct {
@@ -27,7 +29,9 @@ type ProcessEngineConfigurationBuilder struct {
 
 	instance *ProcessEngineConfigurationImpl
 
-	expressionManager engine.ExpressionManager
+	expressionManagerFactory engine.ExpressionManagerFactory
+
+	httpClient *resty.Client
 }
 
 func NewProcessEngineConfigurationBuilder() *ProcessEngineConfigurationBuilder {
@@ -36,8 +40,8 @@ func NewProcessEngineConfigurationBuilder() *ProcessEngineConfigurationBuilder {
 	}
 }
 
-func (builder *ProcessEngineConfigurationBuilder) ExpressionManager(expressionManager engine.ExpressionManager) *ProcessEngineConfigurationBuilder {
-	builder.expressionManager = expressionManager
+func (builder *ProcessEngineConfigurationBuilder) ExpressionManagerFactory(expressionManagerFactory engine.ExpressionManagerFactory) *ProcessEngineConfigurationBuilder {
+	builder.expressionManagerFactory = expressionManagerFactory
 	return builder
 }
 
@@ -95,6 +99,11 @@ func (builder *ProcessEngineConfigurationBuilder) DeploymentSettings(deploymentS
 	return builder
 }
 
+func (builder *ProcessEngineConfigurationBuilder) HttpClient(httpClient *resty.Client) *ProcessEngineConfigurationBuilder {
+	builder.httpClient = httpClient
+	return builder
+}
+
 func (builder *ProcessEngineConfigurationBuilder) Get() *ProcessEngineConfigurationImpl {
 	return builder.instance
 }
@@ -108,7 +117,8 @@ func (builder *ProcessEngineConfigurationBuilder) Build() *ProcessEngineConfigur
 	result.bpmnDeployer = builder.bpmnDeployer
 	result.idGenerator = builder.idGenerator
 	result.deploymentSettings = builder.deploymentSettings
-	result.expressionManager = builder.expressionManager
+	result.expressionManagerFactory = builder.expressionManagerFactory
+	result.httpClient = builder.httpClient
 
 	if result.idGenerator == nil {
 		result.idGenerator = uuidgenerator.UUIDGenerator{}
@@ -158,8 +168,14 @@ func (builder *ProcessEngineConfigurationBuilder) Build() *ProcessEngineConfigur
 		result.bpmnDeployer = &bpmnDeployer
 	}
 
-	if result.expressionManager == nil {
-		result.expressionManager = expr.DefaultExpressionManager{}
+	if result.expressionManagerFactory == nil {
+		result.expressionManagerFactory = func() engine.ExpressionManager {
+			return expr.DefaultExpressionManager{}
+		}
+	}
+
+	if result.httpClient == nil {
+		result.httpClient = utils.NewDefaultHttpClient()
 	}
 
 	return result

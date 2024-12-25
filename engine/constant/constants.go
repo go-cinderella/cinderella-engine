@@ -10,4 +10,11 @@ const (
 
 const DurationUnit = 1_000_000
 
+const HttpRetryCount = 3
+
 var ELEMENT_TASK_LIST = []string{ELEMENT_TASK_USER}
+
+const (
+	SERVICE_TASK_HTTP     = "http"
+	SERVICE_TASK_PIPELINE = "pipeline"
+)

@@ -19,4 +19,8 @@ type ActivityBehaviorFactory interface {
 	CreateIntermediateCatchConditionalEventActivityBehavior(conditionalEventDefinition ConditionalEventDefinition) IntermediateCatchConditionalEventActivityBehavior
 
 	CreateIntermediateCatchEventActivityBehavior(intermediateCatchEvent IntermediateCatchEvent) IntermediateCatchEventActivityBehavior
+
+	CreateHttpActivityBehavior(serviceTask ServiceTask, key string) HttpServiceTaskActivityBehavior
+
+	CreatePipelineActivityBehavior(serviceTask ServiceTask, key string) PipelineServiceTaskActivityBehavior
 }

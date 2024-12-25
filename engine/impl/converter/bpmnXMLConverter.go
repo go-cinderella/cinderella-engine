@@ -21,6 +21,7 @@ func init() {
 	AddConverter(ExclusiveGatewayXMLConverter{BpmnXMLConverter{BaseBpmnXMLConverter(ExclusiveGatewayXMLConverter{})}})
 	AddConverter(ParallelGatewayXMLConverter{BpmnXMLConverter{BaseBpmnXMLConverter(ParallelGatewayXMLConverter{})}})
 	AddConverter(IntermediateCatchEventXMLConverter{BpmnXMLConverter{BaseBpmnXMLConverter(IntermediateCatchEventXMLConverter{})}})
+	AddConverter(ServiceTaskXMLConverter{BpmnXMLConverter{BaseBpmnXMLConverter(ServiceTaskXMLConverter{})}})
 }
 
 type BpmnXMLConverter struct {

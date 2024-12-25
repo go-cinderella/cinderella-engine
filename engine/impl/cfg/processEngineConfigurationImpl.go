@@ -4,6 +4,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine"
 	"github.com/go-cinderella/cinderella-engine/engine/idgenerator"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/parse"
+	"github.com/go-resty/resty/v2"
 )
 
 var _ engine.ProcessEngineConfiguration = (*ProcessEngineConfigurationImpl)(nil)
@@ -18,12 +19,18 @@ type ProcessEngineConfigurationImpl struct {
 
 	idGenerator idgenerator.IDGenerator
 
-	deploymentSettings map[string]interface{}
-	expressionManager  engine.ExpressionManager
+	deploymentSettings       map[string]interface{}
+	expressionManagerFactory engine.ExpressionManagerFactory
+
+	httpClient *resty.Client
 }
 
-func (processEngineConfiguration ProcessEngineConfigurationImpl) GetExpressionManager() engine.ExpressionManager {
-	return processEngineConfiguration.expressionManager
+func (processEngineConfiguration ProcessEngineConfigurationImpl) GetHttpClient() *resty.Client {
+	return processEngineConfiguration.httpClient
+}
+
+func (processEngineConfiguration ProcessEngineConfigurationImpl) GetExpressionManagerFactory() engine.ExpressionManagerFactory {
+	return processEngineConfiguration.expressionManagerFactory
 }
 
 func (processEngineConfiguration ProcessEngineConfigurationImpl) GetDeploymentSettings() map[string]interface{} {
@@ -72,6 +79,8 @@ func getDefaultBpmnParseHandlers() []parse.BpmnParseHandler {
 	handlers = append(handlers, parse.IntermediateCatchEventParseHandler{AbstractActivityBpmnParseHandler: parse.AbstractActivityBpmnParseHandler{AbstractBpmnParseHandler: parse.AbstractBpmnParseHandler{ParseHandler: parse.IntermediateCatchEventParseHandler{}}}})
 
 	handlers = append(handlers, parse.ConditionalEventDefinitionParseHandler{AbstractActivityBpmnParseHandler: parse.AbstractActivityBpmnParseHandler{AbstractBpmnParseHandler: parse.AbstractBpmnParseHandler{ParseHandler: parse.ConditionalEventDefinitionParseHandler{}}}})
+
+	handlers = append(handlers, parse.ServiceTaskParseHandler{AbstractActivityBpmnParseHandler: parse.AbstractActivityBpmnParseHandler{AbstractBpmnParseHandler: parse.AbstractBpmnParseHandler{ParseHandler: parse.ServiceTaskParseHandler{}}}})
 
 	return handlers
 }
