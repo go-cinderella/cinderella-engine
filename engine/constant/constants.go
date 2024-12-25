@@ -12,7 +12,7 @@ const DurationUnit = 1_000_000
 
 const HttpRetryCount = 3
 
-var ELEMENT_TASK_LIST = []string{ELEMENT_TASK_USER}
+var ELEMENT_TASK_LIST = []string{ELEMENT_TASK_USER, ELEMENT_TASK_SERVICE}
 
 const (
 	SERVICE_TASK_HTTP     = "http"

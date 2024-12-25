@@ -9,6 +9,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"github.com/wubin1989/gorm/clause"
+	"strings"
 	"time"
 )
 
@@ -122,7 +123,11 @@ func (historicActinstManager HistoricActinstDataManager) List(listRequest histor
 	}
 
 	if stringutils.IsNotEmpty(listRequest.ActivityType) {
-		do = do.Where(actHiActinstQ.ActType.Eq(listRequest.ActivityType))
+		if strings.Contains(listRequest.ActivityType, ",") {
+			do = do.Where(actHiActinstQ.ActType.In(strings.Split(listRequest.ActivityType, ",")...))
+		} else {
+			do = do.Where(actHiActinstQ.ActType.Eq(listRequest.ActivityType))
+		}
 	}
 
 	var result []model.ActHiActinst

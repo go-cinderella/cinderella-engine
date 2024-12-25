@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"math"
+	"strings"
 )
 
 type ExecutionEntityManager struct {
@@ -128,7 +129,7 @@ func (executionEntityManager ExecutionEntityManager) RecordBusinessStatus(delega
 		},
 		Finished:          lo.ToPtr(false),
 		ProcessInstanceId: delegateExecution.GetProcessInstanceId(),
-		ActivityType:      constant.ELEMENT_TASK_USER,
+		ActivityType:      strings.Join(constant.ELEMENT_TASK_LIST, ","),
 	})
 	if err != nil {
 		return err
