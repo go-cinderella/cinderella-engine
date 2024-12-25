@@ -8,7 +8,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"strings"
@@ -89,6 +88,23 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		return errors.WithStack(errors.New(string(resp.Body())))
 	}
 
-	log.Infof("PipelineServiceTaskActivityBehavior execute result: %v\n", resp.Body())
+	/**
+	{
+	   "code": "-1",
+	   "message": "不支持的Git触发类型",
+	   "data": null
+	}
+
+	*/
+	result := make(map[string]interface{})
+	if err = json.Unmarshal(resp.Body(), &result); err != nil {
+		return errors.WithStack(err)
+	}
+
+	if cast.ToString(result["code"]) != "200" {
+		return errors.WithStack(errors.New(result["message"].(string)))
+	}
+
+	pipeline.leave(execution)
 	return nil
 }

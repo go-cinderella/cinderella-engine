@@ -17,5 +17,5 @@ func (behavior bpmnActivityBehavior) performIgnoreConditionsOutgoingBehavior(act
 }
 
 func (behavior bpmnActivityBehavior) performOutgoingBehavior(activityExecution delegate.DelegateExecution, checkConditions bool) {
-	contextutil.GetAgenda().PlanTakeOutgoingSequenceFlowsOperation(activityExecution, true)
+	contextutil.GetAgenda().PlanTakeOutgoingSequenceFlowsOperation(activityExecution, checkConditions)
 }
