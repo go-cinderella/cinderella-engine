@@ -6,6 +6,8 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine"
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
+	"github.com/go-cinderella/cinderella-engine/engine/dto/execution"
+	"github.com/go-cinderella/cinderella-engine/engine/dto/request"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
@@ -41,11 +43,31 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 		return nil, err
 	}
 
-	task := taskEntities[0]
 	var executionEntity entitymanager.ExecutionEntity
-	executionEntity, err = executionEntityManager.FindById(task.GetExecutionId())
-	if err != nil {
-		return nil, err
+	var task entitymanager.TaskEntity
+	var flowElementId string
+
+	if len(taskEntities) > 0 {
+		task = taskEntities[0]
+		flowElementId = task.GetTaskDefineKey()
+		executionEntity, err = executionEntityManager.FindById(task.GetExecutionId())
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		executionEntities, err := executionEntityManager.List(execution.ListRequest{
+			ListCommonRequest: request.ListCommonRequest{
+				Size: 1,
+			},
+			ProcessInstanceId: moveActivityCmd.ProcessInstanceId,
+			ChildOnly:         lo.ToPtr(true),
+		})
+		if err != nil {
+			return nil, err
+		}
+		if len(executionEntities) > 0 {
+			executionEntity = executionEntities[0]
+		}
 	}
 
 	processUtils := utils.ProcessDefinitionUtil{}
@@ -55,7 +77,7 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 		return nil, err
 	}
 
-	currentTask := process.GetFlowElement(task.GetTaskDefineKey())
+	currentTask := process.GetFlowElement(flowElementId)
 	targetFlowElement := process.GetFlowElement(moveActivityCmd.TargetActivityId)
 	sequenceFlow := newSequenceFlow(targetFlowElement, currentTask.GetId())
 	currentTask.SetOutgoing([]delegate.FlowElement{sequenceFlow})
