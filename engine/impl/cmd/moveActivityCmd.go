@@ -67,6 +67,7 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 		}
 		if len(executionEntities) > 0 {
 			executionEntity = executionEntities[0]
+			flowElementId = executionEntity.ActivityId
 		}
 	}
 
