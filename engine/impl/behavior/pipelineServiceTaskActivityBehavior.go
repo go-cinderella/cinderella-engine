@@ -79,7 +79,7 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		return errors.WithStack(errors.New("requestUrl is empty"))
 	}
 
-	requestUrl := field.FieldName
+	requestUrl := field.StringValue
 	resp, err := req.Post(requestUrl)
 	if err != nil {
 		return errors.WithStack(err)
