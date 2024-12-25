@@ -44,6 +44,7 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 	}
 
 	var executionEntity entitymanager.ExecutionEntity
+	var executionEntities []entitymanager.ExecutionEntity
 	var task entitymanager.TaskEntity
 	var flowElementId string
 
@@ -55,7 +56,7 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 			return nil, err
 		}
 	} else {
-		executionEntities, err := executionEntityManager.List(execution.ListRequest{
+		executionEntities, err = executionEntityManager.List(execution.ListRequest{
 			ListCommonRequest: request.ListCommonRequest{
 				Size: 1,
 			},
@@ -126,7 +127,26 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 		return true
 	})
 
-	contextutil.GetAgendaFromContext(commandContext).PlanTriggerExecutionOperation(&executionEntity)
+	lo.ForEachWhile(executionEntities, func(item entitymanager.ExecutionEntity, index int) (goon bool) {
+
+		if err = executionEntityManager.DeleteExecution(item.GetExecutionId()); err != nil {
+			return false
+		}
+
+		if err = historicActivityInstanceEntityManager.RecordActEndByExecutionIdAndActId(item.GetExecutionId(), item.ActivityId, &reason); err != nil {
+			return false
+		}
+
+		return true
+	})
+
+	_, ok = currentTask.(*model.UserTask)
+	if ok {
+		contextutil.GetAgendaFromContext(commandContext).PlanTriggerExecutionOperation(&executionEntity)
+	} else {
+		contextutil.GetAgendaFromContext(commandContext).PlanTakeOutgoingSequenceFlowsOperation(&executionEntity, false)
+	}
+
 	return nil, nil
 }
 
