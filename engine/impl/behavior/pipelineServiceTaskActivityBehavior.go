@@ -70,6 +70,8 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		}
 	}
 
+	requestBody["process_instance_id"] = execution.GetProcessInstanceId()
+
 	req.SetBody(requestBody)
 
 	// set request url
