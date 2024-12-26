@@ -11,9 +11,7 @@ type TriggerExecutionOperation struct {
 func (trigger TriggerExecutionOperation) Run() (err error) {
 	element := trigger.Execution.GetCurrentFlowElement()
 	behavior := element.GetBehavior()
-	operation := behavior.(interface {
-		delegate.TriggerableActivityBehavior
-	})
+	operation := behavior.(delegate.TriggerableActivityBehavior)
 	operation.Trigger(trigger.Execution)
 	return err
 }

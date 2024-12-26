@@ -7,6 +7,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	. "github.com/go-cinderella/cinderella-engine/engine/impl/handler"
+	"github.com/spf13/cast"
 	"reflect"
 	"time"
 )
@@ -50,7 +51,7 @@ func (user UserAutoTaskActivityBehavior) Execute(execution delegate.DelegateExec
 
 	code := callResponse[0].Interface()
 	errRes := callResponse[1].Interface()
-	code = code.(string)
+	code = cast.ToString(code)
 	if code != ACTIVITI_HANDLER_CODE {
 		err := errRes.(error)
 		return err

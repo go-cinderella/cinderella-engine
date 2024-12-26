@@ -18,4 +18,5 @@ type HistoricActivityInstanceEntity struct {
 	DurationInMillis        int        `json:"durationInMillis"`
 	TenantId                *string    `json:"tenantId"`
 	DeleteReason            *string    `json:"deleteReason"`
+	BusinessResult          *string    `json:"businessResult"`
 }

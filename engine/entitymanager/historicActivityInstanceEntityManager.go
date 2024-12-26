@@ -112,6 +112,7 @@ func (historicActivityInstanceEntityManager HistoricActivityInstanceEntityManage
 			DurationInMillis:        cast.ToInt(item.Duration_),
 			TenantId:                item.TenantID_,
 			DeleteReason:            item.DeleteReason_,
+			BusinessResult:          item.BusinessResult_,
 		}
 	})
 	return result, nil
@@ -125,4 +126,10 @@ func (historicActivityInstanceEntityManager HistoricActivityInstanceEntityManage
 func (historicActivityInstanceEntityManager HistoricActivityInstanceEntityManager) DeleteByProcessInstanceId(processInstanceId, actId string) error {
 	actinstDataManager := datamanager.GetHistoricActinstDataManager()
 	return actinstDataManager.DeleteByProcessInstanceId(processInstanceId, actId)
+}
+
+func (historicActivityInstanceEntityManager HistoricActivityInstanceEntityManager) RecordBusinessKeyByExecutionId(entity delegate.DelegateExecution, businessKey string) error {
+	actinstDataManager := datamanager.GetHistoricActinstDataManager()
+	err := actinstDataManager.RecordBusinessKeyByExecutionId(entity.GetExecutionId(), &businessKey)
+	return err
 }

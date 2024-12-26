@@ -5,6 +5,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/go-cinderella/cinderella-engine/engine/variable"
 	"github.com/samber/lo"
+	"github.com/spf13/cast"
 	"reflect"
 	"sync"
 )
@@ -28,7 +29,11 @@ type VariableScopeImpl struct {
 	ExecutionEntity ExecutionEntity
 }
 
-// 保存流程变量
+func IsIntegral(val float64) bool {
+	return val == float64(int(val))
+}
+
+// SetVariable 保存流程变量
 func (variableScope VariableScopeImpl) SetVariable(execution delegate.DelegateExecution, variables map[string]interface{}) error {
 	variableManager := variable.GetVariableManager()
 	variableTypes := variableManager.VariableTypes
@@ -40,6 +45,12 @@ func (variableScope VariableScopeImpl) SetVariable(execution delegate.DelegateEx
 		}
 
 		kind := reflect.TypeOf(v).Kind()
+		if kind == reflect.Float64 {
+			if IsIntegral(v.(float64)) {
+				v = cast.ToInt(v)
+				kind = reflect.Int
+			}
+		}
 
 		variableType := variableTypes.GetVariableType(kind.String())
 		if variableType == nil {

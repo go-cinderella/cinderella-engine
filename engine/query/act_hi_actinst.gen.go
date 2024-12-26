@@ -44,6 +44,7 @@ func newActHiActinst(db *gorm.DB, opts ...gormgen.DOOption) actHiActinst {
 	_actHiActinst.Duration = field.NewInt64(tableName, "duration_")
 	_actHiActinst.DeleteReason = field.NewString(tableName, "delete_reason_")
 	_actHiActinst.TenantID = field.NewString(tableName, "tenant_id_")
+	_actHiActinst.BusinessResult = field.NewString(tableName, "business_result_")
 
 	_actHiActinst.fillFieldMap()
 
@@ -71,6 +72,7 @@ type actHiActinst struct {
 	Duration         field.Int64
 	DeleteReason     field.String
 	TenantID         field.String
+	BusinessResult   field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -104,6 +106,7 @@ func (a *actHiActinst) updateTableName(table string) *actHiActinst {
 	a.Duration = field.NewInt64(table, "duration_")
 	a.DeleteReason = field.NewString(table, "delete_reason_")
 	a.TenantID = field.NewString(table, "tenant_id_")
+	a.BusinessResult = field.NewString(table, "business_result_")
 
 	a.fillFieldMap()
 
@@ -158,6 +161,7 @@ func (a *actHiActinst) fillFieldMap() {
 	a.fieldMap["duration_"] = a.Duration
 	a.fieldMap["delete_reason_"] = a.DeleteReason
 	a.fieldMap["tenant_id_"] = a.TenantID
+	a.fieldMap["business_result_"] = a.BusinessResult
 }
 
 func (a actHiActinst) Clone(db *gorm.DB) actHiActinst {

@@ -29,5 +29,4 @@ func HasTrueCondition(sequenceFlow model.SequenceFlow, execution delegate.Delega
 	} else {
 		return true
 	}
-
 }

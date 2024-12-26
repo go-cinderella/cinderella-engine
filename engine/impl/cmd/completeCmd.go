@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"github.com/go-cinderella/cinderella-engine/engine"
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
@@ -9,7 +8,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/eventmanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/cmd/taskcmd"
-	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/handler"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/errs"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
@@ -20,9 +18,8 @@ var _ taskcmd.ITaskCmd = (*CompleteCmd)(nil)
 
 type CompleteCmd struct {
 	taskcmd.NeedsActiveTaskCmd
-	Variables   map[string]interface{}
-	UserId      *string
-	CurrentTask delegate.FlowElement
+	ProcessVariables map[string]interface{}
+	UserId           *string
 }
 
 func (completeCmd CompleteCmd) TaskExecute(commandContext engine.Context, entity entitymanager.TaskEntity) (interface{}, error) {
@@ -43,20 +40,17 @@ func (completeCmd CompleteCmd) executeTaskComplete(task entitymanager.TaskEntity
 		return err
 	}
 
-	currentTask := completeCmd.CurrentTask
-	if currentTask == nil {
-		processUtils := utils.ProcessDefinitionUtil{}
-		process, err := processUtils.GetProcess(executionEntity.GetProcessDefinitionId())
-		if err != nil {
-			return err
-		}
-
-		currentTask = process.GetFlowElement(executionEntity.GetCurrentActivityId())
+	processUtils := utils.ProcessDefinitionUtil{}
+	process, err := processUtils.GetProcess(executionEntity.GetProcessDefinitionId())
+	if err != nil {
+		return err
 	}
+
+	currentTask := process.GetFlowElement(executionEntity.GetCurrentActivityId())
 
 	executionEntity.SetCurrentFlowElement(currentTask)
 
-	if err = executionEntity.SetVariable(&executionEntity, completeCmd.Variables); err != nil {
+	if err = executionEntity.SetVariable(&executionEntity, completeCmd.ProcessVariables); err != nil {
 		return err
 	}
 
@@ -90,15 +84,14 @@ func (completeCmd CompleteCmd) executeTaskComplete(task entitymanager.TaskEntity
 	return nil
 }
 
-func NewCompleteCmd(ctx context.Context, taskId string, formData map[string]any, userId *string, options ...taskcmd.Options) CompleteCmd {
+func NewCompleteCmd(taskId string, formData map[string]any, userId *string, options ...taskcmd.Options) CompleteCmd {
 	completeCmd := CompleteCmd{
-		Variables: formData,
-		UserId:    userId,
+		ProcessVariables: formData,
+		UserId:           userId,
 	}
 	completeCmd.NeedsActiveTaskCmd = taskcmd.NeedsActiveTaskCmd{
 		ITaskCmd: &completeCmd,
 		TaskId:   taskId,
-		Ctx:      ctx,
 	}
 
 	for _, option := range options {

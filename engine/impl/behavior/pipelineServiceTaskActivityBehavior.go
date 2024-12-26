@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/db"
+	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
+	"regexp"
 	"strings"
 )
 
@@ -21,6 +23,8 @@ type PipelineServiceTaskActivityBehavior struct {
 	ServiceTask model.ServiceTask
 	ProcessKey  string
 }
+
+var rgx = regexp.MustCompile(`\$\{(.*?)\}`)
 
 func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.DelegateExecution) error {
 	httpClient := contextutil.GetHttpClient()
@@ -36,6 +40,7 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 	// set request body
 	requestBody := make(map[string]interface{})
 	extensionElements := pipeline.ServiceTask.ExtensionElements
+	variable := execution.GetProcessVariable()
 
 	field := extensionElements.GetFieldByName("requestBody")
 	if stringutils.IsNotEmpty(field.FieldName) {
@@ -53,15 +58,14 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 				expressionManager := contextutil.GetExpressionManager()
 				context := expressionManager.EvaluationContext()
 
-				variable := execution.GetProcessVariable()
 				if len(variable) > 0 {
 					context.SetVariables(variable)
 				}
 
 				expression := expressionManager.CreateExpression(parameterValue)
 				value := expression.GetValueContext(&context)
-				b, ok := value.(string)
-				if ok && stringutils.IsNotEmpty(b) {
+				b := cast.ToString(value)
+				if stringutils.IsNotEmpty(b) {
 					requestBody[k] = b
 				}
 			} else {
@@ -70,7 +74,8 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		}
 	}
 
-	requestBody["process_instance_id"] = execution.GetProcessInstanceId()
+	requestBody["processInstanceId"] = execution.GetProcessInstanceId()
+	requestBody["executionId"] = execution.GetExecutionId()
 
 	req.SetBody(requestBody)
 
@@ -81,6 +86,19 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 	}
 
 	requestUrl := field.StringValue
+
+	if rgx.MatchString(requestUrl) {
+		requestUrl = rgx.ReplaceAllStringFunc(requestUrl, func(s string) string {
+			s = strings.TrimPrefix(s, "${")
+			s = strings.TrimSuffix(s, "}")
+			v, ok := variable[s]
+			if !ok {
+				return s
+			}
+			return cast.ToString(v)
+		})
+	}
+
 	resp, err := req.Post(requestUrl)
 	if err != nil {
 		return errors.WithStack(err)
@@ -90,23 +108,26 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		return errors.WithStack(errors.New(string(resp.Body())))
 	}
 
-	/**
-	{
-	   "code": "-1",
-	   "message": "不支持的Git触发类型",
-	   "data": null
-	}
-
-	*/
 	result := make(map[string]interface{})
 	if err = json.Unmarshal(resp.Body(), &result); err != nil {
 		return errors.WithStack(err)
 	}
 
 	if cast.ToString(result["code"]) != "200" {
-		return errors.WithStack(errors.New(result["message"].(string)))
+		return errors.WithStack(errors.New(cast.ToString(result["message"])))
 	}
 
+	businessKey := cast.ToString(result["data"])
+	historicActivityInstanceEntityManager := entitymanager.GetHistoricActivityInstanceEntityManager()
+	if err = historicActivityInstanceEntityManager.RecordBusinessKeyByExecutionId(execution, businessKey); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// Trigger 普通用户节点处理
+func (pipeline PipelineServiceTaskActivityBehavior) Trigger(execution delegate.DelegateExecution) error {
 	pipeline.leave(execution)
 	return nil
 }

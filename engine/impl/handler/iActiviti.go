@@ -5,6 +5,7 @@ import (
 	delegate2 "github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/errs"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"reflect"
 	"sync"
 )
@@ -63,7 +64,7 @@ func PerformTaskListener(entity delegate2.DelegateExecution, taskName, processKe
 	callResponse := method.Func.Call(taskParams)
 	code := callResponse[0].Interface()
 	errRes := callResponse[1].Interface()
-	code = code.(string)
+	code = cast.ToString(code)
 	if code != ACTIVITI_HANDLER_CODE {
 		err := errRes.(error)
 		return err

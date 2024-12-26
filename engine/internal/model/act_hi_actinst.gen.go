@@ -34,6 +34,7 @@ type ActHiActinst struct {
 	Duration_         *int64     `gorm:"column:DURATION_;type:bigint" json:"duration_"`
 	DeleteReason_     *string    `gorm:"column:DELETE_REASON_;type:varchar(4000)" json:"delete_reason_"`
 	TenantID_         *string    `gorm:"column:TENANT_ID_;type:varchar(255)" json:"tenant_id_"`
+	BusinessResult_   *string    `gorm:"column:business_result_;type:text" json:"business_result_"`
 }
 
 // TableName ActHiActinst's table name

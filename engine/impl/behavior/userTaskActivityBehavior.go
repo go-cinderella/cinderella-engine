@@ -10,6 +10,7 @@ import (
 	. "github.com/go-cinderella/cinderella-engine/engine/impl/handler"
 	model2 "github.com/go-cinderella/cinderella-engine/engine/internal/model"
 	"github.com/samber/lo"
+	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"strings"
 	"time"
@@ -49,8 +50,8 @@ func (user UserTaskActivityBehavior) Execute(execution delegate.DelegateExecutio
 
 			expression := expressionManager.CreateExpression(assigneeStr)
 			value := expression.GetValueContext(&context)
-			b, ok := value.(string)
-			if ok && stringutils.IsNotEmpty(b) {
+			b := cast.ToString(value)
+			if stringutils.IsNotEmpty(b) {
 				task.Assignee = &b
 			}
 		} else {
@@ -136,8 +137,8 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 
 			expression := expressionManager.CreateExpression(candidateUsers)
 			value := expression.GetValueContext(&context)
-			b, ok := value.(string)
-			if ok && stringutils.IsNotEmpty(b) {
+			b := cast.ToString(value)
+			if stringutils.IsNotEmpty(b) {
 				users = strings.Split(b, ",")
 			}
 		} else {
@@ -186,8 +187,8 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 
 			expression := expressionManager.CreateExpression(candidateGroups)
 			value := expression.GetValueContext(&context)
-			b, ok := value.(string)
-			if ok && stringutils.IsNotEmpty(b) {
+			b := cast.ToString(value)
+			if stringutils.IsNotEmpty(b) {
 				groups = strings.Split(b, ",")
 			}
 		} else {

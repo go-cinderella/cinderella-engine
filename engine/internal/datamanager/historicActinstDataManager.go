@@ -8,6 +8,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
 	"github.com/samber/lo"
 	"github.com/unionj-cloud/toolkit/stringutils"
+	"github.com/wubin1989/gen/field"
 	"github.com/wubin1989/gorm/clause"
 	"strings"
 	"time"
@@ -130,8 +131,32 @@ func (historicActinstManager HistoricActinstDataManager) List(listRequest histor
 		}
 	}
 
-	var result []model.ActHiActinst
+	if stringutils.IsNotEmpty(listRequest.ActivityId) {
+		if strings.Contains(listRequest.ActivityId, ",") {
+			do = do.Where(actHiActinstQ.ActID.In(strings.Split(listRequest.ActivityId, ",")...))
+		} else {
+			do = do.Where(actHiActinstQ.ActID.Eq(listRequest.ActivityId))
+		}
+	}
+
 	commonRequest := listRequest.ListCommonRequest
+	if stringutils.IsNotEmpty(commonRequest.Sort) {
+		var sortField field.Field
+		switch commonRequest.Sort {
+		case "start":
+			sortField = field.Field(actHiActinstQ.StartTime)
+		default:
+			sortField = field.NewField((&model.ActHiActinst{}).TableName(), commonRequest.Sort)
+		}
+
+		if stringutils.IsNotEmpty(commonRequest.Order) && strings.ToLower(commonRequest.Order) == "desc" {
+			do = do.Order(sortField.Desc())
+		} else {
+			do = do.Order(sortField)
+		}
+	}
+
+	var result []model.ActHiActinst
 	if err := do.Offset(commonRequest.Start).Limit(commonRequest.Size).Fetch(&result); err != nil {
 		return nil, err
 	}
@@ -160,5 +185,15 @@ func (historicActinstManager HistoricActinstDataManager) MigrateAct(procDefId, o
 	}
 
 	_, err := hiActInstQuery.Where(hiActInstQuery.ProcDefID.Eq(procDefId), hiActInstQuery.ActID.Eq(oldActivityId)).Updates(&updateExample)
+	return err
+}
+
+func (historicActinstManager HistoricActinstDataManager) RecordBusinessKeyByExecutionId(executionId string, businessKey *string) error {
+	hiActInstQuery := contextutil.GetQuery().ActHiActinst
+	updateExample := model.ActHiActinst{
+		BusinessResult_: businessKey,
+	}
+
+	_, err := hiActInstQuery.Where(hiActInstQuery.ExecutionID.Eq(executionId)).Updates(&updateExample)
 	return err
 }

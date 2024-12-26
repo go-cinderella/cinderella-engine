@@ -140,7 +140,8 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 		return true
 	})
 
-	_, ok = currentTask.(*model.UserTask)
+	behavior := currentTask.GetBehavior()
+	_, ok = behavior.(delegate.TriggerableActivityBehavior)
 	if ok {
 		contextutil.GetAgendaFromContext(commandContext).PlanTriggerExecutionOperation(&executionEntity)
 	} else {
