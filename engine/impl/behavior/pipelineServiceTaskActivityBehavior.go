@@ -2,7 +2,7 @@ package behavior
 
 import (
 	"context"
-	"encoding/json"
+	"github.com/bytedance/sonic"
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/db"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
@@ -11,9 +11,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
+	"maps"
 	"regexp"
 	"strings"
 )
+
+var json = sonic.ConfigDefault
 
 var _ delegate.ActivityBehavior = (*PipelineServiceTaskActivityBehavior)(nil)
 var _ delegate.TriggerableActivityBehavior = (*PipelineServiceTaskActivityBehavior)(nil)
@@ -74,6 +77,9 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		}
 	}
 
+	businessParameter := make(map[string]any)
+	businessParameter["requestBody"] = maps.Clone(requestBody)
+
 	requestBody["processInstanceId"] = execution.GetProcessInstanceId()
 	requestBody["executionId"] = execution.GetExecutionId()
 
@@ -99,6 +105,8 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		})
 	}
 
+	businessParameter["requestUrl"] = requestUrl
+
 	resp, err := req.Post(requestUrl)
 	if err != nil {
 		return errors.WithStack(err)
@@ -117,9 +125,11 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		return errors.WithStack(errors.New(cast.ToString(result["message"])))
 	}
 
-	businessKey := cast.ToString(result["data"])
+	businessResult := cast.ToString(result["data"])
+	businessParameterJson, _ := json.MarshalToString(businessParameter)
+	
 	historicActivityInstanceEntityManager := entitymanager.GetHistoricActivityInstanceEntityManager()
-	if err = historicActivityInstanceEntityManager.RecordBusinessKeyByExecutionId(execution, businessKey); err != nil {
+	if err = historicActivityInstanceEntityManager.RecordBusinessDataByExecutionId(execution, businessParameterJson, businessResult); err != nil {
 		return errors.WithStack(err)
 	}
 

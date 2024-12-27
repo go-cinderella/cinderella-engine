@@ -188,10 +188,11 @@ func (historicActinstManager HistoricActinstDataManager) MigrateAct(procDefId, o
 	return err
 }
 
-func (historicActinstManager HistoricActinstDataManager) RecordBusinessKeyByExecutionId(executionId string, businessKey *string) error {
+func (historicActinstManager HistoricActinstDataManager) RecordBusinessDataByExecutionId(executionId string, businessParameter, businessResult *string) error {
 	hiActInstQuery := contextutil.GetQuery().ActHiActinst
 	updateExample := model.ActHiActinst{
-		BusinessResult_: businessKey,
+		BusinessResult_:    businessResult,
+		BusinessParameter_: businessParameter,
 	}
 
 	_, err := hiActInstQuery.Where(hiActInstQuery.ExecutionID.Eq(executionId)).Updates(&updateExample)

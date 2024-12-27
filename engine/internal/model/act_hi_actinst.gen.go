@@ -17,24 +17,25 @@ import (
 
 // ActHiActinst mapped from table <act_hi_actinst>
 type ActHiActinst struct {
-	ID_               string     `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
-	Rev_              *int32     `gorm:"column:REV_;type:integer;default:1" json:"rev_"`
-	ProcDefID_        string     `gorm:"column:PROC_DEF_ID_;type:varchar(64);not null" json:"proc_def_id_"`
-	ProcInstID_       string     `gorm:"column:PROC_INST_ID_;type:varchar(64);not null;index:act_idx_hi_act_inst_procinst,priority:1" json:"proc_inst_id_"`
-	ExecutionID_      string     `gorm:"column:EXECUTION_ID_;type:varchar(64);not null;index:act_idx_hi_act_inst_exec,priority:1" json:"execution_id_"`
-	ActID_            string     `gorm:"column:ACT_ID_;type:varchar(255);not null;index:act_idx_hi_act_inst_exec,priority:2;index:act_idx_hi_act_inst_procinst,priority:2" json:"act_id_"`
-	TaskID_           *string    `gorm:"column:TASK_ID_;type:varchar(64)" json:"task_id_"`
-	CallProcInstID_   *string    `gorm:"column:CALL_PROC_INST_ID_;type:varchar(64)" json:"call_proc_inst_id_"`
-	ActName_          *string    `gorm:"column:ACT_NAME_;type:varchar(255)" json:"act_name_"`
-	ActType_          string     `gorm:"column:ACT_TYPE_;type:varchar(255);not null" json:"act_type_"`
-	Assignee_         *string    `gorm:"column:ASSIGNEE_;type:varchar(255)" json:"assignee_"`
-	StartTime_        time.Time  `gorm:"column:START_TIME_;type:timestamp without time zone;not null;index:act_idx_hi_act_inst_start,priority:1" json:"start_time_"`
-	EndTime_          *time.Time `gorm:"column:END_TIME_;type:timestamp without time zone;index:act_idx_hi_act_inst_end,priority:1" json:"end_time_"`
-	TransactionOrder_ *int32     `gorm:"column:TRANSACTION_ORDER_;type:integer" json:"transaction_order_"`
-	Duration_         *int64     `gorm:"column:DURATION_;type:bigint" json:"duration_"`
-	DeleteReason_     *string    `gorm:"column:DELETE_REASON_;type:varchar(4000)" json:"delete_reason_"`
-	TenantID_         *string    `gorm:"column:TENANT_ID_;type:varchar(255)" json:"tenant_id_"`
-	BusinessResult_   *string    `gorm:"column:business_result_;type:text" json:"business_result_"`
+	ID_                string     `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
+	Rev_               *int32     `gorm:"column:REV_;type:integer;default:1" json:"rev_"`
+	ProcDefID_         string     `gorm:"column:PROC_DEF_ID_;type:varchar(64);not null" json:"proc_def_id_"`
+	ProcInstID_        string     `gorm:"column:PROC_INST_ID_;type:varchar(64);not null;index:act_idx_hi_act_inst_procinst,priority:1" json:"proc_inst_id_"`
+	ExecutionID_       string     `gorm:"column:EXECUTION_ID_;type:varchar(64);not null;index:act_idx_hi_act_inst_exec,priority:1" json:"execution_id_"`
+	ActID_             string     `gorm:"column:ACT_ID_;type:varchar(255);not null;index:act_idx_hi_act_inst_exec,priority:2;index:act_idx_hi_act_inst_procinst,priority:2" json:"act_id_"`
+	TaskID_            *string    `gorm:"column:TASK_ID_;type:varchar(64)" json:"task_id_"`
+	CallProcInstID_    *string    `gorm:"column:CALL_PROC_INST_ID_;type:varchar(64)" json:"call_proc_inst_id_"`
+	ActName_           *string    `gorm:"column:ACT_NAME_;type:varchar(255)" json:"act_name_"`
+	ActType_           string     `gorm:"column:ACT_TYPE_;type:varchar(255);not null" json:"act_type_"`
+	Assignee_          *string    `gorm:"column:ASSIGNEE_;type:varchar(255)" json:"assignee_"`
+	StartTime_         time.Time  `gorm:"column:START_TIME_;type:timestamp without time zone;not null;index:act_idx_hi_act_inst_start,priority:1" json:"start_time_"`
+	EndTime_           *time.Time `gorm:"column:END_TIME_;type:timestamp without time zone;index:act_idx_hi_act_inst_end,priority:1" json:"end_time_"`
+	TransactionOrder_  *int32     `gorm:"column:TRANSACTION_ORDER_;type:integer" json:"transaction_order_"`
+	Duration_          *int64     `gorm:"column:DURATION_;type:bigint" json:"duration_"`
+	DeleteReason_      *string    `gorm:"column:DELETE_REASON_;type:varchar(4000)" json:"delete_reason_"`
+	TenantID_          *string    `gorm:"column:TENANT_ID_;type:varchar(255)" json:"tenant_id_"`
+	BusinessResult_    *string    `gorm:"column:business_result_;type:text" json:"business_result_"`
+	BusinessParameter_ *string    `gorm:"column:business_parameter_;type:text" json:"business_parameter_"`
 }
 
 // TableName ActHiActinst's table name

@@ -45,6 +45,7 @@ func newActHiActinst(db *gorm.DB, opts ...gormgen.DOOption) actHiActinst {
 	_actHiActinst.DeleteReason = field.NewString(tableName, "delete_reason_")
 	_actHiActinst.TenantID = field.NewString(tableName, "tenant_id_")
 	_actHiActinst.BusinessResult = field.NewString(tableName, "business_result_")
+	_actHiActinst.BusinessParameter = field.NewString(tableName, "business_parameter_")
 
 	_actHiActinst.fillFieldMap()
 
@@ -54,25 +55,26 @@ func newActHiActinst(db *gorm.DB, opts ...gormgen.DOOption) actHiActinst {
 type actHiActinst struct {
 	actHiActinstDo
 
-	ALL              field.Asterisk
-	ID               field.String
-	Rev              field.Int32
-	ProcDefID        field.String
-	ProcInstID       field.String
-	ExecutionID      field.String
-	ActID            field.String
-	TaskID           field.String
-	CallProcInstID   field.String
-	ActName          field.String
-	ActType          field.String
-	Assignee         field.String
-	StartTime        field.Time
-	EndTime          field.Time
-	TransactionOrder field.Int32
-	Duration         field.Int64
-	DeleteReason     field.String
-	TenantID         field.String
-	BusinessResult   field.String
+	ALL               field.Asterisk
+	ID                field.String
+	Rev               field.Int32
+	ProcDefID         field.String
+	ProcInstID        field.String
+	ExecutionID       field.String
+	ActID             field.String
+	TaskID            field.String
+	CallProcInstID    field.String
+	ActName           field.String
+	ActType           field.String
+	Assignee          field.String
+	StartTime         field.Time
+	EndTime           field.Time
+	TransactionOrder  field.Int32
+	Duration          field.Int64
+	DeleteReason      field.String
+	TenantID          field.String
+	BusinessResult    field.String
+	BusinessParameter field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -107,6 +109,7 @@ func (a *actHiActinst) updateTableName(table string) *actHiActinst {
 	a.DeleteReason = field.NewString(table, "delete_reason_")
 	a.TenantID = field.NewString(table, "tenant_id_")
 	a.BusinessResult = field.NewString(table, "business_result_")
+	a.BusinessParameter = field.NewString(table, "business_parameter_")
 
 	a.fillFieldMap()
 
@@ -162,6 +165,7 @@ func (a *actHiActinst) fillFieldMap() {
 	a.fieldMap["delete_reason_"] = a.DeleteReason
 	a.fieldMap["tenant_id_"] = a.TenantID
 	a.fieldMap["business_result_"] = a.BusinessResult
+	a.fieldMap["business_parameter_"] = a.BusinessParameter
 }
 
 func (a actHiActinst) Clone(db *gorm.DB) actHiActinst {
