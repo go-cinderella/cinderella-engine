@@ -6,7 +6,13 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/dto/request"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/task"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
+	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
+	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
+	"github.com/go-cinderella/cinderella-engine/engine/utils"
+	"github.com/samber/lo"
 	"math"
+	"slices"
+	"strings"
 )
 
 var _ engine.Command = (*GetCurrentTasksByUserCmd)(nil)
@@ -42,21 +48,108 @@ func (g GetCurrentTasksByUserCmd) Execute(commandContext engine.Context) (interf
 
 	currentTasks := make([]entitymanager.TaskEntity, 0)
 
+	taskDataManager := datamanager.GetTaskDataManager()
 	req := task.ListRequest{
 		ListCommonRequest: request.ListCommonRequest{
 			Size: math.MaxInt32,
 		},
-		ProcessInstanceId:   g.ProcessInstanceId,
-		CandidateOrAssigned: *g.UserId,
+		ProcessInstanceId: g.ProcessInstanceId,
 	}
-	taskEntityManager := entitymanager.GetTaskEntityManager()
-	tasks, err := taskEntityManager.List(req)
+	uniqTaskDefKeys, err := taskDataManager.GetUniqTaskDefKeys(req)
+	if err != nil {
+		return nil, err
+	}
+	if len(uniqTaskDefKeys) == 0 {
+		return currentTasks, nil
+	}
+
+	processUtils := utils.ProcessDefinitionUtil{}
+	var process model.Process
+	process, err = processUtils.GetProcess(*uniqTaskDefKeys[0].ProcDefID_)
 	if err != nil {
 		return nil, err
 	}
 
-	currentTasks = append(currentTasks, tasks...)
-	if len(g.Groups) > 0 {
+	var taskDefKeys []string
+	var assigneeOrCandidateUsersElKeys []string
+	var candidateGroupsElKeys []string
+
+	for _, item := range uniqTaskDefKeys {
+		flowElement := process.GetFlowElement(*item.TaskDefKey_)
+		userTask := flowElement.(*model.UserTask)
+
+		assigneeEl := userTask.Assignee
+		if assigneeEl != nil && !strings.HasPrefix(*assigneeEl, "${") {
+			// Assignee is literal
+			assignee := *assigneeEl
+			if g.UserId != nil && *g.UserId == assignee {
+				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
+				continue
+			}
+		} else if assigneeEl != nil && strings.HasPrefix(*assigneeEl, "${") && strings.HasSuffix(*assigneeEl, "}") {
+			assigneeOrCandidateUsersElKeys = append(assigneeOrCandidateUsersElKeys, *item.TaskDefKey_)
+		}
+
+		candidateUsersEl := userTask.CandidateUsers
+		if candidateUsersEl != nil && !strings.HasPrefix(*candidateUsersEl, "${") {
+			candidateUsersStr := *candidateUsersEl
+			candidateUsers := strings.Split(candidateUsersStr, ",")
+			if g.UserId != nil && slices.Contains(candidateUsers, *g.UserId) {
+				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
+				continue
+			}
+		} else if candidateUsersEl != nil && strings.HasPrefix(*candidateUsersEl, "${") && strings.HasSuffix(*candidateUsersEl, "}") {
+			assigneeOrCandidateUsersElKeys = append(assigneeOrCandidateUsersElKeys, *item.TaskDefKey_)
+		}
+
+		candidateGroupsEl := userTask.CandidateGroups
+		if candidateGroupsEl != nil && !strings.HasPrefix(*candidateGroupsEl, "${") {
+			candidateGroupsStr := *candidateGroupsEl
+			candidateGroups := strings.Split(candidateGroupsStr, ",")
+			if len(g.Groups) > 0 && len(lo.Intersect(candidateGroups, g.Groups)) > 0 {
+				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
+				continue
+			}
+		} else if candidateGroupsEl != nil && strings.HasPrefix(*candidateGroupsEl, "${") && strings.HasSuffix(*candidateGroupsEl, "}") {
+			candidateGroupsElKeys = append(candidateGroupsElKeys, *item.TaskDefKey_)
+		}
+	}
+
+	taskEntityManager := entitymanager.GetTaskEntityManager()
+
+	if len(taskDefKeys) > 0 {
+		req = task.ListRequest{
+			ListCommonRequest: request.ListCommonRequest{
+				Size: math.MaxInt32,
+			},
+			ProcessInstanceId:  g.ProcessInstanceId,
+			TaskDefinitionKeys: taskDefKeys,
+		}
+		tasks, err := taskEntityManager.List(req)
+		if err != nil {
+			return nil, err
+		}
+		currentTasks = append(currentTasks, tasks...)
+	}
+
+	if len(assigneeOrCandidateUsersElKeys) > 0 {
+		req = task.ListRequest{
+			ListCommonRequest: request.ListCommonRequest{
+				Size: math.MaxInt32,
+			},
+			ProcessInstanceId:   g.ProcessInstanceId,
+			CandidateOrAssigned: *g.UserId,
+			TaskDefinitionKeys:  assigneeOrCandidateUsersElKeys,
+		}
+		tasks, err := taskEntityManager.List(req)
+		if err != nil {
+			return nil, err
+		}
+
+		currentTasks = append(currentTasks, tasks...)
+	}
+
+	if len(g.Groups) > 0 && len(candidateGroupsElKeys) > 0 {
 		/**
 		SELECT RES.*
 		from ACT_RU_TASK RES
@@ -70,15 +163,21 @@ func (g GetCurrentTasksByUserCmd) Execute(commandContext engine.Context) (interf
 			ListCommonRequest: request.ListCommonRequest{
 				Size: math.MaxInt32,
 			},
-			ProcessInstanceId: g.ProcessInstanceId,
-			CandidateGroupIn:  g.Groups,
+			ProcessInstanceId:  g.ProcessInstanceId,
+			CandidateGroupIn:   g.Groups,
+			TaskDefinitionKeys: candidateGroupsElKeys,
 		}
-		tasks, err = taskEntityManager.List(req)
+		tasks, err := taskEntityManager.List(req)
 		if err != nil {
 			return nil, err
 		}
 		currentTasks = append(currentTasks, tasks...)
 	}
+
+	currentTasks = lo.UniqBy[entitymanager.TaskEntity, string, []entitymanager.TaskEntity](currentTasks, func(item entitymanager.TaskEntity) string {
+		return item.Id
+	})
+
 	return currentTasks, nil
 }
 

@@ -27,6 +27,7 @@ type ListRequest struct {
 	InvolvedUser                   string                     `json:"involvedUser,omitempty"`
 	ProcessInstanceId              string                     `json:"processInstanceId,omitempty"`
 	TaskDefinitionKey              string                     `json:"taskDefinitionKey,omitempty"`
+	TaskDefinitionKeys             []string                   `json:"taskDefinitionKeys,omitempty"`
 	TaskDefinitionKeyLike          string                     `json:"taskDefinitionKeyLike,omitempty"`
 	ProcessInstanceBusinessKey     string                     `json:"processInstanceBusinessKey,omitempty"`
 	ProcessInstanceBusinessKeyLike string                     `json:"processInstanceBusinessKeyLike,omitempty"`

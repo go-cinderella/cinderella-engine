@@ -111,6 +111,10 @@ func (taskManager TaskDataManager) List(listRequest task.ListRequest) ([]model.A
 		do = do.Where(taskQuery.TaskDefKey.Eq(listRequest.TaskDefinitionKey))
 	}
 
+	if len(listRequest.TaskDefinitionKeys) > 0 {
+		do = do.Where(taskQuery.TaskDefKey.In(listRequest.TaskDefinitionKeys...))
+	}
+
 	if stringutils.IsNotEmpty(listRequest.CandidateOrAssigned) || len(listRequest.CandidateGroupIn) > 0 {
 		linkQuery := contextutil.GetQuery().ActRuIdentitylink
 
@@ -152,6 +156,65 @@ func (taskManager TaskDataManager) List(listRequest task.ListRequest) ([]model.A
 
 	var result []model.ActRuTask
 	if err := do.Offset(commonRequest.Start).Limit(commonRequest.Size).Fetch(&result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (taskManager TaskDataManager) GetUniqTaskDefKeys(listRequest task.ListRequest) ([]model.ActRuTask, error) {
+	taskQuery := contextutil.GetQuery().ActRuTask
+	do := taskQuery.Where()
+
+	if stringutils.IsNotEmpty(listRequest.ProcessInstanceId) {
+		do = do.Where(taskQuery.ProcInstID.Eq(listRequest.ProcessInstanceId))
+	}
+
+	if stringutils.IsNotEmpty(listRequest.TaskDefinitionKey) {
+		do = do.Where(taskQuery.TaskDefKey.Eq(listRequest.TaskDefinitionKey))
+	}
+
+	if stringutils.IsNotEmpty(listRequest.CandidateOrAssigned) || len(listRequest.CandidateGroupIn) > 0 {
+		linkQuery := contextutil.GetQuery().ActRuIdentitylink
+
+		if stringutils.IsNotEmpty(listRequest.CandidateOrAssigned) {
+			subQuery := linkQuery.Select(linkQuery.ID).Where(
+				linkQuery.TaskID.EqCol(taskQuery.ID),
+				linkQuery.Type.Eq("candidate"),
+				linkQuery.UserID.Eq(listRequest.CandidateOrAssigned),
+			)
+			do = do.Where(taskQuery.Where(taskQuery.Assignee.Eq(listRequest.CandidateOrAssigned)).Or(taskQuery.Where(gormgen.Exists(subQuery))))
+		}
+
+		if len(listRequest.CandidateGroupIn) > 0 {
+			subQuery := linkQuery.Select(linkQuery.ID).Where(
+				linkQuery.TaskID.EqCol(taskQuery.ID),
+				linkQuery.Type.Eq("candidate"),
+				linkQuery.GroupID.In(listRequest.CandidateGroupIn...),
+			)
+			do = do.Where(gormgen.Exists(subQuery))
+		}
+	}
+
+	commonRequest := listRequest.ListCommonRequest
+	if stringutils.IsNotEmpty(commonRequest.Sort) {
+		var sortField field.Field
+		switch commonRequest.Sort {
+		case "start":
+			sortField = field.Field(taskQuery.CreateTime)
+		default:
+			sortField = field.NewField((&model.ActRuTask{}).TableName(), commonRequest.Sort)
+		}
+
+		if stringutils.IsNotEmpty(commonRequest.Order) && strings.ToLower(commonRequest.Order) == "desc" {
+			do = do.Order(sortField.Desc())
+		} else {
+			do = do.Order(sortField)
+		}
+	}
+
+	var result []model.ActRuTask
+	if err := do.Distinct(taskQuery.TaskDefKey.As("TASK_DEF_KEY_"), taskQuery.ProcDefID.As("PROC_DEF_ID_")).Offset(commonRequest.Start).Limit(commonRequest.Size).Fetch(&result); err != nil {
 		return nil, err
 	}
 
