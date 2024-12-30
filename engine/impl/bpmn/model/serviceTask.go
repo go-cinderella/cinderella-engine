@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/xml"
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"reflect"
@@ -12,6 +13,7 @@ var _ delegate.FlowElement = (*ServiceTask)(nil)
 
 type ServiceTask struct {
 	FlowNode
+	XMLName           xml.Name          `xml:"serviceTask"`
 	TaskType          string            `xml:"type,attr"`
 	ExtensionElements *ExtensionElement `xml:"extensionElements"`
 }

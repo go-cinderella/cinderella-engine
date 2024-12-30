@@ -1,11 +1,13 @@
 package model
 
+import "encoding/xml"
+
 type SequenceFlow struct {
 	FlowNode
-	//Id                  string   `xml:"id,attr"`
-	SourceRef           string `xml:"sourceRef,attr"`
-	TargetRef           string `xml:"targetRef,attr"`
-	ConditionExpression string `xml:"conditionExpression"`
+	XMLName             xml.Name `xml:"sequenceFlow"`
+	SourceRef           string   `xml:"sourceRef,attr"`
+	TargetRef           string   `xml:"targetRef,attr"`
+	ConditionExpression string   `xml:"conditionExpression"`
 }
 
 func (sequenceFlow SequenceFlow) GetType() string {

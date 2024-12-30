@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/xml"
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 )
@@ -12,6 +13,7 @@ var _ delegate.FlowElement = (*IntermediateCatchEvent)(nil)
 // IntermediateCatchEvent 中间抛出事件
 type IntermediateCatchEvent struct {
 	FlowNode
+	XMLName                    xml.Name                    `xml:"intermediateCatchEvent"`
 	MessageEventDefinition     *MessageEventDefinition     `xml:"messageEventDefinition"`
 	TimerEventDefinition       *TimerEventDefinition       `xml:"timerEventDefinition"`
 	LinkEventDefinition        *LinkEventDefinition        `xml:"linkEventDefinition"`

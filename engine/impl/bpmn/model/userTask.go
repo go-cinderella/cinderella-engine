@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/xml"
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/spf13/cast"
@@ -13,6 +14,7 @@ var _ delegate.FlowElement = (*UserTask)(nil)
 
 type UserTask struct {
 	FlowNode
+	XMLName           xml.Name                          `xml:"userTask"`
 	Assignee          *string                           `xml:"assignee,attr"`
 	FormKey           *string                           `xml:"formKey,attr"`
 	CandidateUsers    *string                           `xml:"candidateUsers,attr"`

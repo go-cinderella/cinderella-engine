@@ -1,12 +1,14 @@
 package model
 
 import (
+	"encoding/xml"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 )
 
 type Process struct {
 	FlowNode
-	IsExecutable string `xml:"isExecutable,attr"`
+	XMLName      xml.Name `xml:"process"`
+	IsExecutable string   `xml:"isExecutable,attr"`
 	// Attributes below aren't used
 	//Documentation           string                   `xml:"documentation"`
 	//IsExecutable            string                   `xml:"isExecutable,attr"`
