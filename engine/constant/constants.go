@@ -18,3 +18,8 @@ const (
 	SERVICE_TASK_HTTP     = "http"
 	SERVICE_TASK_PIPELINE = "pipeline"
 )
+
+const (
+	Alphabet               = "0123456789abcdefghijklmnopqrstuvwxyz"
+	ColumnRandomCodeLength = 7
+)

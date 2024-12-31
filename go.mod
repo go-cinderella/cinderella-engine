@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/klauspost/compress v1.17.8
+	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/opentracing-contrib/go-stdlib v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/samber/do v1.6.0
