@@ -1,9 +1,9 @@
 package interceptor
 
 import (
-	"database/sql"
 	"github.com/go-cinderella/cinderella-engine/engine"
 	"github.com/go-cinderella/cinderella-engine/engine/db"
+	"github.com/samber/do"
 	"github.com/wubin1989/gorm"
 )
 
@@ -15,12 +15,14 @@ func (transactionContextInterceptor TransactionContextInterceptor) Execute(comma
 
 	sqlSession := db.DB()
 
-	if _, ok := sqlSession.Statement.ConnPool.(*sql.Tx); ok {
-		// already in transaction which is managed by outside
+	if sqlSession != nil {
+		// *gorm.DB has already been injected which is managed by outside
 		return transactionContextInterceptor.Next.Execute(command)
 	}
 
 	defer db.ClearTXDB()
+
+	sqlSession = do.MustInvoke[*gorm.DB](nil)
 
 	ctx := command.Context()
 	if ctx != nil {
