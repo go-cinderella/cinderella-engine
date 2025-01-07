@@ -15,11 +15,11 @@ func (dataManagers DataManager) Insert(data interface{}) error {
 }
 
 func (dataManagers DataManager) FindById(id string, data interface{}) error {
-	err := db.DB().Where("id_ = ?", id).Find(data).Error
+	err := db.DB().Where(`"id_" = ?`, id).Find(data).Error
 	return err
 }
 func (dataManagers DataManager) Delete(id string) error {
 	tableName := dataManagers.TableName()
-	err := db.DB().Where("id_ = ?", id).Table(tableName).Delete(nil).Error
+	err := db.DB().Where(`"id_" = ?`, id).Table(tableName).Delete(nil).Error
 	return err
 }

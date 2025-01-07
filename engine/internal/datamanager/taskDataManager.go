@@ -19,7 +19,7 @@ type TaskDataManager struct {
 
 func (taskManager TaskDataManager) GetById(id int64) (model.ActRuTask, error) {
 	task := model.ActRuTask{}
-	err := db.DB().Where("id_ = ?", id).First(&task).Error
+	err := db.DB().Where(`"id_" = ?`, id).First(&task).Error
 	if err != nil {
 		log.Error("find bu id err:", err)
 	}
@@ -214,7 +214,7 @@ func (taskManager TaskDataManager) GetUniqTaskDefKeys(listRequest task.ListReque
 	}
 
 	var result []model.ActRuTask
-	if err := do.Distinct(taskQuery.TaskDefKey.As("TASK_DEF_KEY_"), taskQuery.ProcDefID.As("PROC_DEF_ID_")).Offset(commonRequest.Start).Limit(commonRequest.Size).Fetch(&result); err != nil {
+	if err := do.Distinct(taskQuery.TaskDefKey, taskQuery.ProcDefID).Offset(commonRequest.Start).Limit(commonRequest.Size).Fetch(&result); err != nil {
 		return nil, err
 	}
 

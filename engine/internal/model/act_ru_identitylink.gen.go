@@ -15,14 +15,14 @@ import (
 
 // ActRuIdentitylink mapped from table <act_ru_identitylink>
 type ActRuIdentitylink struct {
-	ID_                string  `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
-	Rev_               *int32  `gorm:"column:REV_;type:integer" json:"rev_"`
-	GroupID_           *string `gorm:"column:GROUP_ID_;type:varchar(255);index:act_idx_ident_lnk_group,priority:1" json:"group_id_"`
-	Type_              *string `gorm:"column:TYPE_;type:varchar(255)" json:"type_"`
-	UserID_            *string `gorm:"column:USER_ID_;type:varchar(255);index:act_idx_ident_lnk_user,priority:1" json:"user_id_"`
-	TaskID_            *string `gorm:"column:TASK_ID_;type:varchar(64);index:act_idx_tskass_task,priority:1" json:"task_id_"`
-	ProcInstID_        *string `gorm:"column:PROC_INST_ID_;type:varchar(64);index:act_idx_idl_procinst,priority:1" json:"proc_inst_id_"`
-	ProcDefID_         *string `gorm:"column:PROC_DEF_ID_;type:varchar(64);index:act_idx_athrz_procedef,priority:1" json:"proc_def_id_"`
+	ID_                string  `gorm:"column:id_;type:varchar(64);primaryKey" json:"id_"`
+	Rev_               *int32  `gorm:"column:rev_;type:integer" json:"rev_"`
+	GroupID_           *string `gorm:"column:group_id_;type:varchar(255);index:act_idx_ident_lnk_group,priority:1" json:"group_id_"`
+	Type_              *string `gorm:"column:type_;type:varchar(255)" json:"type_"`
+	UserID_            *string `gorm:"column:user_id_;type:varchar(255);index:act_idx_ident_lnk_user,priority:1" json:"user_id_"`
+	TaskID_            *string `gorm:"column:task_id_;type:varchar(64);index:act_idx_tskass_task,priority:1" json:"task_id_"`
+	ProcInstID_        *string `gorm:"column:proc_inst_id_;type:varchar(64);index:act_idx_idl_procinst,priority:1" json:"proc_inst_id_"`
+	ProcDefID_         *string `gorm:"column:proc_def_id_;type:varchar(64);index:act_idx_athrz_procedef,priority:1" json:"proc_def_id_"`
 	ScopeID_           *string `gorm:"column:scope_id_;type:varchar(255);index:act_idx_ident_lnk_scope,priority:1" json:"scope_id_"`
 	SubScopeID_        *string `gorm:"column:sub_scope_id_;type:varchar(255);index:act_idx_ident_lnk_sub_scope,priority:1" json:"sub_scope_id_"`
 	ScopeType_         *string `gorm:"column:scope_type_;type:varchar(255);index:act_idx_ident_lnk_scope_def,priority:1;index:act_idx_ident_lnk_scope,priority:2;index:act_idx_ident_lnk_sub_scope,priority:2" json:"scope_type_"`

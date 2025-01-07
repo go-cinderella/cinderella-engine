@@ -48,7 +48,6 @@ func newActHiProcinst(db *gorm.DB, opts ...gormgen.DOOption) actHiProcinst {
 	_actHiProcinst.ReferenceType = field.NewString(tableName, "reference_type_")
 	_actHiProcinst.PropagatedStageInstID = field.NewString(tableName, "propagated_stage_inst_id_")
 	_actHiProcinst.BusinessStatus = field.NewString(tableName, "business_status_")
-	_actHiProcinst.ID = field.NewString(tableName, "id")
 
 	_actHiProcinst.fillFieldMap()
 
@@ -117,7 +116,6 @@ func (a *actHiProcinst) updateTableName(table string) *actHiProcinst {
 	a.ReferenceType = field.NewString(table, "reference_type_")
 	a.PropagatedStageInstID = field.NewString(table, "propagated_stage_inst_id_")
 	a.BusinessStatus = field.NewString(table, "business_status_")
-	a.ID = field.NewString(table, "id")
 
 	a.fillFieldMap()
 
@@ -176,7 +174,6 @@ func (a *actHiProcinst) fillFieldMap() {
 	a.fieldMap["reference_type_"] = a.ReferenceType
 	a.fieldMap["propagated_stage_inst_id_"] = a.PropagatedStageInstID
 	a.fieldMap["business_status_"] = a.BusinessStatus
-	a.fieldMap["id"] = a.ID
 }
 
 func (a actHiProcinst) Clone(db *gorm.DB) actHiProcinst {

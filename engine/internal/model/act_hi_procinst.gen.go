@@ -17,27 +17,27 @@ import (
 
 // ActHiProcinst mapped from table <act_hi_procinst>
 type ActHiProcinst struct {
-	ID_                     string     `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
-	Rev_                    *int32     `gorm:"column:REV_;type:integer;default:1" json:"rev_"`
-	ProcInstID_             string     `gorm:"column:PROC_INST_ID_;type:varchar(64);not null" json:"proc_inst_id_"`
-	BusinessKey_            *string    `gorm:"column:BUSINESS_KEY_;type:varchar(255);index:act_idx_hi_pro_i_buskey,priority:1" json:"business_key_"`
-	ProcDefID_              string     `gorm:"column:PROC_DEF_ID_;type:varchar(64);not null" json:"proc_def_id_"`
-	StartTime_              time.Time  `gorm:"column:START_TIME_;type:timestamp without time zone;not null" json:"start_time_"`
-	EndTime_                *time.Time `gorm:"column:END_TIME_;type:timestamp without time zone;index:act_idx_hi_pro_inst_end,priority:1" json:"end_time_"`
-	Duration_               *int64     `gorm:"column:DURATION_;type:bigint" json:"duration_"`
-	StartUserID_            *string    `gorm:"column:START_USER_ID_;type:varchar(255)" json:"start_user_id_"`
-	StartActID_             *string    `gorm:"column:START_ACT_ID_;type:varchar(255)" json:"start_act_id_"`
-	EndActID_               *string    `gorm:"column:END_ACT_ID_;type:varchar(255)" json:"end_act_id_"`
-	SuperProcessInstanceID_ *string    `gorm:"column:SUPER_PROCESS_INSTANCE_ID_;type:varchar(64);index:act_idx_hi_pro_super_procinst,priority:1" json:"super_process_instance_id_"`
-	DeleteReason_           *string    `gorm:"column:DELETE_REASON_;type:varchar(4000)" json:"delete_reason_"`
-	TenantID_               *string    `gorm:"column:TENANT_ID_;type:varchar(255)" json:"tenant_id_"`
-	Name_                   *string    `gorm:"column:NAME_;type:varchar(255)" json:"name_"`
-	CallbackID_             *string    `gorm:"column:CALLBACK_ID_;type:varchar(255)" json:"callback_id_"`
-	CallbackType_           *string    `gorm:"column:CALLBACK_TYPE_;type:varchar(255)" json:"callback_type_"`
-	ReferenceID_            *string    `gorm:"column:REFERENCE_ID_;type:varchar(255)" json:"reference_id_"`
-	ReferenceType_          *string    `gorm:"column:REFERENCE_TYPE_;type:varchar(255)" json:"reference_type_"`
-	PropagatedStageInstID_  *string    `gorm:"column:PROPAGATED_STAGE_INST_ID_;type:varchar(255)" json:"propagated_stage_inst_id_"`
-	BusinessStatus_         *string    `gorm:"column:BUSINESS_STATUS_;type:varchar(255)" json:"business_status_"`
+	ID_                     string     `gorm:"column:id_;type:varchar(64);primaryKey" json:"id_"`
+	Rev_                    *int32     `gorm:"column:rev_;type:integer;default:1" json:"rev_"`
+	ProcInstID_             string     `gorm:"column:proc_inst_id_;type:varchar(64);not null" json:"proc_inst_id_"`
+	BusinessKey_            *string    `gorm:"column:business_key_;type:varchar(255);index:act_idx_hi_pro_i_buskey,priority:1" json:"business_key_"`
+	ProcDefID_              string     `gorm:"column:proc_def_id_;type:varchar(64);not null" json:"proc_def_id_"`
+	StartTime_              time.Time  `gorm:"column:start_time_;type:timestamp without time zone;not null" json:"start_time_"`
+	EndTime_                *time.Time `gorm:"column:end_time_;type:timestamp without time zone;index:act_idx_hi_pro_inst_end,priority:1" json:"end_time_"`
+	Duration_               *int64     `gorm:"column:duration_;type:bigint" json:"duration_"`
+	StartUserID_            *string    `gorm:"column:start_user_id_;type:varchar(255)" json:"start_user_id_"`
+	StartActID_             *string    `gorm:"column:start_act_id_;type:varchar(255)" json:"start_act_id_"`
+	EndActID_               *string    `gorm:"column:end_act_id_;type:varchar(255)" json:"end_act_id_"`
+	SuperProcessInstanceID_ *string    `gorm:"column:super_process_instance_id_;type:varchar(64);index:act_idx_hi_pro_super_procinst,priority:1" json:"super_process_instance_id_"`
+	DeleteReason_           *string    `gorm:"column:delete_reason_;type:varchar(4000)" json:"delete_reason_"`
+	TenantID_               *string    `gorm:"column:tenant_id_;type:varchar(255)" json:"tenant_id_"`
+	Name_                   *string    `gorm:"column:name_;type:varchar(255)" json:"name_"`
+	CallbackID_             *string    `gorm:"column:callback_id_;type:varchar(255)" json:"callback_id_"`
+	CallbackType_           *string    `gorm:"column:callback_type_;type:varchar(255)" json:"callback_type_"`
+	ReferenceID_            *string    `gorm:"column:reference_id_;type:varchar(255)" json:"reference_id_"`
+	ReferenceType_          *string    `gorm:"column:reference_type_;type:varchar(255)" json:"reference_type_"`
+	PropagatedStageInstID_  *string    `gorm:"column:propagated_stage_inst_id_;type:varchar(255)" json:"propagated_stage_inst_id_"`
+	BusinessStatus_         *string    `gorm:"column:business_status_;type:varchar(255)" json:"business_status_"`
 }
 
 // TableName ActHiProcinst's table name

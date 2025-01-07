@@ -15,12 +15,12 @@ import (
 
 // ActGeBytearray mapped from table <act_ge_bytearray>
 type ActGeBytearray struct {
-	ID_           string  `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
-	Rev_          *int32  `gorm:"column:REV_;type:integer" json:"rev_"`
-	Name_         *string `gorm:"column:NAME_;type:varchar(255)" json:"name_"`
-	DeploymentID_ *string `gorm:"column:DEPLOYMENT_ID_;type:varchar(64);index:act_idx_bytear_depl,priority:1" json:"deployment_id_"`
-	Bytes_        *[]byte `gorm:"column:BYTES_;type:bytea" json:"bytes_"`
-	Generated_    *bool   `gorm:"column:GENERATED_;type:boolean" json:"generated_"`
+	ID_           string  `gorm:"column:id_;type:varchar(64);primaryKey" json:"id_"`
+	Rev_          *int32  `gorm:"column:rev_;type:integer" json:"rev_"`
+	Name_         *string `gorm:"column:name_;type:varchar(255)" json:"name_"`
+	DeploymentID_ *string `gorm:"column:deployment_id_;type:varchar(64);index:act_idx_bytear_depl,priority:1" json:"deployment_id_"`
+	Bytes_        *[]byte `gorm:"column:bytes_;type:bytea" json:"bytes_"`
+	Generated_    *bool   `gorm:"column:generated_;type:boolean" json:"generated_"`
 }
 
 // TableName ActGeBytearray's table name

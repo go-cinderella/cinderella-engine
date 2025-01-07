@@ -83,7 +83,7 @@ func (variableManager VariableDataManager) Upsert(varinst variable.Variable) err
 	var value map[string]interface{}
 	copier.DeepCopy(varinst, &value)
 
-	err := db.DB().Table((&variable.Variable{}).TableName()).Clauses(clause.OnConflict{
+	err := db.DB().Model(&variable.Variable{}).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "name_"}, {Name: "proc_inst_id_"}},
 		DoUpdates: clause.AssignmentColumns([]string{"double_", "long_", "text_"}),
 	}).Create(value).Error

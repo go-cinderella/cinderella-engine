@@ -17,16 +17,16 @@ import (
 
 // ActReDeployment mapped from table <act_re_deployment>
 type ActReDeployment struct {
-	ID_                 string     `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
-	Name_               *string    `gorm:"column:NAME_;type:varchar(255)" json:"name_"`
-	Category_           *string    `gorm:"column:CATEGORY_;type:varchar(255)" json:"category_"`
-	Key_                *string    `gorm:"column:KEY_;type:varchar(255)" json:"key_"`
-	TenantID_           *string    `gorm:"column:TENANT_ID_;type:varchar(255)" json:"tenant_id_"`
-	DeployTime_         *time.Time `gorm:"column:DEPLOY_TIME_;type:timestamp without time zone" json:"deploy_time_"`
-	DerivedFrom_        *string    `gorm:"column:DERIVED_FROM_;type:varchar(64)" json:"derived_from_"`
-	DerivedFromRoot_    *string    `gorm:"column:DERIVED_FROM_ROOT_;type:varchar(64)" json:"derived_from_root_"`
-	ParentDeploymentID_ *string    `gorm:"column:PARENT_DEPLOYMENT_ID_;type:varchar(255)" json:"parent_deployment_id_"`
-	EngineVersion_      *string    `gorm:"column:ENGINE_VERSION_;type:varchar(255)" json:"engine_version_"`
+	ID_                 string     `gorm:"column:id_;type:varchar(64);primaryKey" json:"id_"`
+	Name_               *string    `gorm:"column:name_;type:varchar(255)" json:"name_"`
+	Category_           *string    `gorm:"column:category_;type:varchar(255)" json:"category_"`
+	Key_                *string    `gorm:"column:key_;type:varchar(255)" json:"key_"`
+	TenantID_           *string    `gorm:"column:tenant_id_;type:varchar(255)" json:"tenant_id_"`
+	DeployTime_         *time.Time `gorm:"column:deploy_time_;type:timestamp without time zone" json:"deploy_time_"`
+	DerivedFrom_        *string    `gorm:"column:derived_from_;type:varchar(64)" json:"derived_from_"`
+	DerivedFromRoot_    *string    `gorm:"column:derived_from_root_;type:varchar(64)" json:"derived_from_root_"`
+	ParentDeploymentID_ *string    `gorm:"column:parent_deployment_id_;type:varchar(255)" json:"parent_deployment_id_"`
+	EngineVersion_      *string    `gorm:"column:engine_version_;type:varchar(255)" json:"engine_version_"`
 	ProcessID_          string     `gorm:"column:process_id_;type:varchar(255)" json:"process_id_"`
 }
 

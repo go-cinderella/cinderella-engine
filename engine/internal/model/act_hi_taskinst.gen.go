@@ -17,34 +17,34 @@ import (
 
 // ActHiTaskinst mapped from table <act_hi_taskinst>
 type ActHiTaskinst struct {
-	ID_                    string     `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
-	Rev_                   *int32     `gorm:"column:REV_;type:integer;default:1" json:"rev_"`
-	ProcDefID_             *string    `gorm:"column:PROC_DEF_ID_;type:varchar(64)" json:"proc_def_id_"`
-	TaskDefID_             *string    `gorm:"column:TASK_DEF_ID_;type:varchar(64)" json:"task_def_id_"`
-	TaskDefKey_            *string    `gorm:"column:TASK_DEF_KEY_;type:varchar(255)" json:"task_def_key_"`
-	ProcInstID_            *string    `gorm:"column:PROC_INST_ID_;type:varchar(64);index:act_idx_hi_task_inst_procinst,priority:1" json:"proc_inst_id_"`
-	ExecutionID_           *string    `gorm:"column:EXECUTION_ID_;type:varchar(64)" json:"execution_id_"`
-	ScopeID_               *string    `gorm:"column:SCOPE_ID_;type:varchar(255);index:act_idx_hi_task_scope,priority:1" json:"scope_id_"`
-	SubScopeID_            *string    `gorm:"column:SUB_SCOPE_ID_;type:varchar(255);index:act_idx_hi_task_sub_scope,priority:1" json:"sub_scope_id_"`
-	ScopeType_             *string    `gorm:"column:SCOPE_TYPE_;type:varchar(255);index:act_idx_hi_task_scope_def,priority:1;index:act_idx_hi_task_sub_scope,priority:2;index:act_idx_hi_task_scope,priority:2" json:"scope_type_"`
-	ScopeDefinitionID_     *string    `gorm:"column:SCOPE_DEFINITION_ID_;type:varchar(255);index:act_idx_hi_task_scope_def,priority:2" json:"scope_definition_id_"`
-	PropagatedStageInstID_ *string    `gorm:"column:PROPAGATED_STAGE_INST_ID_;type:varchar(255)" json:"propagated_stage_inst_id_"`
-	Name_                  *string    `gorm:"column:NAME_;type:varchar(255)" json:"name_"`
-	ParentTaskID_          *string    `gorm:"column:PARENT_TASK_ID_;type:varchar(64)" json:"parent_task_id_"`
-	Description_           *string    `gorm:"column:DESCRIPTION_;type:varchar(4000)" json:"description_"`
-	Owner_                 *string    `gorm:"column:OWNER_;type:varchar(255)" json:"owner_"`
-	Assignee_              *string    `gorm:"column:ASSIGNEE_;type:varchar(255)" json:"assignee_"`
-	StartTime_             time.Time  `gorm:"column:START_TIME_;type:timestamp without time zone;not null" json:"start_time_"`
-	ClaimTime_             *time.Time `gorm:"column:CLAIM_TIME_;type:timestamp without time zone" json:"claim_time_"`
-	EndTime_               *time.Time `gorm:"column:END_TIME_;type:timestamp without time zone" json:"end_time_"`
-	Duration_              *int64     `gorm:"column:DURATION_;type:bigint" json:"duration_"`
-	DeleteReason_          *string    `gorm:"column:DELETE_REASON_;type:varchar(4000)" json:"delete_reason_"`
-	Priority_              *int32     `gorm:"column:PRIORITY_;type:integer" json:"priority_"`
-	DueDate_               *time.Time `gorm:"column:DUE_DATE_;type:timestamp without time zone" json:"due_date_"`
-	FormKey_               *string    `gorm:"column:FORM_KEY_;type:varchar(255)" json:"form_key_"`
-	Category_              *string    `gorm:"column:CATEGORY_;type:varchar(255)" json:"category_"`
-	TenantID_              *string    `gorm:"column:TENANT_ID_;type:varchar(255)" json:"tenant_id_"`
-	LastUpdatedTime_       *time.Time `gorm:"column:LAST_UPDATED_TIME_;type:timestamp without time zone" json:"last_updated_time_"`
+	ID_                    string     `gorm:"column:id_;type:varchar(64);primaryKey" json:"id_"`
+	Rev_                   *int32     `gorm:"column:rev_;type:integer;default:1" json:"rev_"`
+	ProcDefID_             *string    `gorm:"column:proc_def_id_;type:varchar(64)" json:"proc_def_id_"`
+	TaskDefID_             *string    `gorm:"column:task_def_id_;type:varchar(64)" json:"task_def_id_"`
+	TaskDefKey_            *string    `gorm:"column:task_def_key_;type:varchar(255)" json:"task_def_key_"`
+	ProcInstID_            *string    `gorm:"column:proc_inst_id_;type:varchar(64);index:act_idx_hi_task_inst_procinst,priority:1" json:"proc_inst_id_"`
+	ExecutionID_           *string    `gorm:"column:execution_id_;type:varchar(64)" json:"execution_id_"`
+	ScopeID_               *string    `gorm:"column:scope_id_;type:varchar(255);index:act_idx_hi_task_scope,priority:1" json:"scope_id_"`
+	SubScopeID_            *string    `gorm:"column:sub_scope_id_;type:varchar(255);index:act_idx_hi_task_sub_scope,priority:1" json:"sub_scope_id_"`
+	ScopeType_             *string    `gorm:"column:scope_type_;type:varchar(255);index:act_idx_hi_task_scope_def,priority:1;index:act_idx_hi_task_sub_scope,priority:2;index:act_idx_hi_task_scope,priority:2" json:"scope_type_"`
+	ScopeDefinitionID_     *string    `gorm:"column:scope_definition_id_;type:varchar(255);index:act_idx_hi_task_scope_def,priority:2" json:"scope_definition_id_"`
+	PropagatedStageInstID_ *string    `gorm:"column:propagated_stage_inst_id_;type:varchar(255)" json:"propagated_stage_inst_id_"`
+	Name_                  *string    `gorm:"column:name_;type:varchar(255)" json:"name_"`
+	ParentTaskID_          *string    `gorm:"column:parent_task_id_;type:varchar(64)" json:"parent_task_id_"`
+	Description_           *string    `gorm:"column:description_;type:varchar(4000)" json:"description_"`
+	Owner_                 *string    `gorm:"column:owner_;type:varchar(255)" json:"owner_"`
+	Assignee_              *string    `gorm:"column:assignee_;type:varchar(255)" json:"assignee_"`
+	StartTime_             time.Time  `gorm:"column:start_time_;type:timestamp without time zone;not null" json:"start_time_"`
+	ClaimTime_             *time.Time `gorm:"column:claim_time_;type:timestamp without time zone" json:"claim_time_"`
+	EndTime_               *time.Time `gorm:"column:end_time_;type:timestamp without time zone" json:"end_time_"`
+	Duration_              *int64     `gorm:"column:duration_;type:bigint" json:"duration_"`
+	DeleteReason_          *string    `gorm:"column:delete_reason_;type:varchar(4000)" json:"delete_reason_"`
+	Priority_              *int32     `gorm:"column:priority_;type:integer" json:"priority_"`
+	DueDate_               *time.Time `gorm:"column:due_date_;type:timestamp without time zone" json:"due_date_"`
+	FormKey_               *string    `gorm:"column:form_key_;type:varchar(255)" json:"form_key_"`
+	Category_              *string    `gorm:"column:category_;type:varchar(255)" json:"category_"`
+	TenantID_              *string    `gorm:"column:tenant_id_;type:varchar(255)" json:"tenant_id_"`
+	LastUpdatedTime_       *time.Time `gorm:"column:last_updated_time_;type:timestamp without time zone" json:"last_updated_time_"`
 }
 
 // TableName ActHiTaskinst's table name

@@ -15,24 +15,24 @@ import (
 
 // ActReProcdef mapped from table <act_re_procdef>
 type ActReProcdef struct {
-	ID_                   string  `gorm:"column:ID_;type:varchar(64);primaryKey" json:"id_"`
-	Rev_                  *int32  `gorm:"column:REV_;type:integer" json:"rev_"`
-	Category_             *string `gorm:"column:CATEGORY_;type:varchar(255)" json:"category_"`
-	Name_                 *string `gorm:"column:NAME_;type:varchar(255)" json:"name_"`
-	Key_                  string  `gorm:"column:KEY_;type:varchar(255);not null" json:"key_"`
-	Version_              int32   `gorm:"column:VERSION_;type:integer;not null" json:"version_"`
-	DeploymentID_         *string `gorm:"column:DEPLOYMENT_ID_;type:varchar(64)" json:"deployment_id_"`
-	ResourceName_         *string `gorm:"column:RESOURCE_NAME_;type:varchar(4000)" json:"resource_name_"`
-	DgrmResourceName_     *string `gorm:"column:DGRM_RESOURCE_NAME_;type:varchar(4000)" json:"dgrm_resource_name_"`
-	Description_          *string `gorm:"column:DESCRIPTION_;type:varchar(4000)" json:"description_"`
-	HasStartFormKey_      *bool   `gorm:"column:HAS_START_FORM_KEY_;type:boolean" json:"has_start_form_key_"`
-	HasGraphicalNotation_ *bool   `gorm:"column:HAS_GRAPHICAL_NOTATION_;type:boolean" json:"has_graphical_notation_"`
-	SuspensionState_      *int32  `gorm:"column:SUSPENSION_STATE_;type:integer" json:"suspension_state_"`
-	TenantID_             *string `gorm:"column:TENANT_ID_;type:varchar(255)" json:"tenant_id_"`
-	DerivedFrom_          *string `gorm:"column:DERIVED_FROM_;type:varchar(64)" json:"derived_from_"`
-	DerivedFromRoot_      *string `gorm:"column:DERIVED_FROM_ROOT_;type:varchar(64)" json:"derived_from_root_"`
-	DerivedVersion_       *int32  `gorm:"column:DERIVED_VERSION_;type:integer;not null;default:0" json:"derived_version_"`
-	EngineVersion_        *string `gorm:"column:ENGINE_VERSION_;type:varchar(255)" json:"engine_version_"`
+	ID_                   string  `gorm:"column:id_;type:varchar(64);primaryKey" json:"id_"`
+	Rev_                  *int32  `gorm:"column:rev_;type:integer" json:"rev_"`
+	Category_             *string `gorm:"column:category_;type:varchar(255)" json:"category_"`
+	Name_                 *string `gorm:"column:name_;type:varchar(255)" json:"name_"`
+	Key_                  string  `gorm:"column:key_;type:varchar(255);not null" json:"key_"`
+	Version_              int32   `gorm:"column:version_;type:integer;not null" json:"version_"`
+	DeploymentID_         *string `gorm:"column:deployment_id_;type:varchar(64)" json:"deployment_id_"`
+	ResourceName_         *string `gorm:"column:resource_name_;type:varchar(4000)" json:"resource_name_"`
+	DgrmResourceName_     *string `gorm:"column:dgrm_resource_name_;type:varchar(4000)" json:"dgrm_resource_name_"`
+	Description_          *string `gorm:"column:description_;type:varchar(4000)" json:"description_"`
+	HasStartFormKey_      *bool   `gorm:"column:has_start_form_key_;type:boolean" json:"has_start_form_key_"`
+	HasGraphicalNotation_ *bool   `gorm:"column:has_graphical_notation_;type:boolean" json:"has_graphical_notation_"`
+	SuspensionState_      *int32  `gorm:"column:suspension_state_;type:integer" json:"suspension_state_"`
+	TenantID_             *string `gorm:"column:tenant_id_;type:varchar(255)" json:"tenant_id_"`
+	DerivedFrom_          *string `gorm:"column:derived_from_;type:varchar(64)" json:"derived_from_"`
+	DerivedFromRoot_      *string `gorm:"column:derived_from_root_;type:varchar(64)" json:"derived_from_root_"`
+	DerivedVersion_       *int32  `gorm:"column:derived_version_;type:integer;not null;default:0" json:"derived_version_"`
+	EngineVersion_        *string `gorm:"column:engine_version_;type:varchar(255)" json:"engine_version_"`
 	ProcessID_            string  `gorm:"column:process_id_;type:varchar(255)" json:"process_id_"`
 }
 
