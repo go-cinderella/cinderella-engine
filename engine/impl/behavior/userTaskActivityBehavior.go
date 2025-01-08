@@ -140,14 +140,15 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 				return utils.GetStringSliceFromExpression(variables, item)
 			})
 			users = lo.Reduce[[]string, []string](userSlices, func(agg []string, item []string, index int) []string {
-				if len(item) > 0 {
-					return append(agg, item...)
-				}
-				return agg
+				return append(agg, item...)
 			}, []string{})
 		}
 
 		for _, userId := range users {
+			if stringutils.IsEmpty(userId) {
+				continue
+			}
+
 			link := model2.ActRuIdentitylink{
 				Rev_:        lo.ToPtr(int32(1)),
 				Type_:       lo.ToPtr("candidate"),
@@ -189,14 +190,15 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 				return utils.GetStringSliceFromExpression(variables, item)
 			})
 			groups = lo.Reduce[[]string, []string](groupSlices, func(agg []string, item []string, index int) []string {
-				if len(item) > 0 {
-					return append(agg, item...)
-				}
-				return agg
+				return append(agg, item...)
 			}, []string{})
 		}
 
 		for _, group := range groups {
+			if stringutils.IsEmpty(group) {
+				continue
+			}
+
 			link := model2.ActRuIdentitylink{
 				Rev_:        lo.ToPtr(int32(1)),
 				Type_:       lo.ToPtr("candidate"),
