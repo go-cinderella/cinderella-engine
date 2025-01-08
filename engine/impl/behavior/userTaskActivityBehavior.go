@@ -140,7 +140,10 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 				return utils.GetStringSliceFromExpression(variables, item)
 			})
 			users = lo.Reduce[[]string, []string](userSlices, func(agg []string, item []string, index int) []string {
-				return append(agg, item...)
+				if len(item) > 0 {
+					return append(agg, item...)
+				}
+				return agg
 			}, []string{})
 		}
 
@@ -186,7 +189,10 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 				return utils.GetStringSliceFromExpression(variables, item)
 			})
 			groups = lo.Reduce[[]string, []string](groupSlices, func(agg []string, item []string, index int) []string {
-				return append(agg, item...)
+				if len(item) > 0 {
+					return append(agg, item...)
+				}
+				return agg
 			}, []string{})
 		}
 
