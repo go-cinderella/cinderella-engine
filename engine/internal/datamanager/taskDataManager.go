@@ -27,7 +27,6 @@ func (taskManager TaskDataManager) GetById(id int64) (model.ActRuTask, error) {
 }
 func (taskManager TaskDataManager) createHistoricTask(task *model.ActRuTask) model.ActHiTaskinst {
 	historicTask := model.ActHiTaskinst{}
-	//historicTask.TaskEntity = task.TaskEntity
 	historicTask.ID_ = task.ID_
 	historicTask.ProcInstID_ = task.ProcInstID_
 	historicTask.StartTime_ = *task.CreateTime_

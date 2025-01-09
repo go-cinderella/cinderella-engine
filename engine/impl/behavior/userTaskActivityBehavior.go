@@ -9,6 +9,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	. "github.com/go-cinderella/cinderella-engine/engine/impl/handler"
 	model2 "github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
@@ -121,31 +122,33 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 		}
 	}
 
+	variables := execution.GetProcessVariable()
+
 	if user.CandidateUsers != nil {
 
 		candidateUsers := *user.CandidateUsers
 		var users []string
 
-		if strings.HasPrefix(candidateUsers, "${") && strings.HasSuffix(candidateUsers, "}") {
-			expressionManager := contextutil.GetExpressionManager()
-			context := expressionManager.EvaluationContext()
-
-			variable := execution.GetProcessVariable()
-			if len(variable) > 0 {
-				context.SetVariables(variable)
-			}
-
-			expression := expressionManager.CreateExpression(candidateUsers)
-			value := expression.GetValueContext(&context)
-			b := cast.ToString(value)
-			if stringutils.IsNotEmpty(b) {
-				users = strings.Split(b, ",")
-			}
+		if utils.IsExpr(candidateUsers) {
+			users = utils.GetStringSliceFromExpression(variables, candidateUsers)
 		} else {
 			users = strings.Split(candidateUsers, ",")
+			userSlices := lo.Map[string, []string](users, func(item string, index int) []string {
+				if !utils.IsExpr(item) {
+					return []string{item}
+				}
+				return utils.GetStringSliceFromExpression(variables, item)
+			})
+			users = lo.Reduce[[]string, []string](userSlices, func(agg []string, item []string, index int) []string {
+				return append(agg, item...)
+			}, []string{})
 		}
 
 		for _, userId := range users {
+			if stringutils.IsEmpty(userId) {
+				continue
+			}
+
 			link := model2.ActRuIdentitylink{
 				Rev_:        lo.ToPtr(int32(1)),
 				Type_:       lo.ToPtr("candidate"),
@@ -176,26 +179,26 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 		candidateGroups := *user.CandidateGroups
 		var groups []string
 
-		if strings.HasPrefix(candidateGroups, "${") && strings.HasSuffix(candidateGroups, "}") {
-			expressionManager := contextutil.GetExpressionManager()
-			context := expressionManager.EvaluationContext()
-
-			variable := execution.GetProcessVariable()
-			if len(variable) > 0 {
-				context.SetVariables(variable)
-			}
-
-			expression := expressionManager.CreateExpression(candidateGroups)
-			value := expression.GetValueContext(&context)
-			b := cast.ToString(value)
-			if stringutils.IsNotEmpty(b) {
-				groups = strings.Split(b, ",")
-			}
+		if utils.IsExpr(candidateGroups) {
+			groups = utils.GetStringSliceFromExpression(variables, candidateGroups)
 		} else {
 			groups = strings.Split(candidateGroups, ",")
+			groupSlices := lo.Map[string, []string](groups, func(item string, index int) []string {
+				if !utils.IsExpr(item) {
+					return []string{item}
+				}
+				return utils.GetStringSliceFromExpression(variables, item)
+			})
+			groups = lo.Reduce[[]string, []string](groupSlices, func(agg []string, item []string, index int) []string {
+				return append(agg, item...)
+			}, []string{})
 		}
 
 		for _, group := range groups {
+			if stringutils.IsEmpty(group) {
+				continue
+			}
+
 			link := model2.ActRuIdentitylink{
 				Rev_:        lo.ToPtr(int32(1)),
 				Type_:       lo.ToPtr("candidate"),

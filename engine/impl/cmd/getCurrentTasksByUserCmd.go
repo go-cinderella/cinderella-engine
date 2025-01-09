@@ -79,38 +79,56 @@ func (g GetCurrentTasksByUserCmd) Execute(commandContext engine.Context) (interf
 		userTask := flowElement.(*model.UserTask)
 
 		assigneeEl := userTask.Assignee
-		if assigneeEl != nil && !strings.HasPrefix(*assigneeEl, "${") {
+		if assigneeEl != nil && !utils.IsExpr(*assigneeEl) {
 			// Assignee is literal
 			assignee := *assigneeEl
 			if g.UserId != nil && *g.UserId == assignee {
 				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
 				continue
 			}
-		} else if assigneeEl != nil && strings.HasPrefix(*assigneeEl, "${") && strings.HasSuffix(*assigneeEl, "}") {
+		} else if assigneeEl != nil && utils.IsExpr(*assigneeEl) {
 			assigneeOrCandidateUsersElKeys = append(assigneeOrCandidateUsersElKeys, *item.TaskDefKey_)
 		}
 
 		candidateUsersEl := userTask.CandidateUsers
-		if candidateUsersEl != nil && !strings.HasPrefix(*candidateUsersEl, "${") {
+		if candidateUsersEl != nil && !utils.IsExpr(*candidateUsersEl) {
 			candidateUsersStr := *candidateUsersEl
 			candidateUsers := strings.Split(candidateUsersStr, ",")
 			if g.UserId != nil && slices.Contains(candidateUsers, *g.UserId) {
 				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
 				continue
 			}
-		} else if candidateUsersEl != nil && strings.HasPrefix(*candidateUsersEl, "${") && strings.HasSuffix(*candidateUsersEl, "}") {
+
+			if g.UserId != nil {
+				_, hasExpr := lo.Find(candidateUsers, func(item string) bool {
+					return utils.IsExpr(item)
+				})
+				if hasExpr {
+					assigneeOrCandidateUsersElKeys = append(assigneeOrCandidateUsersElKeys, *item.TaskDefKey_)
+				}
+			}
+		} else if candidateUsersEl != nil && utils.IsExpr(*candidateUsersEl) {
 			assigneeOrCandidateUsersElKeys = append(assigneeOrCandidateUsersElKeys, *item.TaskDefKey_)
 		}
 
 		candidateGroupsEl := userTask.CandidateGroups
-		if candidateGroupsEl != nil && !strings.HasPrefix(*candidateGroupsEl, "${") {
+		if candidateGroupsEl != nil && !utils.IsExpr(*candidateGroupsEl) {
 			candidateGroupsStr := *candidateGroupsEl
 			candidateGroups := strings.Split(candidateGroupsStr, ",")
 			if len(g.Groups) > 0 && len(lo.Intersect(candidateGroups, g.Groups)) > 0 {
 				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
 				continue
 			}
-		} else if candidateGroupsEl != nil && strings.HasPrefix(*candidateGroupsEl, "${") && strings.HasSuffix(*candidateGroupsEl, "}") {
+
+			if len(g.Groups) > 0 {
+				_, hasExpr := lo.Find(candidateGroups, func(item string) bool {
+					return utils.IsExpr(item)
+				})
+				if hasExpr {
+					candidateGroupsElKeys = append(candidateGroupsElKeys, *item.TaskDefKey_)
+				}
+			}
+		} else if candidateGroupsEl != nil && utils.IsExpr(*candidateGroupsEl) {
 			candidateGroupsElKeys = append(candidateGroupsElKeys, *item.TaskDefKey_)
 		}
 	}
