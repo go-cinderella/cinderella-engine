@@ -5,10 +5,10 @@ import (
 )
 
 type UserTaskExtensionElement struct {
-	AssigneeType            string `xml:"flowable:assigneeType"`
-	StaticAssigneeVariables string `xml:"flowable:staticAssigneeVariables,omitempty"`
-	IdmCandidateGroups      string `xml:"flowable:idmCandidateGroups,omitempty"`
-	IdmCandidateUsers       string `xml:"flowable:idmCandidateUsers,omitempty"`
+	AssigneeType                  string `xml:"flowable:assigneeType"`
+	StaticAssigneeVariables       string `xml:"flowable:staticAssigneeVariables,omitempty"`
+	IdmCandidateGroups            string `xml:"flowable:idmCandidateGroups,omitempty"`
+	StaticCandidateUsersVariables string `xml:"flowable:staticCandidateUsersVariables,omitempty"`
 }
 
 type UserTask struct {
