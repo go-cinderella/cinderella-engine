@@ -10,12 +10,14 @@ import (
 	model "github.com/go-cinderella/cinderella-engine/engine/internal/model"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/samber/lo"
+	"github.com/unionj-cloud/toolkit/stringutils"
 	"time"
 )
 
 var _ engine.Command = (*StartProcessInstanceByKeyCmd)(nil)
 
 type StartProcessInstanceByKeyCmd struct {
+	ProcessInstanceId    string
 	ProcessDefinitionKey string
 	Variables            map[string]interface{}
 	BusinessKey          string
@@ -25,17 +27,17 @@ type StartProcessInstanceByKeyCmd struct {
 	Transactional        bool
 }
 
-func (startProcessInstanceByKeyCmd StartProcessInstanceByKeyCmd) IsTransactional() bool {
-	return startProcessInstanceByKeyCmd.Transactional
+func (receiver StartProcessInstanceByKeyCmd) IsTransactional() bool {
+	return receiver.Transactional
 }
 
-func (startProcessInstanceByKeyCmd StartProcessInstanceByKeyCmd) Context() context.Context {
-	return startProcessInstanceByKeyCmd.Ctx
+func (receiver StartProcessInstanceByKeyCmd) Context() context.Context {
+	return receiver.Ctx
 }
 
-func (startProcessInstanceByKeyCmd StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entitymanager.ExecutionEntity, error) {
+func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entitymanager.ExecutionEntity, error) {
 	processDefinitionEntityManager := entitymanager.GetProcessDefinitionEntityManager()
-	definitionEntity, err := processDefinitionEntityManager.FindLatestProcessDefinitionByKey(startProcessInstanceByKeyCmd.ProcessDefinitionKey)
+	definitionEntity, err := processDefinitionEntityManager.FindLatestProcessDefinitionByKey(receiver.ProcessDefinitionKey)
 	if err != nil {
 		return entitymanager.ExecutionEntity{}, err
 	}
@@ -52,13 +54,17 @@ func (startProcessInstanceByKeyCmd StartProcessInstanceByKeyCmd) Start(ctx engin
 
 	processInstance := model.ActRuExecution{}
 	processInstance.Rev_ = lo.ToPtr(int32(1))
-	processInstance.ID_, _ = contextutil.GetIDGenerator().NextID()
-	processInstance.BusinessKey_ = &startProcessInstanceByKeyCmd.BusinessKey
-	processInstance.TenantID_ = &startProcessInstanceByKeyCmd.TenantId
+	if stringutils.IsNotEmpty(receiver.ProcessInstanceId) {
+		processInstance.ID_ = receiver.ProcessInstanceId
+	} else {
+		processInstance.ID_, _ = contextutil.GetIDGenerator().NextID()
+	}
+	processInstance.BusinessKey_ = &receiver.BusinessKey
+	processInstance.TenantID_ = &receiver.TenantId
 	processInstance.StartTime_ = lo.ToPtr(time.Now().UTC())
 	processInstance.ProcDefID_ = lo.ToPtr(definitionEntity.GetId())
 	processInstance.IsActive_ = lo.ToPtr(true)
-	processInstance.StartUserID_ = &startProcessInstanceByKeyCmd.UserId
+	processInstance.StartUserID_ = &receiver.UserId
 	processInstance.StartActID_ = &element.Id
 	processInstance.ProcInstID_ = &processInstance.ID_
 	processInstance.RootProcInstID_ = &processInstance.ID_
@@ -83,7 +89,7 @@ func (startProcessInstanceByKeyCmd StartProcessInstanceByKeyCmd) Start(ctx engin
 	processInstanceEntity.SetProcessInstanceId(*processInstance.ProcInstID_)
 
 	//保存流程变量
-	if err = processInstanceEntity.SetVariable(&processInstanceEntity, startProcessInstanceByKeyCmd.Variables); err != nil {
+	if err = processInstanceEntity.SetVariable(&processInstanceEntity, receiver.Variables); err != nil {
 		return entitymanager.ExecutionEntity{}, err
 	}
 
@@ -118,8 +124,8 @@ func (startProcessInstanceByKeyCmd StartProcessInstanceByKeyCmd) Start(ctx engin
 	return execution, nil
 }
 
-func (startProcessInstanceByKeyCmd StartProcessInstanceByKeyCmd) Execute(ctx engine.Context) (interface{}, error) {
-	execution, err := startProcessInstanceByKeyCmd.Start(ctx)
+func (receiver StartProcessInstanceByKeyCmd) Execute(ctx engine.Context) (interface{}, error) {
+	execution, err := receiver.Start(ctx)
 	if err != nil {
 		return nil, err
 	}

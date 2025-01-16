@@ -19,6 +19,7 @@ func (ProcessParser ProcessParser) Parse(decoder *Decoder, token StartElement, m
 	process.Id = tem["id"]
 	process.Name = tem["name"]
 	process.IsExecutable = tem["isExecutable"]
+	process.FormKey = tem["formKey"]
 	process.XMLName = token.Name
 
 	//这里不能用这个方法：decoder.DecodeElement(&process, &token)

@@ -3,9 +3,8 @@ package cmd
 import (
 	"context"
 	"github.com/go-cinderella/cinderella-engine/engine"
-	"github.com/go-cinderella/cinderella-engine/engine/dto/historicprocess"
-	"github.com/go-cinderella/cinderella-engine/engine/dto/request"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
+	"github.com/go-cinderella/cinderella-engine/engine/impl/converter"
 )
 
 var _ engine.Command = (*GetProcessStatusCmd)(nil)
@@ -22,21 +21,22 @@ func (g GetProcessStatusCmd) IsTransactional() bool {
 
 func (g GetProcessStatusCmd) Execute(commandContext engine.Context) (interface{}, error) {
 	historicProcessInstanceEntityManager := entitymanager.GetHistoricProcessInstanceEntityManager()
-	procInsts, err := historicProcessInstanceEntityManager.List(historicprocess.ListRequest{
-		ListCommonRequest: request.ListCommonRequest{
-			Size: 1,
-		},
-		ProcessInstanceId: g.ProcessInstanceId,
-	})
+	processInstance, err := historicProcessInstanceEntityManager.FindById(g.ProcessInstanceId)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	if len(procInsts) == 0 {
-		return "", err
+	processDefinitionEntityManager := entitymanager.GetProcessDefinitionEntityManager()
+	resourceEntity, err := processDefinitionEntityManager.FindResourceEntityByProcessDefinitionById(processInstance.GetProcessDefinitionId())
+	if err != nil {
+		return nil, err
 	}
-	processInstance := procInsts[0]
-	return processInstance.BusinessStatus, nil
+
+	bpmnXMLConverter := converter.BpmnXMLConverter{}
+	bpmnModel := bpmnXMLConverter.ConvertToBpmnModel(resourceEntity.GetBytes())
+	process := bpmnModel.GetProcess()
+	flowElement := process.GetFlowElement(processInstance.BusinessStatus)
+	return flowElement, nil
 }
 
 func (g GetProcessStatusCmd) Context() context.Context {
