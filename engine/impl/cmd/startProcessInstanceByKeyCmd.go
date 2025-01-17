@@ -6,6 +6,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	bpmn_model "github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
+	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 	model "github.com/go-cinderella/cinderella-engine/engine/internal/model"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
@@ -23,6 +24,8 @@ type StartProcessInstanceByKeyCmd struct {
 	BusinessKey          string
 	TenantId             string
 	UserId               string
+	StartActivityId      string
+	StartActivityName    string
 	Ctx                  context.Context
 	Transactional        bool
 }
@@ -48,9 +51,22 @@ func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entityma
 		return entitymanager.ExecutionEntity{}, err
 	}
 
-	//获取开始节点
-	flowElement := process.InitialFlowElement
-	element := flowElement.(*bpmn_model.StartEvent)
+	var element delegate.FlowElement
+	if stringutils.IsNotEmpty(receiver.StartActivityId) {
+		// 从指定节点开始流程流转
+		element = process.GetFlowElement(receiver.StartActivityId)
+	} else if stringutils.IsNotEmpty(receiver.StartActivityName) {
+		flowElementNameMap := make(map[string]delegate.FlowElement)
+		lo.ForEach(process.FlowElementList, func(item delegate.FlowElement, index int) {
+			flowElementNameMap[item.GetName()] = item
+		})
+
+		element = flowElementNameMap[receiver.StartActivityName]
+	} else {
+		// 默认从开始节点开始流程流转
+		flowElement := process.InitialFlowElement
+		element = flowElement.(*bpmn_model.StartEvent)
+	}
 
 	processInstance := model.ActRuExecution{}
 	processInstance.Rev_ = lo.ToPtr(int32(1))
@@ -65,7 +81,7 @@ func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entityma
 	processInstance.ProcDefID_ = lo.ToPtr(definitionEntity.GetId())
 	processInstance.IsActive_ = lo.ToPtr(true)
 	processInstance.StartUserID_ = &receiver.UserId
-	processInstance.StartActID_ = &element.Id
+	processInstance.StartActID_ = lo.ToPtr(element.GetId())
 	processInstance.ProcInstID_ = &processInstance.ID_
 	processInstance.RootProcInstID_ = &processInstance.ID_
 	processInstance.IsConcurrent_ = lo.ToPtr(false)
