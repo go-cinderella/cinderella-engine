@@ -25,8 +25,6 @@ func (g GetNextFormButtonsCmd) IsTransactional() bool {
 	return g.Transactional
 }
 
-const MODEL_FORM_SEPARATOR = "."
-
 type UserTaskFormButton struct {
 	ActionValue     *string
 	ActionName      *string
@@ -62,8 +60,7 @@ func (g GetNextFormButtonsCmd) Execute(commandContext engine.Context) (interface
 	conditionalEvents := lo.Map[delegate.FlowElement, *bpmn_model.IntermediateCatchEvent](targetFlowElements, func(item delegate.FlowElement, index int) *bpmn_model.IntermediateCatchEvent {
 		return item.(*bpmn_model.IntermediateCatchEvent)
 	})
-	processId := process.Id
-	mainForm := processId[strings.LastIndex(processId, MODEL_FORM_SEPARATOR)+1:]
+	mainForm := process.FormKey
 	return lo.Map[*bpmn_model.IntermediateCatchEvent, *UserTaskFormButton](conditionalEvents, func(item *bpmn_model.IntermediateCatchEvent, index int) *UserTaskFormButton {
 		formKey := item.FormButtonEventDefinition.FormKey
 		if stringutils.IsEmpty(formKey) {
