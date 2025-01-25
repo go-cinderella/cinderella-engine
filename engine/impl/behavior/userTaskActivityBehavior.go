@@ -2,7 +2,6 @@ package behavior
 
 import (
 	. "github.com/go-cinderella/cinderella-engine/engine/constant"
-	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	"github.com/go-cinderella/cinderella-engine/engine/eventmanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
@@ -11,7 +10,6 @@ import (
 	model2 "github.com/go-cinderella/cinderella-engine/engine/internal/model"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/samber/lo"
-	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"strings"
 	"time"
@@ -40,20 +38,11 @@ func (user UserTaskActivityBehavior) Execute(execution delegate.DelegateExecutio
 	if assignee != nil && stringutils.IsNotEmpty(*assignee) {
 		assigneeStr := *assignee
 
-		if strings.HasPrefix(assigneeStr, "${") && strings.HasSuffix(assigneeStr, "}") {
-			expressionManager := contextutil.GetExpressionManager()
-			context := expressionManager.EvaluationContext()
+		if utils.IsExpr(assigneeStr) {
+			output := utils.GetStringFromExpression(execution.GetProcessVariable(), assigneeStr)
 
-			variable := execution.GetProcessVariable()
-			if len(variable) > 0 {
-				context.SetVariables(variable)
-			}
-
-			expression := expressionManager.CreateExpression(assigneeStr)
-			value := expression.GetValueContext(&context)
-			b := cast.ToString(value)
-			if stringutils.IsNotEmpty(b) {
-				task.Assignee = &b
+			if stringutils.IsNotEmpty(output) {
+				task.Assignee = &output
 			}
 		} else {
 			task.Assignee = assignee

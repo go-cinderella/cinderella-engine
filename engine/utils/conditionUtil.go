@@ -1,19 +1,15 @@
 package utils
 
 import (
-	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
-	"github.com/go-cinderella/cinderella-engine/engine/expression"
-	"github.com/go-cinderella/cinderella-engine/engine/expression/spel"
+	"errors"
+	"github.com/expr-lang/expr"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/spf13/cast"
+	"github.com/unionj-cloud/toolkit/stringutils"
+	"github.com/unionj-cloud/toolkit/zlogger"
 	"maps"
 	"strings"
-)
-
-var (
-	context = spel.StandardEvaluationContext{}
-	parser  = expression.SpelExpressionParser{}
 )
 
 type ConditionUtil struct {
@@ -21,11 +17,23 @@ type ConditionUtil struct {
 
 func HasTrueCondition(sequenceFlow model.SequenceFlow, execution delegate.DelegateExecution) bool {
 	var conditionExpression = sequenceFlow.ConditionExpression
-	if conditionExpression != "" {
+	if stringutils.IsNotEmpty(conditionExpression) && IsExpr(conditionExpression) {
+		code := Trim(conditionExpression)
 		variable := execution.GetProcessVariable()
-		context.SetVariables(variable)
-		valueContext := parser.ParseExpression(conditionExpression).GetValueContext(&context)
-		b, ok := valueContext.(bool)
+
+		program, err := expr.Compile(code, expr.Env(variable))
+		if err != nil {
+			zlogger.Error().Err(err).Msg("failed to compile condition expression")
+			return false
+		}
+
+		output, err := expr.Run(program, variable)
+		if err != nil {
+			zlogger.Error().Err(err).Msg("failed to evaluate condition expression")
+			return false
+		}
+
+		b, ok := output.(bool)
 		if ok {
 			return b
 		}
@@ -39,17 +47,53 @@ func IsExpr(input string) bool {
 	return strings.HasPrefix(input, "${") && strings.HasSuffix(input, "}")
 }
 
-func GetStringSliceFromExpression(variables map[string]interface{}, input string) []string {
-	expressionManager := contextutil.GetExpressionManager()
-	context := expressionManager.EvaluationContext()
+func IsTrue(variables map[string]interface{}, input string) bool {
+	output, err := Evaluate(variables, input)
+	if err != nil {
+		zlogger.Error().Err(err).Msg("failed to evaluate condition expression")
+		return false
+	}
+	
+	return cast.ToBool(output)
+}
 
-	if len(variables) > 0 {
-		context.SetVariables(maps.Clone(variables))
+func Trim(input string) string {
+	return strings.TrimSuffix(strings.TrimPrefix(input, "${"), "}")
+}
+
+func Evaluate(variables map[string]interface{}, input string) (interface{}, error) {
+	if !IsExpr(input) {
+		return nil, errors.New(`not a valid expression`)
+	}
+	env := maps.Clone(variables)
+	program, err := expr.Compile(Trim(input), expr.Env(env))
+	if err != nil {
+		return nil, err
 	}
 
-	expression := expressionManager.CreateExpression(input)
-	value := expression.GetValueContext(&context)
+	output, err := expr.Run(program, env)
+	if err != nil {
+		return nil, err
+	}
 
-	b := cast.ToString(value)
-	return strings.Split(b, ",")
+	return output, nil
+}
+
+func GetStringSliceFromExpression(variables map[string]interface{}, input string) []string {
+	output, err := Evaluate(variables, input)
+	if err != nil {
+		zlogger.Error().Err(err).Msg("failed to evaluate condition expression")
+		return nil
+	}
+
+	b := cast.ToString(output)
+	return stringutils.Split(b, ",")
+}
+
+func GetStringFromExpression(variables map[string]interface{}, input string) string {
+	result := GetStringSliceFromExpression(variables, input)
+	if len(result) == 0 {
+		return ""
+	}
+	return result[0]
 }

@@ -1,10 +1,10 @@
 package behavior
 
 import (
-	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
+	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/samber/lo"
 	"github.com/unionj-cloud/toolkit/stringutils"
 )
@@ -35,22 +35,12 @@ func (behavior IntermediateCatchConditionalEventActivityBehavior) Trigger(execut
 		return nil
 	}
 
-	variable := execution.GetProcessVariable()
-	if len(variable) == 0 {
+	variables := execution.GetProcessVariable()
+	if len(variables) == 0 {
 		return nil
 	}
 
-	expressionManager := contextutil.GetExpressionManager()
-
-	context := expressionManager.EvaluationContext()
-
-	context.SetVariables(variable)
-
-	expression := expressionManager.CreateExpression(conditionExpression)
-	valueContext := expression.GetValueContext(&context)
-
-	b, ok := valueContext.(bool)
-	if ok && b {
+	if utils.IsTrue(variables, conditionExpression) {
 		return behavior.leaveIntermediateCatchEvent(execution)
 	}
 

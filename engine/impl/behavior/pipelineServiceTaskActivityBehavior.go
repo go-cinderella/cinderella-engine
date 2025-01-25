@@ -8,6 +8,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
+	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
@@ -43,7 +44,7 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 	// set request body
 	requestBody := make(map[string]interface{})
 	extensionElements := pipeline.ServiceTask.ExtensionElements
-	variable := execution.GetProcessVariable()
+	variables := execution.GetProcessVariable()
 
 	field := extensionElements.GetFieldByName("requestBody")
 	if stringutils.IsNotEmpty(field.FieldName) {
@@ -57,19 +58,10 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 			}
 
 			parameterValue := cast.ToString(v)
-			if strings.HasPrefix(parameterValue, "${") && strings.HasSuffix(parameterValue, "}") {
-				expressionManager := contextutil.GetExpressionManager()
-				context := expressionManager.EvaluationContext()
-
-				if len(variable) > 0 {
-					context.SetVariables(variable)
-				}
-
-				expression := expressionManager.CreateExpression(parameterValue)
-				value := expression.GetValueContext(&context)
-				b := cast.ToString(value)
-				if stringutils.IsNotEmpty(b) {
-					requestBody[k] = b
+			if utils.IsExpr(parameterValue) {
+				output := utils.GetStringFromExpression(variables, parameterValue)
+				if stringutils.IsNotEmpty(output) {
+					requestBody[k] = output
 				}
 			} else {
 				requestBody[k] = v
@@ -97,7 +89,7 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 		requestUrl = rgx.ReplaceAllStringFunc(requestUrl, func(s string) string {
 			s = strings.TrimPrefix(s, "${")
 			s = strings.TrimSuffix(s, "}")
-			v, ok := variable[s]
+			v, ok := variables[s]
 			if !ok {
 				return s
 			}
@@ -127,7 +119,7 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 
 	businessResult := cast.ToString(result["data"])
 	businessParameterJson, _ := json.MarshalToString(businessParameter)
-	
+
 	historicActivityInstanceEntityManager := entitymanager.GetHistoricActivityInstanceEntityManager()
 	if err = historicActivityInstanceEntityManager.RecordBusinessDataByExecutionId(execution, businessParameterJson, businessResult); err != nil {
 		return errors.WithStack(err)

@@ -6,7 +6,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/parse"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/parse/deployer"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/parse/factory"
-	"github.com/go-cinderella/cinderella-engine/engine/impl/expr"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/interceptor"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/go-cinderella/cinderella-engine/engine/uuidgenerator"
@@ -29,8 +28,6 @@ type ProcessEngineConfigurationBuilder struct {
 
 	instance *ProcessEngineConfigurationImpl
 
-	expressionManagerFactory engine.ExpressionManagerFactory
-
 	httpClient *resty.Client
 }
 
@@ -38,11 +35,6 @@ func NewProcessEngineConfigurationBuilder() *ProcessEngineConfigurationBuilder {
 	return &ProcessEngineConfigurationBuilder{
 		instance: &ProcessEngineConfigurationImpl{},
 	}
-}
-
-func (builder *ProcessEngineConfigurationBuilder) ExpressionManagerFactory(expressionManagerFactory engine.ExpressionManagerFactory) *ProcessEngineConfigurationBuilder {
-	builder.expressionManagerFactory = expressionManagerFactory
-	return builder
 }
 
 func (builder *ProcessEngineConfigurationBuilder) IdGenerator(idGenerator idgenerator.IDGenerator) *ProcessEngineConfigurationBuilder {
@@ -117,7 +109,6 @@ func (builder *ProcessEngineConfigurationBuilder) Build() *ProcessEngineConfigur
 	result.bpmnDeployer = builder.bpmnDeployer
 	result.idGenerator = builder.idGenerator
 	result.deploymentSettings = builder.deploymentSettings
-	result.expressionManagerFactory = builder.expressionManagerFactory
 	result.httpClient = builder.httpClient
 
 	if result.idGenerator == nil {
@@ -166,12 +157,6 @@ func (builder *ProcessEngineConfigurationBuilder) Build() *ProcessEngineConfigur
 			},
 		}
 		result.bpmnDeployer = &bpmnDeployer
-	}
-
-	if result.expressionManagerFactory == nil {
-		result.expressionManagerFactory = func() engine.ExpressionManager {
-			return expr.DefaultExpressionManager{}
-		}
 	}
 
 	if result.httpClient == nil {

@@ -19,18 +19,13 @@ type ProcessEngineConfigurationImpl struct {
 
 	idGenerator idgenerator.IDGenerator
 
-	deploymentSettings       map[string]interface{}
-	expressionManagerFactory engine.ExpressionManagerFactory
+	deploymentSettings map[string]interface{}
 
 	httpClient *resty.Client
 }
 
 func (processEngineConfiguration ProcessEngineConfigurationImpl) GetHttpClient() *resty.Client {
 	return processEngineConfiguration.httpClient
-}
-
-func (processEngineConfiguration ProcessEngineConfigurationImpl) GetExpressionManagerFactory() engine.ExpressionManagerFactory {
-	return processEngineConfiguration.expressionManagerFactory
 }
 
 func (processEngineConfiguration ProcessEngineConfigurationImpl) GetDeploymentSettings() map[string]interface{} {

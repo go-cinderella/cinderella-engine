@@ -37,10 +37,6 @@ func GetBpmnDeployer() engine.Deployer {
 	return MustGetCommandContext().GetProcessEngineConfiguration().GetBpmnDeployer()
 }
 
-func GetExpressionManager() engine.ExpressionManager {
-	return MustGetCommandContext().GetProcessEngineConfiguration().GetExpressionManagerFactory()()
-}
-
 func GetHttpClient() *resty.Client {
 	return MustGetCommandContext().GetProcessEngineConfiguration().GetHttpClient()
 }
