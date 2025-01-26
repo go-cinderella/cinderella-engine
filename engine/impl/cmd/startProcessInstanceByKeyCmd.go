@@ -62,7 +62,9 @@ func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entityma
 		})
 
 		element = flowElementNameMap[receiver.StartActivityName]
-	} else {
+	}
+
+	if element == nil {
 		// 默认从开始节点开始流程流转
 		flowElement := process.InitialFlowElement
 		element = flowElement.(*bpmn_model.StartEvent)
