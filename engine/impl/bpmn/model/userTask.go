@@ -13,15 +13,14 @@ var _ delegate.BaseElement = (*UserTask)(nil)
 var _ delegate.FlowElement = (*UserTask)(nil)
 
 type UserTask struct {
-	FlowNode
-	XMLName           xml.Name                          `xml:"userTask"`
-	Assignee          *string                           `xml:"assignee,attr"`
-	FormKey           *string                           `xml:"formKey,attr"`
-	CandidateUsers    *string                           `xml:"candidateUsers,attr"`
-	CandidateGroups   *string                           `xml:"candidateGroups,attr"`
-	DueDate           *string                           `xml:"dueDate,attr"`
-	MultiInstance     *MultiInstanceLoopCharacteristics `xml:"multiInstanceLoopCharacteristics"`
-	ExtensionElements *ExtensionElement                 `xml:"extensionElements"`
+	Task
+	XMLName           xml.Name          `xml:"userTask"`
+	Assignee          *string           `xml:"assignee,attr"`
+	FormKey           *string           `xml:"formKey,attr"`
+	CandidateUsers    *string           `xml:"candidateUsers,attr"`
+	CandidateGroups   *string           `xml:"candidateGroups,attr"`
+	DueDate           *string           `xml:"dueDate,attr"`
+	ExtensionElements *ExtensionElement `xml:"extensionElements"`
 }
 
 func (user UserTask) GetType() string {

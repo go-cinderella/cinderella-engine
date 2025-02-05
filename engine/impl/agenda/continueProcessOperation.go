@@ -37,7 +37,6 @@ func (cont *ContinueProcessOperation) continueThroughSequenceFlow(sequenceFlow d
 	}
 
 	executionEntity := entitymanager.ExecutionEntity{
-		VariableScopeImpl:   &entitymanager.VariableScopeImpl{},
 		ProcessInstanceId:   execution.GetProcessInstanceId(),
 		ProcessDefinitionId: execution.GetProcessDefinitionId(),
 		StartTime:           time.Now().UTC(),

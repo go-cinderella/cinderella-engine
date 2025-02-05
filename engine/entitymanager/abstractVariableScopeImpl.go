@@ -7,26 +7,9 @@ import (
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"reflect"
-	"sync"
 )
 
-var usedVariablesCache *sync.Pool
-
-type AbstractVariableScopeImpl interface {
-	GetSourceActivityExecution() ExecutionEntity
-}
-
-func init() {
-	usedVariablesCache = &sync.Pool{
-		New: func() interface{} {
-			return nil
-		},
-	}
-}
-
 type VariableScopeImpl struct {
-	AbstractVariableScopeImpl
-	ExecutionEntity ExecutionEntity
 }
 
 func IsIntegral(val float64) bool {
@@ -70,29 +53,5 @@ func (variableScope VariableScopeImpl) SetVariable(execution delegate.DelegateEx
 		}
 	}
 
-	return nil
-}
-func (variableScope VariableScopeImpl) SetVariableLocal(variables map[string]interface{}) error {
-	variable := usedVariablesCache.Get()
-	if variable == nil {
-		usedVariablesCache.Put(variables)
-	} else {
-		variablesCache := variable.(map[string]interface{})
-		for k, v := range variables {
-			variablesCache[k] = v
-		}
-		usedVariablesCache.Put(variablesCache)
-	}
-	return nil
-}
-
-func (variableScope VariableScopeImpl) GetVariableLocal() (variables map[string]interface{}) {
-	variable := usedVariablesCache.Get()
-	if variable == nil {
-		return nil
-	} else {
-		variablesCache := variable.(map[string]interface{})
-		return variablesCache
-	}
 	return nil
 }

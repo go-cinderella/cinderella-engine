@@ -19,7 +19,7 @@ func HasTrueCondition(sequenceFlow model.SequenceFlow, execution delegate.Delega
 	var conditionExpression = sequenceFlow.ConditionExpression
 	if stringutils.IsNotEmpty(conditionExpression) && IsExpr(conditionExpression) {
 		code := Trim(conditionExpression)
-		variable := execution.GetProcessVariable()
+		variable := execution.GetProcessVariables()
 
 		program, err := expr.Compile(code, expr.Env(variable))
 		if err != nil {
@@ -53,7 +53,7 @@ func IsTrue(variables map[string]interface{}, input string) bool {
 		zlogger.Error().Err(err).Msg("failed to evaluate condition expression")
 		return false
 	}
-	
+
 	return cast.ToBool(output)
 }
 

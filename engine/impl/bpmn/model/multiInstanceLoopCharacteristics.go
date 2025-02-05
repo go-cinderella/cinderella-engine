@@ -10,8 +10,13 @@ type MultiInstanceLoopCharacteristics struct {
 	// LoopCardinality TODO
 	LoopCardinality int `xml:"loopCardinality"`
 
-	IsSequential        bool   `xml:"isSequential,attr"`
-	Collection          string `xml:"collection,attr"`
-	ElementVariable     string `xml:"elementVariable,attr"`
+	IsSequential    bool   `xml:"isSequential,attr"`
+	Collection      string `xml:"collection,attr"`
+	ElementVariable string `xml:"elementVariable,attr"`
+
+	// if empty, means all
+	// e.g.:
+	// ${(nrOfCompletedInstances / nrOfInstances) * 100 &gt; 50}
+	// ${nrOfCompletedInstances == 5}
 	CompletionCondition string `xml:"completionCondition"`
 }

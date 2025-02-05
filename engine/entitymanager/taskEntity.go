@@ -74,11 +74,11 @@ func (taskEntiy *TaskEntity) SetTaskDefineName(taskDefineName string) {
 	taskEntiy.TaskDefineName = taskDefineName
 }
 
-func (taskEntiy TaskEntity) GetVariable() map[string]interface{} {
+func (taskEntiy TaskEntity) GetVariables() map[string]interface{} {
 	//variableManager := task.GetVariableEntityManager()
 	//variables, err := variableManager.SelectByTaskId(taskEntiy.TaskId)
 	//if err != nil {
-	//	return task.HandleVariable(variables)
+	//	return task.handleVariables(variables)
 	//}
 	return nil
 }

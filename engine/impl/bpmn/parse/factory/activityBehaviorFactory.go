@@ -1,26 +1,31 @@
 package factory
 
 import (
-	. "github.com/go-cinderella/cinderella-engine/engine/impl/behavior"
-	. "github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
+	"github.com/go-cinderella/cinderella-engine/engine/impl/behavior"
+	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
+	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 )
 
 type ActivityBehaviorFactory interface {
-	CreateUserTaskActivityBehavior(userTask UserTask, key string) UserTaskActivityBehavior
+	CreateUserTaskActivityBehavior(userTask model.UserTask, key string) behavior.UserTaskActivityBehavior
 
-	CreateAutoUserTaskActivityBehavior(userTask UserTask, key string) UserAutoTaskActivityBehavior
+	CreateSequentialMultiInstanceBehavior(activity model.Activity, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.SequentialMultiInstanceBehavior
 
-	CreateExclusiveGatewayActivityBehavior(exclusiveGateway ExclusiveGateway) ExclusiveGatewayActivityBehavior
+	CreateParallelMultiInstanceBehavior(activity model.Activity, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.ParallelMultiInstanceBehavior
 
-	CreateInclusiveGatewayActivityBehavior(inclusiveGateway InclusiveGateway) InclusiveGatewayActivityBehavior
+	CreateAutoUserTaskActivityBehavior(userTask model.UserTask, key string) behavior.UserAutoTaskActivityBehavior
 
-	CreateParallelGatewayActivityBehavior(inclusiveGateway ParallelGateway) ParallelGatewayActivityBehavior
+	CreateExclusiveGatewayActivityBehavior(exclusiveGateway model.ExclusiveGateway) behavior.ExclusiveGatewayActivityBehavior
 
-	CreateIntermediateCatchConditionalEventActivityBehavior(conditionalEventDefinition ConditionalEventDefinition) IntermediateCatchConditionalEventActivityBehavior
+	CreateInclusiveGatewayActivityBehavior(inclusiveGateway model.InclusiveGateway) behavior.InclusiveGatewayActivityBehavior
 
-	CreateIntermediateCatchEventActivityBehavior(intermediateCatchEvent IntermediateCatchEvent) IntermediateCatchEventActivityBehavior
+	CreateParallelGatewayActivityBehavior(inclusiveGateway model.ParallelGateway) behavior.ParallelGatewayActivityBehavior
 
-	CreateHttpActivityBehavior(serviceTask ServiceTask, key string) HttpServiceTaskActivityBehavior
+	CreateIntermediateCatchConditionalEventActivityBehavior(conditionalEventDefinition model.ConditionalEventDefinition) behavior.IntermediateCatchConditionalEventActivityBehavior
 
-	CreatePipelineActivityBehavior(serviceTask ServiceTask, key string) PipelineServiceTaskActivityBehavior
+	CreateIntermediateCatchEventActivityBehavior(intermediateCatchEvent model.IntermediateCatchEvent) behavior.IntermediateCatchEventActivityBehavior
+
+	CreateHttpActivityBehavior(serviceTask model.ServiceTask, key string) behavior.HttpServiceTaskActivityBehavior
+
+	CreatePipelineActivityBehavior(serviceTask model.ServiceTask, key string) behavior.PipelineServiceTaskActivityBehavior
 }

@@ -1,10 +1,7 @@
 package delegate
 
-import (
-	"github.com/go-cinderella/cinderella-engine/engine/variable"
-)
-
 type DelegateExecution interface {
+	VariableScope
 	GetId() string
 	SetId(id string)
 
@@ -30,15 +27,13 @@ type DelegateExecution interface {
 
 	SetCurrentActivityId(currentActivityId string)
 
-	//SetVariable(execution ExecutionEntity,variables map[string]interface{}) error
-
-	GetSpecificVariable(variableName string) (variable.Variable, error)
-
-	GetVariable() map[string]interface{}
-
-	GetProcessVariable() map[string]interface{}
-
 	GetExecutionId() string
 
 	GetTenantId() *string
+
+	// IsMultiInstanceRoot returns whether this execution is the root of a multi instance execution.
+	IsMultiInstanceRoot() bool
+
+	// SetMultiInstanceRoot changes whether this execution is a multi instance root or not.
+	SetMultiInstanceRoot(isMultiInstanceRoot bool)
 }

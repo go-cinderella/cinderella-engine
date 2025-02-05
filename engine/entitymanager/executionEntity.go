@@ -11,7 +11,7 @@ var _ delegate.DelegateExecution = (*ExecutionEntity)(nil)
 
 type ExecutionEntity struct {
 	AbstractEntity
-	*VariableScopeImpl
+	VariableScopeImpl
 	BusinessKey        string
 	CurrentFlowElement delegate.FlowElement
 	DeploymentId       string
@@ -32,6 +32,25 @@ type ExecutionEntity struct {
 	ReferenceId                  string    `json:"referenceId"`
 	ReferenceType                string    `json:"referenceType"`
 	TenantId                     *string   `json:"tenantId"`
+	isMultiInstanceRoot          bool
+}
+
+func (execution *ExecutionEntity) GetVariablesLocal() map[string]interface{} {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (execution *ExecutionEntity) GetVariables() map[string]interface{} {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (execution *ExecutionEntity) IsMultiInstanceRoot() bool {
+	return execution.isMultiInstanceRoot
+}
+
+func (execution *ExecutionEntity) SetMultiInstanceRoot(isMultiInstanceRoot bool) {
+	execution.isMultiInstanceRoot = isMultiInstanceRoot
 }
 
 func (execution *ExecutionEntity) GetTenantId() *string {
@@ -87,27 +106,16 @@ func (execution ExecutionEntity) GetCurrentActivityId() string {
 	return execution.CurrentActivityId
 }
 
-func (execution ExecutionEntity) GetProcessVariable() map[string]interface{} {
-	variables := execution.GetVariable()
-	variableLocal := execution.GetVariableLocal()
-	if variableLocal != nil {
-		for k, v := range variableLocal {
-			variables[k] = v
-		}
-	}
-	return variables
-}
-
-func (execution ExecutionEntity) GetVariable() map[string]interface{} {
+func (execution ExecutionEntity) GetProcessVariables() map[string]interface{} {
 	variableManager := datamanager.GetVariableDataManager()
 	variables, err := variableManager.SelectByProcessInstanceId(execution.GetProcessInstanceId())
 	if err == nil {
-		return execution.HandleVariable(variables)
+		return execution.handleVariables(variables)
 	}
 	return nil
 }
 
-func (execution ExecutionEntity) HandleVariable(variables []Variable) map[string]interface{} {
+func (execution ExecutionEntity) handleVariables(variables []Variable) map[string]interface{} {
 	variableManager := GetVariableManager()
 	variableTypes := variableManager.VariableTypes
 	var variableMap = make(map[string]interface{}, 0)

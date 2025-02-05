@@ -99,9 +99,7 @@ func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entityma
 		return entitymanager.ExecutionEntity{}, err
 	}
 
-	processInstanceEntity := entitymanager.ExecutionEntity{
-		VariableScopeImpl: &entitymanager.VariableScopeImpl{},
-	}
+	processInstanceEntity := entitymanager.ExecutionEntity{}
 	processInstanceEntity.SetId(processInstance.ID_)
 	processInstanceEntity.SetProcessDefinitionId(*processInstance.ProcDefID_)
 	processInstanceEntity.SetProcessInstanceId(*processInstance.ProcInstID_)
@@ -127,7 +125,6 @@ func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entityma
 
 	// 生成执行实例
 	execution := entitymanager.ExecutionEntity{
-		VariableScopeImpl:   &entitymanager.VariableScopeImpl{},
 		ProcessInstanceId:   processInstance.ID_,
 		ProcessDefinitionId: definitionEntity.GetId(),
 		StartTime:           time.Now().UTC(),

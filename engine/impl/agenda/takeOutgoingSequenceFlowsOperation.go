@@ -72,7 +72,6 @@ func (take TakeOutgoingSequenceFlowsOperation) handleFlowNode() (err error) {
 	for _, outgoing := range outgoingSequenceFlows {
 
 		executionEntity := entitymanager.ExecutionEntity{
-			VariableScopeImpl:   &entitymanager.VariableScopeImpl{},
 			ProcessInstanceId:   execution.GetProcessInstanceId(),
 			ProcessDefinitionId: execution.GetProcessDefinitionId(),
 			StartTime:           time.Now().UTC(),

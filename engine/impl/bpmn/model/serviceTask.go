@@ -12,7 +12,7 @@ var _ delegate.BaseElement = (*ServiceTask)(nil)
 var _ delegate.FlowElement = (*ServiceTask)(nil)
 
 type ServiceTask struct {
-	FlowNode
+	Task
 	XMLName           xml.Name          `xml:"serviceTask"`
 	TaskType          string            `xml:"type,attr"`
 	ExtensionElements *ExtensionElement `xml:"extensionElements"`

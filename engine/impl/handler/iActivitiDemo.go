@@ -30,7 +30,7 @@ func (test *TestIActiviti) GetOutPut() interface{} {
 }
 
 func (test *TestIActiviti) User001() (code interface{}, err error) {
-	//variable := test.Entity.GetVariable()
+	//variable := test.Entity.GetVariables()
 	//fmt.Println(variable)
 	return constant.ACTIVITI_HANDLER_CODE, nil
 }

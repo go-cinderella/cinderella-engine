@@ -44,7 +44,7 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 	// set request body
 	requestBody := make(map[string]interface{})
 	extensionElements := pipeline.ServiceTask.ExtensionElements
-	variables := execution.GetProcessVariable()
+	variables := execution.GetProcessVariables()
 
 	field := extensionElements.GetFieldByName("requestBody")
 	if stringutils.IsNotEmpty(field.FieldName) {

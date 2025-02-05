@@ -30,9 +30,7 @@ func (executionEntityManager ExecutionEntityManager) FindById(executionId string
 		return ExecutionEntity{}, errors.New("execution not found")
 	}
 
-	entityImpl := ExecutionEntity{
-		VariableScopeImpl: &VariableScopeImpl{},
-	}
+	entityImpl := ExecutionEntity{}
 	entityImpl.SetId(execution.ID_)
 	entityImpl.SetProcessDefinitionId(*execution.ProcDefID_)
 	entityImpl.SetProcessInstanceId(*execution.ProcInstID_)
@@ -50,7 +48,6 @@ func (executionEntityManager ExecutionEntityManager) List(listRequest execution.
 	}
 	result := lo.Map[model.ActRuExecution, ExecutionEntity](executions, func(item model.ActRuExecution, index int) ExecutionEntity {
 		return ExecutionEntity{
-			VariableScopeImpl: &VariableScopeImpl{},
 			AbstractEntity: AbstractEntity{
 				Id: item.ID_,
 			},

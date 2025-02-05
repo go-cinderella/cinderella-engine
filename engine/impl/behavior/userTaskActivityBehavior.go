@@ -24,7 +24,7 @@ type UserTaskActivityBehavior struct {
 	ProcessKey string
 }
 
-// 普通用户节点处理
+// Execute 普通用户节点处理
 func (user UserTaskActivityBehavior) Execute(execution delegate.DelegateExecution) error {
 	task := entitymanager.NewTaskEntity(execution, user.UserTask)
 	if user.UserTask.DueDate != nil && stringutils.IsNotEmpty(*user.UserTask.DueDate) {
@@ -39,7 +39,7 @@ func (user UserTaskActivityBehavior) Execute(execution delegate.DelegateExecutio
 		assigneeStr := *assignee
 
 		if utils.IsExpr(assigneeStr) {
-			output := utils.GetStringFromExpression(execution.GetProcessVariable(), assigneeStr)
+			output := utils.GetStringFromExpression(execution.GetProcessVariables(), assigneeStr)
 
 			if stringutils.IsNotEmpty(output) {
 				task.Assignee = &output
@@ -111,7 +111,7 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 		}
 	}
 
-	variables := execution.GetProcessVariable()
+	variables := execution.GetProcessVariables()
 
 	if user.CandidateUsers != nil {
 
