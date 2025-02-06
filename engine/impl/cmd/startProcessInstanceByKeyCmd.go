@@ -105,7 +105,7 @@ func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entityma
 	processInstanceEntity.SetProcessInstanceId(*processInstance.ProcInstID_)
 
 	//保存流程变量
-	if err = processInstanceEntity.SetVariable(&processInstanceEntity, receiver.Variables); err != nil {
+	if err = processInstanceEntity.SetProcessVariables(receiver.Variables); err != nil {
 		return entitymanager.ExecutionEntity{}, err
 	}
 

@@ -20,7 +20,8 @@ type CinderellaEngineAgenda interface {
 	//
 	//planContinueProcessInCompensation(execution ExecutionEntity)
 	//
-	//planContinueMultiInstanceOperation(execution ExecutionEntity)
+	
+	PlanContinueMultiInstanceOperation(execution delegate.DelegateExecution, multiInstanceRootExecution delegate.DelegateExecution, loopCounter int)
 
 	PlanTakeOutgoingSequenceFlowsOperation(execution delegate.DelegateExecution, evaluateConditions bool)
 

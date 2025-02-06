@@ -75,6 +75,23 @@ func (taskEntityManager TaskEntityManager) FindByProcessInstanceId(processInstan
 	return taskEntitys, nil
 }
 
+func (taskEntityManager TaskEntityManager) FindByExecutionId(executionId string) ([]TaskEntity, error) {
+	taskDataManager := datamanager.GetTaskDataManager()
+	tasks, err := taskDataManager.FindByExecutionId(executionId)
+	if err != nil {
+		return nil, err
+	}
+	var taskEntitys []TaskEntity
+	for _, task := range tasks {
+		taskEntity := TaskEntity{}
+		taskEntity.SetId(task.ID_)
+		taskEntity.SetTaskDefineKey(cast.ToString(task.TaskDefKey_))
+		taskEntity.SetExecutionId(cast.ToString(task.ExecutionID_))
+		taskEntitys = append(taskEntitys, taskEntity)
+	}
+	return taskEntitys, nil
+}
+
 func (taskEntityManager TaskEntityManager) InsertTask(taskEntity *TaskEntity) error {
 	task := model.ActRuTask{
 		Rev_:             lo.ToPtr(int32(1)),

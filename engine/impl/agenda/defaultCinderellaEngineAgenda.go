@@ -15,6 +15,11 @@ type DefaultCinderellaEngineAgenda struct {
 	ctx        engine.Context
 }
 
+func (defaultCinderellaEngineAgenda *DefaultCinderellaEngineAgenda) PlanContinueMultiInstanceOperation(execution delegate.DelegateExecution, multiInstanceRootExecution delegate.DelegateExecution, loopCounter int) {
+	abstractOperation := NewAbstractOperation(execution, defaultCinderellaEngineAgenda, WithContext(defaultCinderellaEngineAgenda.ctx))
+	defaultCinderellaEngineAgenda.PlanOperation(&ContinueMultiInstanceOperation{AbstractOperation: abstractOperation, MultiInstanceRootExecution: multiInstanceRootExecution, LoopCounter: loopCounter})
+}
+
 func (defaultCinderellaEngineAgenda *DefaultCinderellaEngineAgenda) GetContext() engine.Context {
 	return defaultCinderellaEngineAgenda.ctx
 }

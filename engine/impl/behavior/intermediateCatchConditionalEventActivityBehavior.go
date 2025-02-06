@@ -35,7 +35,10 @@ func (behavior IntermediateCatchConditionalEventActivityBehavior) Trigger(execut
 		return nil
 	}
 
-	variables := execution.GetProcessVariables()
+	variables, err := execution.GetProcessVariables()
+	if err != nil {
+		return err
+	}
 	if len(variables) == 0 {
 		return nil
 	}
@@ -56,8 +59,6 @@ func (behavior IntermediateCatchConditionalEventActivityBehavior) Trigger(execut
 
 	currentFlowElement := execution.GetCurrentFlowElement()
 	incomings := currentFlowElement.GetIncoming()
-
-	var err error
 
 	lo.ForEachWhile(incomings, func(item delegate.FlowElement, index int) (goon bool) {
 		if err = historicActivityInstanceEntityManager.DeleteByProcessInstanceId(execution.GetProcessInstanceId(), item.GetId()); err != nil {

@@ -40,7 +40,7 @@ func (n NeedsActiveExecutionCmd) Execute(commandContext engine.Context) (interfa
 		executionEntity.SetCurrentFlowElement(currentFlowElement)
 	}
 
-	if err = executionEntity.SetVariable(&executionEntity, n.ProcessVariables); err != nil {
+	if err = executionEntity.SetProcessVariables(n.ProcessVariables); err != nil {
 		return nil, err
 	}
 

@@ -1,9 +1,9 @@
 package delegate
 
 type VariableScope interface {
-	GetVariables() map[string]interface{}
+	GetProcessVariables() (map[string]interface{}, error)
 
-	GetProcessVariables() map[string]interface{}
+	GetVariablesLocal() (map[string]interface{}, error)
 
-	GetVariablesLocal() map[string]interface{}
+	SetVariableLocal(variableName string, value interface{}) error
 }

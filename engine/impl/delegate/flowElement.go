@@ -15,3 +15,7 @@ type FlowElement interface {
 	GetSourceFlowElement() FlowElement
 	GetTargetFlowElement() FlowElement
 }
+
+type Cloneable interface {
+	Clone() FlowElement
+}

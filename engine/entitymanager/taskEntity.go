@@ -13,7 +13,6 @@ var _ delegate.DelegateExecution = (*TaskEntity)(nil)
 type TaskEntity struct {
 	AbstractEntity
 	ExecutionEntity
-	VariableScopeImpl
 	Assignee       *string
 	StartTime      time.Time
 	TaskDefineName string
@@ -74,18 +73,10 @@ func (taskEntiy *TaskEntity) SetTaskDefineName(taskDefineName string) {
 	taskEntiy.TaskDefineName = taskDefineName
 }
 
-func (taskEntiy TaskEntity) GetVariables() map[string]interface{} {
-	//variableManager := task.GetVariableEntityManager()
-	//variables, err := variableManager.SelectByTaskId(taskEntiy.TaskId)
-	//if err != nil {
-	//	return task.handleVariables(variables)
-	//}
-	return nil
-}
-
-func (taskEntiy TaskEntity) GetSpecificVariable(variableName string) (variable.Variable, error) {
+func (taskEntiy TaskEntity) GetSpecificVariable(variableName string) (variable.Variable, bool) {
 	variableDataManager := datamanager.GetVariableDataManager()
-	return variableDataManager.SelectTaskId(variableName, taskEntiy.GetId())
+	result, ok, _ := variableDataManager.SelectByTaskIdAndName(variableName, taskEntiy.GetId())
+	return result, ok
 }
 
 func (taskEntiy *TaskEntity) SetClaimTime(claimTime *time.Time) {

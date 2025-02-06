@@ -17,7 +17,7 @@ func (historicVariableDataManager HistoricVariableDataManager) Upsert(varinst va
 	copier.DeepCopy(varinst, &value)
 
 	err := db.DB().Model(&variable.HistoricVariable{}).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "name_"}, {Name: "proc_inst_id_"}},
+		Columns:   []clause.Column{{Name: "name_"}, {Name: "execution_id_"}},
 		DoUpdates: clause.AssignmentColumns([]string{"double_", "long_", "text_"}),
 	}).Create(value).Error
 	return err

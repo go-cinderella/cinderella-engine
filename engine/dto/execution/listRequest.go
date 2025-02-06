@@ -15,6 +15,7 @@ type ListRequest struct {
 	SubProcessInstanceId      string   `json:"subProcessInstanceId,omitempty"`
 	ExcludeSubprocesses       *bool    `json:"excludeSubprocesses,omitempty"`
 	IncludeProcessVariables   *bool    `json:"includeProcessVariables,omitempty"`
+	ParentId                  string   `json:"parentId,omitempty"`
 	ChildOnly                 *bool    `json:"childOnly,omitempty"`
 	request.WithTenant
 }

@@ -9,9 +9,9 @@ import (
 type ActivityBehaviorFactory interface {
 	CreateUserTaskActivityBehavior(userTask model.UserTask, key string) behavior.UserTaskActivityBehavior
 
-	CreateSequentialMultiInstanceBehavior(activity model.Activity, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.SequentialMultiInstanceBehavior
+	CreateSequentialMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.SequentialMultiInstanceBehavior
 
-	CreateParallelMultiInstanceBehavior(activity model.Activity, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.ParallelMultiInstanceBehavior
+	CreateParallelMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.ParallelMultiInstanceBehavior
 
 	CreateAutoUserTaskActivityBehavior(userTask model.UserTask, key string) behavior.UserAutoTaskActivityBehavior
 

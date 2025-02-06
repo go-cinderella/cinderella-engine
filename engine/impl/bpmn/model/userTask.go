@@ -94,3 +94,8 @@ func (user *UserTask) Equal(otherUser interface{}) bool {
 
 	return true
 }
+
+func (user UserTask) Clone() delegate.FlowElement {
+	userCopy := user
+	return &userCopy
+}

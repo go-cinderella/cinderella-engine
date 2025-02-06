@@ -19,15 +19,19 @@ func HasTrueCondition(sequenceFlow model.SequenceFlow, execution delegate.Delega
 	var conditionExpression = sequenceFlow.ConditionExpression
 	if stringutils.IsNotEmpty(conditionExpression) && IsExpr(conditionExpression) {
 		code := Trim(conditionExpression)
-		variable := execution.GetProcessVariables()
-
-		program, err := expr.Compile(code, expr.Env(variable))
+		variables, err := execution.GetProcessVariables()
 		if err != nil {
 			zlogger.Error().Err(err).Msg("failed to compile condition expression")
 			return false
 		}
 
-		output, err := expr.Run(program, variable)
+		program, err := expr.Compile(code, expr.Env(variables))
+		if err != nil {
+			zlogger.Error().Err(err).Msg("failed to compile condition expression")
+			return false
+		}
+
+		output, err := expr.Run(program, variables)
 		if err != nil {
 			zlogger.Error().Err(err).Msg("failed to evaluate condition expression")
 			return false

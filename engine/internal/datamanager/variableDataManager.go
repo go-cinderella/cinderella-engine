@@ -15,31 +15,41 @@ type VariableDataManager struct {
 	abstract.DataManager
 }
 
-func (defineManager VariableDataManager) SelectByProcessInstanceIdAndName(name string, processInstanceId string) (variable.Variable, error) {
-	vari := variable.Variable{}
+func (defineManager VariableDataManager) SelectByExecutionIdAndName(name string, executionId string) (variable.Variable, bool, error) {
+	var result []variable.Variable
+
 	variableQuery := contextutil.GetQuery().ActRuVariable
-	err := variableQuery.Where(variableQuery.ProcInstID.Eq(processInstanceId)).Where(variableQuery.Name.Eq(name)).Fetch(&vari)
-	if err != nil {
-		return variable.Variable{}, err
+	if err := variableQuery.Where(variableQuery.ExecutionID.Eq(executionId)).Where(variableQuery.Name.Eq(name)).Fetch(&result); err != nil {
+		return variable.Variable{}, false, err
 	}
-	return vari, nil
+
+	if len(result) > 0 {
+		return result[0], true, nil
+	}
+
+	return variable.Variable{}, false, nil
 }
 
-func (variableManager VariableDataManager) SelectTaskId(name string, taskId string) (variable.Variable, error) {
-	vari := variable.Variable{}
+func (variableManager VariableDataManager) SelectByTaskIdAndName(name string, taskId string) (variable.Variable, bool, error) {
+	var result []variable.Variable
+
 	variableQuery := contextutil.GetQuery().ActRuVariable
-	err := variableQuery.Where(variableQuery.TaskID.Eq(taskId)).Where(variableQuery.Name.Eq(name)).Fetch(&vari)
-	if err != nil {
-		return variable.Variable{}, err
+	if err := variableQuery.Where(variableQuery.TaskID.Eq(taskId)).Where(variableQuery.Name.Eq(name)).Fetch(&result); err != nil {
+		return variable.Variable{}, false, err
 	}
-	return vari, nil
+
+	if len(result) > 0 {
+		return result[0], true, nil
+	}
+
+	return variable.Variable{}, false, nil
 }
 
-func (variableManager VariableDataManager) SelectByProcessInstanceId(processInstanceId string) ([]variable.Variable, error) {
+func (variableManager VariableDataManager) SelectByExecutionId(executionId string) ([]variable.Variable, error) {
 	var variables []variable.Variable
 
 	variableQuery := contextutil.GetQuery().ActRuVariable
-	err := variableQuery.Where(variableQuery.ProcInstID.Eq(processInstanceId)).Fetch(&variables)
+	err := variableQuery.Where(variableQuery.ExecutionID.Eq(executionId)).Fetch(&variables)
 
 	return variables, err
 }
@@ -84,7 +94,7 @@ func (variableManager VariableDataManager) Upsert(varinst variable.Variable) err
 	copier.DeepCopy(varinst, &value)
 
 	err := db.DB().Model(&variable.Variable{}).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "name_"}, {Name: "proc_inst_id_"}},
+		Columns:   []clause.Column{{Name: "name_"}, {Name: "execution_id_"}},
 		DoUpdates: clause.AssignmentColumns([]string{"double_", "long_", "text_"}),
 	}).Create(value).Error
 	return err

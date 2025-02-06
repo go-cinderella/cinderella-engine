@@ -85,10 +85,8 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 	currentTask.SetOutgoing([]delegate.FlowElement{sequenceFlow})
 	executionEntity.SetCurrentFlowElement(currentTask)
 
-	if moveActivityCmd.Variables != nil {
-		if err = executionEntity.SetVariable(&executionEntity, moveActivityCmd.Variables); err != nil {
-			return nil, err
-		}
+	if err = executionEntity.SetProcessVariables(moveActivityCmd.Variables); err != nil {
+		return nil, err
 	}
 
 	userTask, ok := currentTask.(*model.UserTask)

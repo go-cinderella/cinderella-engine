@@ -39,7 +39,11 @@ func (user UserTaskActivityBehavior) Execute(execution delegate.DelegateExecutio
 		assigneeStr := *assignee
 
 		if utils.IsExpr(assigneeStr) {
-			output := utils.GetStringFromExpression(execution.GetProcessVariables(), assigneeStr)
+			variables, err := execution.GetProcessVariables()
+			if err != nil {
+				return err
+			}
+			output := utils.GetStringFromExpression(variables, assigneeStr)
 
 			if stringutils.IsNotEmpty(output) {
 				task.Assignee = &output
@@ -111,7 +115,10 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 		}
 	}
 
-	variables := execution.GetProcessVariables()
+	variables, err := execution.GetProcessVariables()
+	if err != nil {
+		return err
+	}
 
 	if user.CandidateUsers != nil {
 

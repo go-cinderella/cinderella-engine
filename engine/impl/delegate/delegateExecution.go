@@ -2,7 +2,9 @@ package delegate
 
 type DelegateExecution interface {
 	VariableScope
+	// Deprecated:
 	GetId() string
+	// Deprecated:
 	SetId(id string)
 
 	SetBusinessKey(businessKey string)
@@ -28,6 +30,10 @@ type DelegateExecution interface {
 	SetCurrentActivityId(currentActivityId string)
 
 	GetExecutionId() string
+
+	GetParent() (DelegateExecution, error)
+
+	GetParentId() string
 
 	GetTenantId() *string
 

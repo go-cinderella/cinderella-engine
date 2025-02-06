@@ -50,7 +50,7 @@ func (completeCmd CompleteCmd) executeTaskComplete(task entitymanager.TaskEntity
 
 	executionEntity.SetCurrentFlowElement(currentTask)
 
-	if err = executionEntity.SetVariable(&executionEntity, completeCmd.ProcessVariables); err != nil {
+	if err = executionEntity.SetProcessVariables(completeCmd.ProcessVariables); err != nil {
 		return err
 	}
 

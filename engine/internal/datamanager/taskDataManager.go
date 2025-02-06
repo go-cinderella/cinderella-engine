@@ -25,23 +25,18 @@ func (taskManager TaskDataManager) GetById(id int64) (model.ActRuTask, error) {
 	}
 	return task, err
 }
-func (taskManager TaskDataManager) createHistoricTask(task *model.ActRuTask) model.ActHiTaskinst {
-	historicTask := model.ActHiTaskinst{}
-	historicTask.ID_ = task.ID_
-	historicTask.ProcInstID_ = task.ProcInstID_
-	historicTask.StartTime_ = *task.CreateTime_
-	historicTask.TenantID_ = task.TenantID_
-	historicTask.Assignee_ = task.Assignee_
-	historicTask.TaskDefKey_ = task.TaskDefKey_
-	historicTask.TaskDefID_ = task.TaskDefID_
-	historicTask.Name_ = task.Name_
-	return historicTask
-}
 
 func (taskManager TaskDataManager) FindByProcessInstanceId(processInstanceId string) ([]model.ActRuTask, error) {
 	var tasks []model.ActRuTask
 	taskQuery := contextutil.GetQuery().ActRuTask
 	err := taskQuery.Where(taskQuery.ProcInstID.Eq(processInstanceId)).Fetch(&tasks)
+	return tasks, err
+}
+
+func (taskManager TaskDataManager) FindByExecutionId(executionId string) ([]model.ActRuTask, error) {
+	var tasks []model.ActRuTask
+	taskQuery := contextutil.GetQuery().ActRuTask
+	err := taskQuery.Where(taskQuery.ExecutionID.Eq(executionId)).Fetch(&tasks)
 	return tasks, err
 }
 

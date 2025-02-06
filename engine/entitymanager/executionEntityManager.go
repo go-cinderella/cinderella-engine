@@ -15,6 +15,7 @@ import (
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"math"
 	"strings"
+	"time"
 )
 
 type ExecutionEntityManager struct {
@@ -34,9 +35,8 @@ func (executionEntityManager ExecutionEntityManager) FindById(executionId string
 	entityImpl.SetId(execution.ID_)
 	entityImpl.SetProcessDefinitionId(*execution.ProcDefID_)
 	entityImpl.SetProcessInstanceId(*execution.ProcInstID_)
-	if execution.ActID_ != nil {
-		entityImpl.SetCurrentActivityId(*execution.ActID_)
-	}
+	entityImpl.SetCurrentActivityId(cast.ToString(execution.ActID_))
+	entityImpl.SetParentId(cast.ToString(execution.ParentID_))
 	return entityImpl, nil
 }
 
@@ -65,6 +65,7 @@ func (executionEntityManager ExecutionEntityManager) List(listRequest execution.
 			ReferenceId:         cast.ToString(item.ReferenceID_),
 			ReferenceType:       cast.ToString(item.ReferenceType_),
 			TenantId:            item.TenantID_,
+			parentId:            cast.ToString(item.ParentID_),
 		}
 	})
 	return result, nil
@@ -105,17 +106,102 @@ func (executionEntityManager ExecutionEntityManager) CreateExecution(executionEn
 	return nil
 }
 
-func (executionEntityManager ExecutionEntityManager) DeleteExecution(executionId string) error {
-	// TODO 目前所有变量都是流程实例的变量
-	//variableDataManager := datamanager.GetVariableDataManager()
-	//err := variableDataManager.DeleteByExecutionId(executionId)
-	//if err != nil {
-	//	return err
-	//}
+func (executionEntityManager ExecutionEntityManager) CreateChildExecution(parentExecution delegate.DelegateExecution) (ExecutionEntity, error) {
+	newExecution := ExecutionEntity{
+		ProcessInstanceId:   parentExecution.GetProcessInstanceId(),
+		ProcessDefinitionId: parentExecution.GetProcessDefinitionId(),
+		StartTime:           time.Now().UTC(),
+	}
+	newExecution.SetParentId(parentExecution.GetExecutionId())
+	newExecution.SetParent(parentExecution)
+	return newExecution, nil
+}
 
+func (executionEntityManager ExecutionEntityManager) DeleteExecution(executionId string) error {
 	executionDataManager := datamanager.GetExecutionDataManager()
-	err := executionDataManager.Delete(executionId)
-	return err
+	return executionDataManager.Delete(executionId)
+}
+
+func (executionEntityManager ExecutionEntityManager) DeleteRelatedDataForExecution(executionId string, deleteReason *string) error {
+	variableDataManager := datamanager.GetVariableDataManager()
+	if err := variableDataManager.DeleteByExecutionId(executionId); err != nil {
+		return err
+	}
+
+	taskEntities, err := taskEntityManager.FindByExecutionId(executionId)
+	if err != nil {
+		return err
+	}
+
+	lo.ForEachWhile(taskEntities, func(item TaskEntity, index int) (goon bool) {
+		if err = taskEntityManager.DeleteTask(item, deleteReason); err != nil {
+			return false
+		}
+		return true
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (executionEntityManager ExecutionEntityManager) DeleteChildExecution(executionId string, deleteReason *string) error {
+	children, err := executionEntityManager.collectChildren(executionId)
+	if err != nil {
+		return err
+	}
+
+	length := len(children)
+
+	for i := length - 1; i >= 0; i-- {
+		if err = executionEntityManager.DeleteRelatedDataForExecution(children[i].GetExecutionId(), deleteReason); err != nil {
+			return err
+		}
+		if err = executionEntityManager.DeleteExecution(children[i].GetExecutionId()); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (executionEntityManager ExecutionEntityManager) collectChildren(executionId string) ([]ExecutionEntity, error) {
+	var result []ExecutionEntity
+
+	children, err := executionEntityManager.List(execution.ListRequest{
+		ListCommonRequest: request.ListCommonRequest{
+			Start: 0,
+			Size:  math.MaxInt32,
+		},
+		ParentId: executionId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(children) == 0 {
+		return nil, nil
+	}
+	result = append(result, children...)
+
+	var grandChildren []ExecutionEntity
+
+	lo.ForEachWhile(children, func(item ExecutionEntity, index int) (goon bool) {
+		grandChildren, err = executionEntityManager.collectChildren(item.GetExecutionId())
+		if err != nil {
+			return false
+		}
+		if len(grandChildren) == 0 {
+			return true
+		}
+		result = append(result, grandChildren...)
+		return true
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (executionEntityManager ExecutionEntityManager) RecordBusinessStatus(delegateExecution delegate.DelegateExecution) error {

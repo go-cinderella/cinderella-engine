@@ -93,6 +93,10 @@ func (executionDataManager ExecutionDataManager) List(listRequest execution.List
 		do = do.Where(executionQ.ProcInstID.Eq(listRequest.ProcessInstanceId))
 	}
 
+	if stringutils.IsNotEmpty(listRequest.ParentId) {
+		do = do.Where(executionQ.ParentID.Eq(listRequest.ParentId))
+	}
+
 	if listRequest.ChildOnly != nil && *listRequest.ChildOnly {
 		do = do.Where(executionQ.ParentID.IsNotNull())
 	}

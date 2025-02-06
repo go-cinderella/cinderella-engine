@@ -57,3 +57,8 @@ func (serviceTask *ServiceTask) Equal(otherServiceTask interface{}) bool {
 
 	return true
 }
+
+func (serviceTask ServiceTask) Clone() delegate.FlowElement {
+	serviceTaskCopy := serviceTask
+	return &serviceTaskCopy
+}

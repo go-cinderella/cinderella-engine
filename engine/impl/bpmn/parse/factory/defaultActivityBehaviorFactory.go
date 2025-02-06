@@ -11,22 +11,30 @@ var _ ActivityBehaviorFactory = (*DefaultActivityBehaviorFactory)(nil)
 type DefaultActivityBehaviorFactory struct {
 }
 
-func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateSequentialMultiInstanceBehavior(activity model.Activity, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.SequentialMultiInstanceBehavior {
-	return behavior.SequentialMultiInstanceBehavior{
-		MultiInstanceActivityBehavior: behavior.MultiInstanceActivityBehavior{
-			Activity:              activity,
+func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateSequentialMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.SequentialMultiInstanceBehavior {
+	seq := behavior.SequentialMultiInstanceBehavior{
+		AbstractMultiInstanceActivityBehavior: behavior.AbstractMultiInstanceActivityBehavior{
+			Activity:              activity.(behavior.IMultiInstanceActivity),
 			InnerActivityBehavior: innerActivityBehavior,
 		},
 	}
+
+	seq.AbstractMultiInstanceActivityBehavior.Impl = &seq
+
+	return seq
 }
 
-func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateParallelMultiInstanceBehavior(activity model.Activity, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.ParallelMultiInstanceBehavior {
-	return behavior.ParallelMultiInstanceBehavior{
-		MultiInstanceActivityBehavior: behavior.MultiInstanceActivityBehavior{
-			Activity:              activity,
+func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateParallelMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.ParallelMultiInstanceBehavior {
+	para := behavior.ParallelMultiInstanceBehavior{
+		AbstractMultiInstanceActivityBehavior: behavior.AbstractMultiInstanceActivityBehavior{
+			Activity:              activity.(behavior.IMultiInstanceActivity),
 			InnerActivityBehavior: innerActivityBehavior,
 		},
 	}
+
+	para.AbstractMultiInstanceActivityBehavior.Impl = &para
+
+	return para
 }
 
 func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateHttpActivityBehavior(serviceTask model.ServiceTask, key string) behavior.HttpServiceTaskActivityBehavior {
