@@ -37,8 +37,8 @@ type ExecutionEntity struct {
 	ReferenceType                string    `json:"referenceType"`
 	TenantId                     *string   `json:"tenantId"`
 	isMultiInstanceRoot          bool
-	parentId                     string
-	parent                       delegate.DelegateExecution
+	ParentId                     string
+	Parent                       delegate.DelegateExecution
 }
 
 func (execution *ExecutionEntity) RemoveVariablesLocal(variableNames []string) error {
@@ -62,12 +62,12 @@ func (execution *ExecutionEntity) GetVariableLocal(variableName string) (value i
 }
 
 func (execution *ExecutionEntity) GetParent() (delegate.DelegateExecution, error) {
-	if execution.parent != nil {
-		return execution.parent, nil
+	if execution.Parent != nil {
+		return execution.Parent, nil
 	}
 
-	if stringutils.IsNotEmpty(execution.parentId) {
-		parentExection, err := executionEntityManager.FindById(execution.parentId)
+	if stringutils.IsNotEmpty(execution.ParentId) {
+		parentExection, err := executionEntityManager.FindById(execution.ParentId)
 		if err != nil {
 			return nil, err
 		}
@@ -78,15 +78,15 @@ func (execution *ExecutionEntity) GetParent() (delegate.DelegateExecution, error
 }
 
 func (execution *ExecutionEntity) SetParent(parent delegate.DelegateExecution) {
-	execution.parent = parent
+	execution.Parent = parent
 }
 
 func (execution *ExecutionEntity) GetParentId() string {
-	return execution.parentId
+	return execution.ParentId
 }
 
 func (execution *ExecutionEntity) SetParentId(parentId string) {
-	execution.parentId = parentId
+	execution.ParentId = parentId
 }
 
 func (execution *ExecutionEntity) GetVariablesLocal() (map[string]interface{}, error) {
@@ -267,4 +267,25 @@ func (execution ExecutionEntity) doSetVariablesLocal(variables map[string]interf
 	}
 
 	return nil
+}
+
+func CreateChildExecution(parentExecution delegate.DelegateExecution) ExecutionEntity {
+	newExecution := ExecutionEntity{
+		ProcessInstanceId:   parentExecution.GetProcessInstanceId(),
+		ProcessDefinitionId: parentExecution.GetProcessDefinitionId(),
+		ParentId:            parentExecution.GetExecutionId(),
+		Parent:              parentExecution,
+		StartTime:           time.Now().UTC(),
+	}
+	return newExecution
+}
+
+func CreateExecution(execution delegate.DelegateExecution) ExecutionEntity {
+	newExecution := ExecutionEntity{
+		ProcessInstanceId:   execution.GetProcessInstanceId(),
+		ProcessDefinitionId: execution.GetProcessDefinitionId(),
+		ParentId:            execution.GetParentId(),
+		StartTime:           time.Now().UTC(),
+	}
+	return newExecution
 }

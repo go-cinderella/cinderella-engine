@@ -5,7 +5,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
-	"time"
 )
 
 type TakeOutgoingSequenceFlowsOperation struct {
@@ -71,12 +70,7 @@ func (take TakeOutgoingSequenceFlowsOperation) handleFlowNode() (err error) {
 
 	for _, outgoing := range outgoingSequenceFlows {
 
-		executionEntity := entitymanager.ExecutionEntity{
-			ProcessInstanceId:   execution.GetProcessInstanceId(),
-			ProcessDefinitionId: execution.GetProcessDefinitionId(),
-			StartTime:           time.Now().UTC(),
-		}
-
+		executionEntity := entitymanager.CreateExecution(execution)
 		executionEntity.SetCurrentFlowElement(outgoing)
 
 		if err = executionEntityManager.CreateExecution(&executionEntity); err != nil {

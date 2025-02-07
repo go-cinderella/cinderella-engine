@@ -124,11 +124,7 @@ func (receiver StartProcessInstanceByKeyCmd) Start(ctx engine.Context) (entityma
 	}
 
 	// 生成执行实例
-	execution := entitymanager.ExecutionEntity{
-		ProcessInstanceId:   processInstance.ID_,
-		ProcessDefinitionId: definitionEntity.GetId(),
-		StartTime:           time.Now().UTC(),
-	}
+	execution := entitymanager.CreateChildExecution(&processInstanceEntity)
 	execution.SetCurrentFlowElement(element)
 
 	executionEntityManager := entitymanager.GetExecutionEntityManager()

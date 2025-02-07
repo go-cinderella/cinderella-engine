@@ -1,9 +1,10 @@
 package agenda
 
 import (
+	"errors"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
+	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"time"
 )
 
 type ContinueProcessOperation struct {
@@ -36,14 +37,8 @@ func (cont *ContinueProcessOperation) continueThroughSequenceFlow(sequenceFlow d
 		return err
 	}
 
-	executionEntity := entitymanager.ExecutionEntity{
-		ProcessInstanceId:   execution.GetProcessInstanceId(),
-		ProcessDefinitionId: execution.GetProcessDefinitionId(),
-		StartTime:           time.Now().UTC(),
-	}
-
-	flowElement := sequenceFlow.GetTargetFlowElement()
-	executionEntity.SetCurrentFlowElement(flowElement)
+	executionEntity := entitymanager.CreateExecution(execution)
+	executionEntity.SetCurrentFlowElement(sequenceFlow.GetTargetFlowElement())
 
 	if err := executionEntityManager.CreateExecution(&executionEntity); err != nil {
 		return err
@@ -54,7 +49,74 @@ func (cont *ContinueProcessOperation) continueThroughSequenceFlow(sequenceFlow d
 	return nil
 }
 
-func (cont *ContinueProcessOperation) continueThroughFlowNode(element delegate.FlowElement) error {
+func (cont *ContinueProcessOperation) hasMultiInstanceRootExecution(execution delegate.DelegateExecution, element delegate.FlowElement) (bool, error) {
+	currentExecution, err := execution.GetParent()
+	if err != nil {
+		return false, err
+	}
+
+	for currentExecution != nil {
+		if currentExecution.IsMultiInstanceRoot() && element.GetId() == currentExecution.GetCurrentActivityId() {
+			return true, nil
+		}
+
+		currentExecution, err = currentExecution.GetParent()
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return false, nil
+}
+
+func (cont *ContinueProcessOperation) createMultiInstanceRootExecution(execution delegate.DelegateExecution) (delegate.DelegateExecution, error) {
+	parentExecution, err := execution.GetParent()
+	if err != nil {
+		return nil, err
+	}
+
+	flowElement := execution.GetCurrentFlowElement()
+
+	executionEntityManager := entitymanager.GetExecutionEntityManager()
+	executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil)
+	executionEntityManager.DeleteExecution(execution.GetExecutionId())
+
+	multiInstanceRootExecution := entitymanager.CreateChildExecution(parentExecution)
+	multiInstanceRootExecution.SetCurrentFlowElement(flowElement)
+	multiInstanceRootExecution.SetMultiInstanceRoot(true)
+
+	if err = executionEntityManager.CreateExecution(&multiInstanceRootExecution); err != nil {
+		return nil, err
+	}
+
+	return &multiInstanceRootExecution, nil
+}
+
+func (cont *ContinueProcessOperation) executeActivityBehavior(activityBehavior delegate.ActivityBehavior, element delegate.FlowElement) error {
+	return activityBehavior.Execute(cont.Execution)
+}
+
+func (cont *ContinueProcessOperation) executeMultiInstanceSynchronous(element delegate.FlowElement) error {
+	ok, err := cont.hasMultiInstanceRootExecution(cont.Execution, element)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		cont.Execution, err = cont.createMultiInstanceRootExecution(cont.Execution)
+		if err != nil {
+			return err
+		}
+	}
+
+	behavior := element.GetBehavior()
+	if behavior == nil {
+		return errors.New("no behavior")
+	}
+	return cont.executeActivityBehavior(behavior, element)
+}
+
+func (cont *ContinueProcessOperation) executeSynchronous(element delegate.FlowElement) error {
 	var err error
 
 	dataManager := entitymanager.GetHistoricActivityInstanceEntityManager()
@@ -69,9 +131,19 @@ func (cont *ContinueProcessOperation) continueThroughFlowNode(element delegate.F
 
 	behavior := element.GetBehavior()
 	if behavior != nil {
-		err = behavior.Execute(cont.Execution)
+		err = cont.executeActivityBehavior(behavior, element)
 	} else {
 		cont.GetAgenda().PlanTakeOutgoingSequenceFlowsOperation(cont.Execution, true)
 	}
+
 	return err
+}
+
+func (cont *ContinueProcessOperation) continueThroughFlowNode(element delegate.FlowElement) error {
+	getter, ok := element.(model.LoopCharacteristicsGetter)
+	if ok && getter.HasMultiInstanceLoopCharacteristics() {
+		return cont.executeMultiInstanceSynchronous(element)
+	}
+
+	return cont.executeSynchronous(element)
 }

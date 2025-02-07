@@ -15,7 +15,6 @@ import (
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"math"
 	"strings"
-	"time"
 )
 
 type ExecutionEntityManager struct {
@@ -37,6 +36,7 @@ func (executionEntityManager ExecutionEntityManager) FindById(executionId string
 	entityImpl.SetProcessInstanceId(*execution.ProcInstID_)
 	entityImpl.SetCurrentActivityId(cast.ToString(execution.ActID_))
 	entityImpl.SetParentId(cast.ToString(execution.ParentID_))
+	entityImpl.SetMultiInstanceRoot(cast.ToBool(execution.IsMiRoot_))
 	return entityImpl, nil
 }
 
@@ -65,18 +65,18 @@ func (executionEntityManager ExecutionEntityManager) List(listRequest execution.
 			ReferenceId:         cast.ToString(item.ReferenceID_),
 			ReferenceType:       cast.ToString(item.ReferenceType_),
 			TenantId:            item.TenantID_,
-			parentId:            cast.ToString(item.ParentID_),
+			ParentId:            cast.ToString(item.ParentID_),
+			isMultiInstanceRoot: cast.ToBool(item.IsMiRoot_),
 		}
 	})
 	return result, nil
 }
 
 func (executionEntityManager ExecutionEntityManager) CreateExecution(executionEntity *ExecutionEntity) error {
-	executionDataManager := datamanager.GetExecutionDataManager()
 	actRuExecution := model.ActRuExecution{
 		Rev_:                    lo.ToPtr(cast.ToInt32(1)),
 		ProcInstID_:             &executionEntity.ProcessInstanceId,
-		ParentID_:               &executionEntity.ProcessInstanceId,
+		ParentID_:               &executionEntity.ParentId,
 		ProcDefID_:              &executionEntity.ProcessDefinitionId,
 		RootProcInstID_:         &executionEntity.ProcessInstanceId,
 		ActID_:                  &executionEntity.CurrentActivityId,
@@ -84,7 +84,7 @@ func (executionEntityManager ExecutionEntityManager) CreateExecution(executionEn
 		IsConcurrent_:           lo.ToPtr(false),
 		IsScope_:                lo.ToPtr(false),
 		IsEventScope_:           lo.ToPtr(false),
-		IsMiRoot_:               lo.ToPtr(false),
+		IsMiRoot_:               &executionEntity.isMultiInstanceRoot,
 		SuspensionState_:        lo.ToPtr(cast.ToInt32(1)),
 		StartTime_:              &executionEntity.StartTime,
 		IsCountEnabled_:         lo.ToPtr(true),
@@ -98,23 +98,14 @@ func (executionEntityManager ExecutionEntityManager) CreateExecution(executionEn
 		VarCount_:               lo.ToPtr(cast.ToInt32(0)),
 		IDLinkCount_:            lo.ToPtr(cast.ToInt32(0)),
 	}
+
+	executionDataManager := datamanager.GetExecutionDataManager()
 	if err := executionDataManager.Insert(&actRuExecution); err != nil {
 		return err
 	}
 
 	executionEntity.SetId(actRuExecution.ID_)
 	return nil
-}
-
-func (executionEntityManager ExecutionEntityManager) CreateChildExecution(parentExecution delegate.DelegateExecution) (ExecutionEntity, error) {
-	newExecution := ExecutionEntity{
-		ProcessInstanceId:   parentExecution.GetProcessInstanceId(),
-		ProcessDefinitionId: parentExecution.GetProcessDefinitionId(),
-		StartTime:           time.Now().UTC(),
-	}
-	newExecution.SetParentId(parentExecution.GetExecutionId())
-	newExecution.SetParent(parentExecution)
-	return newExecution, nil
 }
 
 func (executionEntityManager ExecutionEntityManager) DeleteExecution(executionId string) error {

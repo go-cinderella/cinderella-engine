@@ -130,11 +130,12 @@ func (f AbstractMultiInstanceActivityBehavior) cleanupMiRoot(execution delegate.
 		return err
 	}
 
-	newExecution, err := executionEntityManager.CreateChildExecution(parentExecution)
-	if err != nil {
+	newExecution := entitymanager.CreateChildExecution(parentExecution)
+	newExecution.SetCurrentFlowElement(flowElement)
+
+	if err = executionEntityManager.CreateExecution(&newExecution); err != nil {
 		return err
 	}
-	newExecution.SetCurrentFlowElement(flowElement)
 
 	return f.flowNodeActivityBehavior.leave(&newExecution)
 }

@@ -23,12 +23,13 @@ func (s SequentialMultiInstanceBehavior) createInstances(multiInstanceRootExecut
 		return 0, nil
 	}
 
+	execution := entitymanager.CreateChildExecution(multiInstanceRootExecution)
+	execution.SetCurrentFlowElement(multiInstanceRootExecution.GetCurrentFlowElement())
+
 	executionEntityManager := entitymanager.GetExecutionEntityManager()
-	execution, err := executionEntityManager.CreateChildExecution(multiInstanceRootExecution)
-	if err != nil {
+	if err = executionEntityManager.CreateExecution(&execution); err != nil {
 		return 0, err
 	}
-	execution.SetCurrentFlowElement(multiInstanceRootExecution.GetCurrentFlowElement())
 
 	if err = s.setLoopVariable(multiInstanceRootExecution, NUMBER_OF_INSTANCES, nrOfInstances); err != nil {
 		return 0, err

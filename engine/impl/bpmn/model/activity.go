@@ -8,3 +8,7 @@ type Activity struct {
 func (a Activity) GetLoopCharacteristics() *MultiInstanceLoopCharacteristics {
 	return a.MultiInstance
 }
+
+func (a Activity) HasMultiInstanceLoopCharacteristics() bool {
+	return a.GetLoopCharacteristics() != nil
+}
