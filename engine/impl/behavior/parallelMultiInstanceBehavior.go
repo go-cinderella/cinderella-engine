@@ -4,18 +4,18 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 )
 
-var _ IMultiInstanceActivityBehavior = (*ParallelMultiInstanceBehavior)(nil)
+var _ multiInstanceActivityBehavior = (*ParallelMultiInstanceBehavior)(nil)
 
 type ParallelMultiInstanceBehavior struct {
 	AbstractMultiInstanceActivityBehavior
 }
 
-func (p ParallelMultiInstanceBehavior) CreateInstances(execution delegate.DelegateExecution) (int, error) {
+func (p ParallelMultiInstanceBehavior) createInstances(execution delegate.DelegateExecution) (int, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (p ParallelMultiInstanceBehavior) Leave(execution delegate.DelegateExecution) error {
+func (p ParallelMultiInstanceBehavior) leave(execution delegate.DelegateExecution) error {
 	//TODO implement me
 	panic("implement me")
 }

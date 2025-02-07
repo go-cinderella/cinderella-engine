@@ -33,11 +33,10 @@ func (abstractBpmnParse AbstractBpmnParseHandler) createMultiInstanceActivityBeh
 	clonedActivity := activity.(delegate.Cloneable).Clone()
 
 	activityBehavior := clonedActivity.GetBehavior()
-	triggerableActivityBehavior := activityBehavior.(delegate.TriggerableActivityBehavior)
 
 	if loopCharacteristics.IsSequential {
-		return bpmnParse.ActivityBehaviorFactory.CreateSequentialMultiInstanceBehavior(clonedActivity, triggerableActivityBehavior)
+		return bpmnParse.ActivityBehaviorFactory.CreateSequentialMultiInstanceBehavior(clonedActivity, activityBehavior)
 	} else {
-		return bpmnParse.ActivityBehaviorFactory.CreateParallelMultiInstanceBehavior(clonedActivity, triggerableActivityBehavior)
+		return bpmnParse.ActivityBehaviorFactory.CreateParallelMultiInstanceBehavior(clonedActivity, activityBehavior)
 	}
 }

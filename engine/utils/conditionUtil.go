@@ -19,7 +19,7 @@ func HasTrueCondition(sequenceFlow model.SequenceFlow, execution delegate.Delega
 	var conditionExpression = sequenceFlow.ConditionExpression
 	if stringutils.IsNotEmpty(conditionExpression) && IsExpr(conditionExpression) {
 		code := Trim(conditionExpression)
-		variables, err := execution.GetProcessVariables()
+		variables, err := execution.GetVariables()
 		if err != nil {
 			zlogger.Error().Err(err).Msg("failed to compile condition expression")
 			return false
@@ -52,7 +52,7 @@ func IsExpr(input string) bool {
 }
 
 func IsTrue(variables map[string]interface{}, input string) bool {
-	output, err := Evaluate(variables, input)
+	output, err := evaluate(variables, input)
 	if err != nil {
 		zlogger.Error().Err(err).Msg("failed to evaluate condition expression")
 		return false
@@ -65,7 +65,7 @@ func Trim(input string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(input, "${"), "}")
 }
 
-func Evaluate(variables map[string]interface{}, input string) (interface{}, error) {
+func evaluate(variables map[string]interface{}, input string) (interface{}, error) {
 	if !IsExpr(input) {
 		return nil, errors.New(`not a valid expression`)
 	}
@@ -84,7 +84,7 @@ func Evaluate(variables map[string]interface{}, input string) (interface{}, erro
 }
 
 func GetStringSliceFromExpression(variables map[string]interface{}, input string) []string {
-	output, err := Evaluate(variables, input)
+	output, err := evaluate(variables, input)
 	if err != nil {
 		zlogger.Error().Err(err).Msg("failed to evaluate condition expression")
 		return nil

@@ -44,7 +44,7 @@ func (pipeline PipelineServiceTaskActivityBehavior) Execute(execution delegate.D
 	// set request body
 	requestBody := make(map[string]interface{})
 	extensionElements := pipeline.ServiceTask.ExtensionElements
-	variables, err := execution.GetProcessVariables()
+	variables, err := execution.GetVariables()
 	if err != nil {
 		return err
 	}

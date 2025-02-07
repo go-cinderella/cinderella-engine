@@ -7,14 +7,14 @@ var _ delegate.TriggerableActivityBehavior = (*abstractBpmnActivityBehavior)(nil
 
 type abstractBpmnActivityBehavior struct {
 	flowNodeActivityBehavior
-	multiInstanceActivityBehavior *AbstractMultiInstanceActivityBehavior
+	multiInstanceActivityBehavior multiInstanceActivityBehavior
 }
 
-func (f *abstractBpmnActivityBehavior) SetMultiInstanceActivityBehavior(multiInstanceActivityBehavior *AbstractMultiInstanceActivityBehavior) {
+func (f *abstractBpmnActivityBehavior) SetMultiInstanceActivityBehavior(multiInstanceActivityBehavior multiInstanceActivityBehavior) {
 	f.multiInstanceActivityBehavior = multiInstanceActivityBehavior
 }
 
-func (f abstractBpmnActivityBehavior) MultiInstanceActivityBehavior() *AbstractMultiInstanceActivityBehavior {
+func (f abstractBpmnActivityBehavior) MultiInstanceActivityBehavior() multiInstanceActivityBehavior {
 	return f.multiInstanceActivityBehavior
 }
 

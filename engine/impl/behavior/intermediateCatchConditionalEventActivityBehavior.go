@@ -35,7 +35,7 @@ func (behavior IntermediateCatchConditionalEventActivityBehavior) Trigger(execut
 		return nil
 	}
 
-	variables, err := execution.GetProcessVariables()
+	variables, err := execution.GetVariables()
 	if err != nil {
 		return err
 	}

@@ -41,6 +41,26 @@ type ExecutionEntity struct {
 	parent                       delegate.DelegateExecution
 }
 
+func (execution *ExecutionEntity) RemoveVariablesLocal(variableNames []string) error {
+	variableDataManager := datamanager.GetVariableDataManager()
+	return variableDataManager.DeleteByExecutionIdAndNames(execution.GetExecutionId(), variableNames)
+}
+
+func (execution *ExecutionEntity) GetVariableLocal(variableName string) (value interface{}, ok bool, err error) {
+	variableDataManager := datamanager.GetVariableDataManager()
+
+	vari, ok, err := variableDataManager.SelectByExecutionIdAndName(variableName, execution.GetExecutionId())
+	if err != nil {
+		return nil, false, err
+	}
+
+	if ok {
+		return execution.getValue(vari), ok, nil
+	}
+
+	return nil, false, nil
+}
+
 func (execution *ExecutionEntity) GetParent() (delegate.DelegateExecution, error) {
 	if execution.parent != nil {
 		return execution.parent, nil
@@ -139,41 +159,55 @@ func (execution ExecutionEntity) GetCurrentActivityId() string {
 	return execution.CurrentActivityId
 }
 
-func (execution ExecutionEntity) GetProcessVariables() (map[string]interface{}, error) {
+func (execution ExecutionEntity) GetVariables() (map[string]interface{}, error) {
+	var variables []variable.Variable
+
 	variableManager := datamanager.GetVariableDataManager()
-	variables, err := variableManager.SelectByExecutionId(execution.GetProcessInstanceId())
+	localVariables, err := variableManager.SelectByExecutionId(execution.GetExecutionId())
 	if err != nil {
 		return nil, err
 	}
+
+	variables = append(variables, localVariables...)
+
+	parent, err := execution.GetParent()
+	if err != nil {
+		return nil, err
+	}
+
+	for parent != nil {
+		localVariables, err = variableManager.SelectByExecutionId(parent.GetExecutionId())
+		if err != nil {
+			return nil, err
+		}
+
+		variables = append(variables, localVariables...)
+
+		parent, err = parent.GetParent()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return execution.handleVariables(variables), nil
 }
 
 func (execution ExecutionEntity) handleVariables(variables []variable.Variable) map[string]interface{} {
-	variableManager := variable.GetVariableManager()
-	variableTypes := variableManager.VariableTypes
 	var variableMap = make(map[string]interface{}, 0)
-	for _, variable := range variables {
-		variableType := variableTypes.GetVariableType(variable.Type_)
-		value := variableType.GetValue(&variable)
-		variableMap[variable.Name_] = value
+	for _, item := range variables {
+		if lo.HasKey(variableMap, item.Name_) {
+			continue
+		}
+		variableMap[item.Name_] = execution.getValue(item)
 	}
 	return variableMap
 }
 
-func (execution ExecutionEntity) GetSourceActivityExecution() ExecutionEntity {
-	return execution
-}
-
-func (execution ExecutionEntity) GetSpecificVariable(variableName string) (variable.Variable, bool) {
-	variableDataManager := datamanager.GetVariableDataManager()
-
-	vari, ok, _ := variableDataManager.SelectByExecutionIdAndName(variableName, execution.GetExecutionId())
-	if ok {
-		return vari, true
-	}
-
-	vari, ok, _ = variableDataManager.SelectByExecutionIdAndName(variableName, execution.GetProcessInstanceId())
-	return vari, ok
+func (execution ExecutionEntity) getValue(vari variable.Variable) interface{} {
+	variableManager := variable.GetVariableManager()
+	variableTypes := variableManager.VariableTypes
+	variableType := variableTypes.GetVariableType(vari.Type_)
+	return variableType.GetValue(&vari)
 }
 
 func IsIntegral(val float64) bool {

@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-type IMultiInstanceActivity interface {
+type MultiInstanceActivity interface {
 	delegate.FlowElement
 	model.LoopCharacteristicsGetter
 }
@@ -25,19 +25,19 @@ const (
 	CollectionElementIndexVariable string = "loopCounter"
 )
 
+type MultiInstanceSupportBehavior interface {
+	delegate.ActivityBehavior
+	SetMultiInstanceActivityBehavior(multiInstanceActivityBehavior multiInstanceActivityBehavior)
+}
+
 // AbstractMultiInstanceActivityBehavior Implementation of the multi-instance functionality as described in the BPMN 2.0 spec.
 type AbstractMultiInstanceActivityBehavior struct {
 	flowNodeActivityBehavior
 
-	Impl IMultiInstanceActivityBehavior
+	Impl multiInstanceActivityBehavior
 	// Instance members
-	Activity              IMultiInstanceActivity
-	InnerActivityBehavior delegate.TriggerableActivityBehavior
-
-	IsSequential        bool
-	Collection          string
-	ElementVariable     string
-	CompletionCondition string
+	Activity              MultiInstanceActivity
+	InnerActivityBehavior MultiInstanceSupportBehavior
 }
 
 func (f AbstractMultiInstanceActivityBehavior) Trigger(execution delegate.DelegateExecution) error {
@@ -50,7 +50,7 @@ func (f AbstractMultiInstanceActivityBehavior) Execute(execution delegate.Delega
 		return err
 	}
 	if !ok {
-		nrOfInstances, err := f.Impl.CreateInstances(execution)
+		nrOfInstances, err := f.Impl.createInstances(execution)
 		if err != nil {
 			return err
 		}
@@ -66,7 +66,7 @@ func (f AbstractMultiInstanceActivityBehavior) Execute(execution delegate.Delega
 }
 
 func (f AbstractMultiInstanceActivityBehavior) leave(execution delegate.DelegateExecution) error {
-	return nil
+	return f.cleanupMiRoot(execution)
 }
 
 func (f AbstractMultiInstanceActivityBehavior) getLocalLoopVariable(execution delegate.DelegateExecution, variableName string) (value int, ok bool, err error) {
@@ -179,7 +179,7 @@ func (f AbstractMultiInstanceActivityBehavior) resolveAndValidateCollection(exec
 	}
 
 	if utils.IsExpr(collection) {
-		variables, err := execution.GetProcessVariables()
+		variables, err := execution.GetVariables()
 		if err != nil {
 			return nil, err
 		}
@@ -191,8 +191,42 @@ func (f AbstractMultiInstanceActivityBehavior) resolveAndValidateCollection(exec
 	}
 }
 
-func (f AbstractMultiInstanceActivityBehavior) SetLoopVariable(execution delegate.DelegateExecution, variableName string, value interface{}) error {
+func (f AbstractMultiInstanceActivityBehavior) setLoopVariable(execution delegate.DelegateExecution, variableName string, value interface{}) error {
 	return execution.SetVariableLocal(variableName, value)
+}
+
+func (f AbstractMultiInstanceActivityBehavior) getLoopVariable(execution delegate.DelegateExecution, variableName string) (int, error) {
+	value, err := f.getLoopVariableInstance(execution, variableName)
+	if err != nil {
+		return 0, err
+	}
+
+	return cast.ToInt(value), nil
+}
+
+func (f AbstractMultiInstanceActivityBehavior) getLoopVariableInstance(execution delegate.DelegateExecution, variableName string) (value interface{}, err error) {
+	value, ok, err := execution.GetVariableLocal(variableName)
+	if err != nil {
+		return nil, err
+	}
+
+	parent, err := execution.GetParent()
+	if err != nil {
+		return nil, err
+	}
+
+	for !ok && parent != nil {
+		value, ok, err = parent.GetVariableLocal(variableName)
+		if err != nil {
+			return nil, err
+		}
+		parent, err = parent.GetParent()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return value, nil
 }
 
 func (f AbstractMultiInstanceActivityBehavior) ExecuteOriginalBehavior(execution delegate.DelegateExecution, multiInstanceRootExecution delegate.DelegateExecution, loopCounter int) error {
@@ -203,11 +237,27 @@ func (f AbstractMultiInstanceActivityBehavior) ExecuteOriginalBehavior(execution
 	value := instances[loopCounter]
 
 	loopCharacteristics := f.Activity.GetLoopCharacteristics()
-	if err = f.SetLoopVariable(execution, loopCharacteristics.ElementVariable, value); err != nil {
+	if err = f.setLoopVariable(execution, loopCharacteristics.ElementVariable, value); err != nil {
 		return err
 	}
 
 	execution.SetCurrentFlowElement(f.Activity)
 	contextutil.GetAgenda().PlanContinueMultiInstanceOperation(execution, multiInstanceRootExecution, loopCounter)
 	return nil
+}
+
+func (f AbstractMultiInstanceActivityBehavior) completionConditionSatisfied(multiInstanceRootExecution delegate.DelegateExecution) (bool, error) {
+	loopCharacteristics := f.Activity.GetLoopCharacteristics()
+	completionCondition := loopCharacteristics.CompletionCondition
+
+	if stringutils.IsNotEmpty(completionCondition) {
+		variables, err := multiInstanceRootExecution.GetVariablesLocal()
+		if err != nil {
+			return false, err
+		}
+
+		return utils.IsTrue(variables, completionCondition), nil
+	}
+
+	return false, nil
 }

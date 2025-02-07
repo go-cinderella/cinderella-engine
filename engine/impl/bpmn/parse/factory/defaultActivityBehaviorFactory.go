@@ -11,28 +11,30 @@ var _ ActivityBehaviorFactory = (*DefaultActivityBehaviorFactory)(nil)
 type DefaultActivityBehaviorFactory struct {
 }
 
-func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateSequentialMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.SequentialMultiInstanceBehavior {
+func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateSequentialMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.ActivityBehavior) behavior.SequentialMultiInstanceBehavior {
 	seq := behavior.SequentialMultiInstanceBehavior{
 		AbstractMultiInstanceActivityBehavior: behavior.AbstractMultiInstanceActivityBehavior{
-			Activity:              activity.(behavior.IMultiInstanceActivity),
-			InnerActivityBehavior: innerActivityBehavior,
+			Activity:              activity.(behavior.MultiInstanceActivity),
+			InnerActivityBehavior: innerActivityBehavior.(behavior.MultiInstanceSupportBehavior),
 		},
 	}
 
 	seq.AbstractMultiInstanceActivityBehavior.Impl = &seq
+	seq.AbstractMultiInstanceActivityBehavior.InnerActivityBehavior.SetMultiInstanceActivityBehavior(&seq)
 
 	return seq
 }
 
-func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateParallelMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.TriggerableActivityBehavior) behavior.ParallelMultiInstanceBehavior {
+func (defaultActivityBehaviorFactory DefaultActivityBehaviorFactory) CreateParallelMultiInstanceBehavior(activity delegate.FlowElement, innerActivityBehavior delegate.ActivityBehavior) behavior.ParallelMultiInstanceBehavior {
 	para := behavior.ParallelMultiInstanceBehavior{
 		AbstractMultiInstanceActivityBehavior: behavior.AbstractMultiInstanceActivityBehavior{
-			Activity:              activity.(behavior.IMultiInstanceActivity),
-			InnerActivityBehavior: innerActivityBehavior,
+			Activity:              activity.(behavior.MultiInstanceActivity),
+			InnerActivityBehavior: innerActivityBehavior.(behavior.MultiInstanceSupportBehavior),
 		},
 	}
 
 	para.AbstractMultiInstanceActivityBehavior.Impl = &para
+	para.AbstractMultiInstanceActivityBehavior.InnerActivityBehavior.SetMultiInstanceActivityBehavior(&para)
 
 	return para
 }

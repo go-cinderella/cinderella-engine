@@ -66,6 +66,12 @@ func (variableManager VariableDataManager) DeleteByExecutionId(executionId strin
 	return err
 }
 
+func (variableManager VariableDataManager) DeleteByExecutionIdAndNames(executionId string, variableNames []string) error {
+	variableQuery := contextutil.GetQuery().ActRuVariable
+	_, err := variableQuery.Where(variableQuery.ExecutionID.Eq(executionId), variableQuery.Name.In(variableNames...)).Delete()
+	return err
+}
+
 func (variableManager VariableDataManager) SelectByTaskId(taskId string) ([]variable.Variable, error) {
 	variables := make([]variable.Variable, 0)
 	variableQuery := contextutil.GetQuery().ActRuVariable
