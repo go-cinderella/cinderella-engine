@@ -32,6 +32,10 @@ func (take TakeOutgoingSequenceFlowsOperation) handleFlowNode() (err error) {
 		return
 	}
 
+	if err = executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil); err != nil {
+		return
+	}
+
 	if err = executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
 		return
 	}

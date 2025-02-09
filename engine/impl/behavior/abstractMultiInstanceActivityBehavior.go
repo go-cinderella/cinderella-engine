@@ -26,7 +26,7 @@ const (
 )
 
 type MultiInstanceSupportBehavior interface {
-	delegate.ActivityBehavior
+	delegate.TriggerableActivityBehavior
 	SetMultiInstanceActivityBehavior(multiInstanceActivityBehavior multiInstanceActivityBehavior)
 }
 
@@ -41,7 +41,7 @@ type AbstractMultiInstanceActivityBehavior struct {
 }
 
 func (f AbstractMultiInstanceActivityBehavior) Trigger(execution delegate.DelegateExecution) error {
-	return nil
+	return f.InnerActivityBehavior.Trigger(execution)
 }
 
 func (f AbstractMultiInstanceActivityBehavior) Execute(execution delegate.DelegateExecution) error {
@@ -120,18 +120,23 @@ func (f AbstractMultiInstanceActivityBehavior) cleanupMiRoot(execution delegate.
 	}
 
 	executionEntityManager := entitymanager.GetExecutionEntityManager()
-	executionEntityManager.DeleteChildExecution(multiInstanceRootExecution.GetExecutionId(), lo.ToPtr(DELETE_REASON_END))
-	executionEntityManager.DeleteRelatedDataForExecution(multiInstanceRootExecution.GetExecutionId(), lo.ToPtr(DELETE_REASON_END))
-	executionEntityManager.DeleteExecution(multiInstanceRootExecution.GetExecutionId())
+	if err = executionEntityManager.DeleteChildExecution(multiInstanceRootExecution.GetExecutionId(), lo.ToPtr(DELETE_REASON_END)); err != nil {
+		return err
+	}
+	if err = executionEntityManager.DeleteRelatedDataForExecution(multiInstanceRootExecution.GetExecutionId(), lo.ToPtr(DELETE_REASON_END)); err != nil {
+		return err
+	}
+	if err = executionEntityManager.DeleteExecution(multiInstanceRootExecution.GetExecutionId()); err != nil {
+		return err
+	}
 
-	flowElement := multiInstanceRootExecution.GetCurrentFlowElement()
 	parentExecution, err := multiInstanceRootExecution.GetParent()
 	if err != nil {
 		return err
 	}
 
 	newExecution := entitymanager.CreateChildExecution(parentExecution)
-	newExecution.SetCurrentFlowElement(flowElement)
+	newExecution.SetCurrentFlowElement(execution.GetCurrentFlowElement())
 
 	if err = executionEntityManager.CreateExecution(&newExecution); err != nil {
 		return err

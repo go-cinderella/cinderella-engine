@@ -12,10 +12,10 @@ var _ engine.Command = (*NeedsActiveExecutionCmd)(nil)
 
 type NeedsActiveExecutionCmd struct {
 	IExecutionCmd
-	Ctx              context.Context
-	ExecutionId      string
-	Transactional    bool
-	ProcessVariables map[string]any
+	Ctx           context.Context
+	ExecutionId   string
+	Transactional bool
+	Variables     map[string]any
 }
 
 func (n NeedsActiveExecutionCmd) IsTransactional() bool {
@@ -40,7 +40,7 @@ func (n NeedsActiveExecutionCmd) Execute(commandContext engine.Context) (interfa
 		executionEntity.SetCurrentFlowElement(currentFlowElement)
 	}
 
-	if err = executionEntity.SetProcessVariables(n.ProcessVariables); err != nil {
+	if err = executionEntity.SetVariablesLocal(n.Variables); err != nil {
 		return nil, err
 	}
 
@@ -65,8 +65,8 @@ func WithContext(ctx context.Context) Options {
 	}
 }
 
-func WithProcessVariables(processVariables map[string]any) Options {
+func WithVariables(processVariables map[string]any) Options {
 	return func(cmd *NeedsActiveExecutionCmd) {
-		cmd.ProcessVariables = processVariables
+		cmd.Variables = processVariables
 	}
 }

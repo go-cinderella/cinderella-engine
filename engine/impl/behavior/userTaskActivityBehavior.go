@@ -17,6 +17,7 @@ import (
 
 var _ delegate.ActivityBehavior = (*UserTaskActivityBehavior)(nil)
 var _ delegate.TriggerableActivityBehavior = (*UserTaskActivityBehavior)(nil)
+var _ MultiInstanceSupportBehavior = (*UserTaskActivityBehavior)(nil)
 
 type UserTaskActivityBehavior struct {
 	abstractBpmnActivityBehavior

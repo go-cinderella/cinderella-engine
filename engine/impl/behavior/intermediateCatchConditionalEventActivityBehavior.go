@@ -17,8 +17,8 @@ type IntermediateCatchConditionalEventActivityBehavior struct {
 	conditionalEventDefinition model.ConditionalEventDefinition
 }
 
-func NewIntermediateCatchConditionalEventActivityBehavior(conditionalEventDefinition model.ConditionalEventDefinition) IntermediateCatchConditionalEventActivityBehavior {
-	return IntermediateCatchConditionalEventActivityBehavior{conditionalEventDefinition: conditionalEventDefinition}
+func NewIntermediateCatchConditionalEventActivityBehavior(conditionalEventDefinition model.ConditionalEventDefinition) *IntermediateCatchConditionalEventActivityBehavior {
+	return &IntermediateCatchConditionalEventActivityBehavior{conditionalEventDefinition: conditionalEventDefinition}
 }
 
 func (behavior *IntermediateCatchConditionalEventActivityBehavior) ConditionalEventDefinition() model.ConditionalEventDefinition {
@@ -53,7 +53,12 @@ func (behavior IntermediateCatchConditionalEventActivityBehavior) Trigger(execut
 	}
 
 	executionEntityManager := entitymanager.GetExecutionEntityManager()
-	if err := executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
+
+	if err = executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil); err != nil {
+		return err
+	}
+
+	if err = executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
 		return err
 	}
 

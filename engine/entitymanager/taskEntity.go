@@ -91,6 +91,11 @@ func (taskEntiy *TaskEntity) SetExecutionId(executionId string) {
 	taskEntiy.ExecutionId = executionId
 }
 
+// SetVariables 保存用户任务实例变量
+func (taskEntiy *TaskEntity) SetVariables(variables map[string]interface{}) error {
+	return taskEntiy.doSetVariablesLocal(variables, taskEntiy.GetExecutionId(), taskEntiy.GetId())
+}
+
 func NewTaskEntity(execution delegate.DelegateExecution, userTask bpmn_model.UserTask) TaskEntity {
 	return TaskEntity{
 		ExecutionId:         execution.GetExecutionId(),

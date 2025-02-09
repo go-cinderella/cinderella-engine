@@ -1,6 +1,5 @@
 package delegate
 
-// 接口
 type FlowElement interface {
 	BaseElement
 	SetOutgoing(f []FlowElement)

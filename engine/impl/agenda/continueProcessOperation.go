@@ -32,6 +32,10 @@ func (cont *ContinueProcessOperation) continueThroughSequenceFlow(sequenceFlow d
 		return err
 	}
 
+	if err := executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil); err != nil {
+		return err
+	}
+
 	// 这里不能用defer函数删旧数据，因为加了外键约束
 	if err := executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
 		return err
@@ -78,8 +82,12 @@ func (cont *ContinueProcessOperation) createMultiInstanceRootExecution(execution
 	flowElement := execution.GetCurrentFlowElement()
 
 	executionEntityManager := entitymanager.GetExecutionEntityManager()
-	executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil)
-	executionEntityManager.DeleteExecution(execution.GetExecutionId())
+	if err = executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil); err != nil {
+		return nil, err
+	}
+	if err = executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
+		return nil, err
+	}
 
 	multiInstanceRootExecution := entitymanager.CreateChildExecution(parentExecution)
 	multiInstanceRootExecution.SetCurrentFlowElement(flowElement)

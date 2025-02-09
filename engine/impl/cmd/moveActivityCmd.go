@@ -68,7 +68,7 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 		}
 		if len(executionEntities) > 0 {
 			executionEntity = executionEntities[0]
-			flowElementId = executionEntity.ActivityId
+			flowElementId = executionEntity.CurrentActivityId
 		}
 	}
 
@@ -114,6 +114,10 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 			return false
 		}
 
+		if err = executionEntityManager.DeleteRelatedDataForExecution(item.GetExecutionId(), &reason); err != nil {
+			return false
+		}
+
 		if err = executionEntityManager.DeleteExecution(item.GetExecutionId()); err != nil {
 			return false
 		}
@@ -126,12 +130,15 @@ func (moveActivityCmd MoveActivityCmd) Execute(commandContext engine.Context) (r
 	})
 
 	lo.ForEachWhile(executionEntities, func(item entitymanager.ExecutionEntity, index int) (goon bool) {
+		if err = executionEntityManager.DeleteRelatedDataForExecution(item.GetExecutionId(), &reason); err != nil {
+			return false
+		}
 
 		if err = executionEntityManager.DeleteExecution(item.GetExecutionId()); err != nil {
 			return false
 		}
 
-		if err = historicActivityInstanceEntityManager.RecordActEndByExecutionIdAndActId(item.GetExecutionId(), item.ActivityId, &reason); err != nil {
+		if err = historicActivityInstanceEntityManager.RecordActEndByExecutionIdAndActId(item.GetExecutionId(), item.CurrentActivityId, &reason); err != nil {
 			return false
 		}
 

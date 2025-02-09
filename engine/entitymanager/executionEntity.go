@@ -28,7 +28,6 @@ type ExecutionEntity struct {
 	ProcessDefinitionId          string    `json:"processDefinitionId"`
 	ProcessDefinitionName        string    `json:"processDefinitionName"`
 	ProcessDefinitionDescription string    `json:"processDefinitionDescription"`
-	ActivityId                   string    `json:"activityId"`
 	StartUserId                  string    `json:"startUserId"`
 	StartTime                    time.Time `json:"StartTime"`
 	CallbackId                   string    `json:"callbackId"`
@@ -216,12 +215,12 @@ func IsIntegral(val float64) bool {
 
 // SetProcessVariables 保存流程变量
 func (execution ExecutionEntity) SetProcessVariables(variables map[string]interface{}) error {
-	return execution.doSetVariablesLocal(variables, execution.GetProcessInstanceId())
+	return execution.doSetVariablesLocal(variables, execution.GetProcessInstanceId(), "")
 }
 
 // SetVariablesLocal 保存执行实例变量
 func (execution ExecutionEntity) SetVariablesLocal(variables map[string]interface{}) error {
-	return execution.doSetVariablesLocal(variables, execution.GetExecutionId())
+	return execution.doSetVariablesLocal(variables, execution.GetExecutionId(), "")
 }
 
 func (execution ExecutionEntity) SetVariableLocal(variableName string, value interface{}) error {
@@ -230,7 +229,7 @@ func (execution ExecutionEntity) SetVariableLocal(variableName string, value int
 	return execution.SetVariablesLocal(variables)
 }
 
-func (execution ExecutionEntity) doSetVariablesLocal(variables map[string]interface{}, executionId string) error {
+func (execution ExecutionEntity) doSetVariablesLocal(variables map[string]interface{}, executionId string, taskId string) error {
 	variableManager := variable.GetVariableManager()
 	variableTypes := variableManager.VariableTypes
 	idGenerator := contextutil.GetIDGenerator()
@@ -260,6 +259,9 @@ func (execution ExecutionEntity) doSetVariablesLocal(variables map[string]interf
 		vari.SetValue(v, variableType)
 		vari.ProcInstID_ = lo.ToPtr(execution.GetProcessInstanceId())
 		vari.ExecutionID_ = &executionId
+		if stringutils.IsNotEmpty(taskId) {
+			vari.TaskID_ = &taskId
+		}
 
 		if err := variableEntityManager.UpsertVariable(vari); err != nil {
 			return err

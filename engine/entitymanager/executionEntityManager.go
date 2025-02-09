@@ -57,7 +57,6 @@ func (executionEntityManager ExecutionEntityManager) List(listRequest execution.
 			BusinessStatus:      cast.ToString(item.BusinessStatus_),
 			Suspended:           cast.ToBool(item.SuspensionState_),
 			ProcessDefinitionId: cast.ToString(item.ProcDefID_),
-			ActivityId:          cast.ToString(item.ActID_),
 			StartUserId:         cast.ToString(item.StartUserID_),
 			StartTime:           *item.StartTime_,
 			CallbackId:          cast.ToString(item.CallbackID_),
