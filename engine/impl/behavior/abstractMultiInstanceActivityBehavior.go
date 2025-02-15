@@ -120,7 +120,29 @@ func (f AbstractMultiInstanceActivityBehavior) cleanupMiRoot(execution delegate.
 	}
 
 	executionEntityManager := entitymanager.GetExecutionEntityManager()
-	if err = executionEntityManager.DeleteChildExecution(multiInstanceRootExecution.GetExecutionId(), lo.ToPtr(DELETE_REASON_END)); err != nil {
+
+	var children []entitymanager.ExecutionEntity
+
+	children, err = executionEntityManager.CollectChildren(multiInstanceRootExecution.GetExecutionId())
+	if err != nil {
+		return err
+	}
+
+	actions, err := executionEntityManager.GetTopKValueFromChildExecutions(children, "action", 1)
+	if err != nil {
+		return err
+	}
+
+	if len(actions) > 0 {
+		variables := make(map[string]interface{})
+		variables["action"] = actions[0]
+
+		if err = execution.SetProcessVariables(variables); err != nil {
+			return err
+		}
+	}
+
+	if err = executionEntityManager.DeleteChildExecutions(children, lo.ToPtr(DELETE_REASON_END)); err != nil {
 		return err
 	}
 	if err = executionEntityManager.DeleteRelatedDataForExecution(multiInstanceRootExecution.GetExecutionId(), lo.ToPtr(DELETE_REASON_END)); err != nil {

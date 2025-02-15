@@ -9,5 +9,7 @@ type VariableScope interface {
 
 	SetVariableLocal(variableName string, value interface{}) error
 
+	SetProcessVariables(variables map[string]interface{}) error
+
 	RemoveVariablesLocal(variableNames []string) error
 }

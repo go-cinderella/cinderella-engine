@@ -93,6 +93,10 @@ import "github.com/go-cinderella/cinderella-engine/engine"
 // TODO: 添加启动示例
 ```
 
+## 与flowable的区别
+
+- 状态流转：sequenceFlow的执行实例是在continueProcessOperation中删除的，而flowable的sequenceFlow的执行实例是在takeOutgoingSequenceFlowsOperation中删除的; flowNode的执行实例的删除时机跟flowable一致，都是在takeOutgoingSequenceFlowsOperation中删除的
+
 ## 贡献指南
 
 欢迎提交 Issue 和 Pull Request。
