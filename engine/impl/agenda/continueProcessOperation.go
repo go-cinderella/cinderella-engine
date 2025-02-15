@@ -1,7 +1,6 @@
 package agenda
 
 import (
-	"errors"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
@@ -119,7 +118,7 @@ func (cont *ContinueProcessOperation) executeMultiInstanceSynchronous(element de
 
 	behavior := element.GetBehavior()
 	if behavior == nil {
-		return errors.New("no behavior")
+		panic("Expected an activity behavior in flow node " + element.GetId())
 	}
 	return cont.executeActivityBehavior(behavior, element)
 }
