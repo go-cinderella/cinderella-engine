@@ -2,6 +2,13 @@ package entitymanager
 
 import (
 	"errors"
+	"math"
+	"strings"
+
+	"github.com/samber/lo"
+	"github.com/spf13/cast"
+	"github.com/unionj-cloud/toolkit/stringutils"
+
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/execution"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/historicactinst"
@@ -10,11 +17,8 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
-	"github.com/samber/lo"
-	"github.com/spf13/cast"
-	"github.com/unionj-cloud/toolkit/stringutils"
-	"math"
-	"strings"
+	"github.com/go-cinderella/cinderella-engine/engine/internal/utils"
+	"github.com/go-cinderella/cinderella-engine/engine/variable"
 )
 
 type ExecutionEntityManager struct {
@@ -137,19 +141,22 @@ func (executionEntityManager ExecutionEntityManager) DeleteRelatedDataForExecuti
 	return nil
 }
 
-func (executionEntityManager ExecutionEntityManager) DeleteChildExecution(executionId string, deleteReason *string) error {
-	children, err := executionEntityManager.collectChildren(executionId)
-	if err != nil {
-		return err
-	}
-
+func (executionEntityManager ExecutionEntityManager) DeleteChildExecutions(children []ExecutionEntity, deleteReason *string) error {
+	var err error
 	length := len(children)
 
 	for i := length - 1; i >= 0; i-- {
-		if err = executionEntityManager.DeleteRelatedDataForExecution(children[i].GetExecutionId(), deleteReason); err != nil {
+		execution := children[i]
+
+		if err = historicActivityInstanceEntityManager.RecordActEndByExecutionIdAndActId(execution.GetExecutionId(), execution.GetCurrentActivityId(), deleteReason); err != nil {
 			return err
 		}
-		if err = executionEntityManager.DeleteExecution(children[i].GetExecutionId()); err != nil {
+
+		if err = executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), deleteReason); err != nil {
+			return err
+		}
+
+		if err = executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
 			return err
 		}
 	}
@@ -157,7 +164,28 @@ func (executionEntityManager ExecutionEntityManager) DeleteChildExecution(execut
 	return nil
 }
 
-func (executionEntityManager ExecutionEntityManager) collectChildren(executionId string) ([]ExecutionEntity, error) {
+func (executionEntityManager ExecutionEntityManager) GetTopKValueFromChildExecutions(children []ExecutionEntity, variableName string, k int) ([]interface{}, error) {
+	executionIds := lo.Map[ExecutionEntity, string](children, func(item ExecutionEntity, index int) string {
+		return item.GetExecutionId()
+	})
+
+	variables, err := variableEntityManager.GetVariablesByParentIdAndVariableName(executionIds, variableName)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(variables) == 0 {
+		return nil, nil
+	}
+
+	variableValues := lo.Map[variable.Variable, interface{}](variables, func(item variable.Variable, index int) interface{} {
+		return item.GetValue()
+	})
+
+	return utils.GetTopKValues(variableValues, k), nil
+}
+
+func (executionEntityManager ExecutionEntityManager) CollectChildren(executionId string) ([]ExecutionEntity, error) {
 	var result []ExecutionEntity
 
 	children, err := executionEntityManager.List(execution.ListRequest{
@@ -178,7 +206,7 @@ func (executionEntityManager ExecutionEntityManager) collectChildren(executionId
 	var grandChildren []ExecutionEntity
 
 	lo.ForEachWhile(children, func(item ExecutionEntity, index int) (goon bool) {
-		grandChildren, err = executionEntityManager.collectChildren(item.GetExecutionId())
+		grandChildren, err = executionEntityManager.CollectChildren(item.GetExecutionId())
 		if err != nil {
 			return false
 		}

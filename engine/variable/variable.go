@@ -69,3 +69,9 @@ func (variable *Variable) TableName() string {
 
 	return TableNameActRuVariable
 }
+
+func (variable *Variable) GetValue() interface{} {
+	variableTypes := variableManager.VariableTypes
+	variableType := variableTypes.GetVariableType(variable.Type_)
+	return variableType.GetValue(variable)
+}

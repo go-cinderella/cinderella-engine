@@ -16,7 +16,7 @@ require (
 	github.com/opentracing-contrib/go-stdlib v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/samber/do v1.6.0
-	github.com/samber/lo v1.47.0
+	github.com/samber/lo v1.49.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cast v1.3.0
 	github.com/unionj-cloud/toolkit v0.0.5

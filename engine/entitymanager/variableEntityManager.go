@@ -46,3 +46,9 @@ func (variableEntityManager VariableEntityManager) DeleteByProcessInstanceId(pro
 	err := variableDataManager.DeleteByProcessInstanceId(processInstanceId)
 	return err
 }
+
+func (variableEntityManager VariableEntityManager) GetVariablesByParentIdAndVariableName(executionIds []string, variableName string) ([]variable.Variable, error) {
+	variableDataManager := datamanager.GetVariableDataManager()
+	variables, err := variableDataManager.SelectByExecutionIdsAndName(executionIds, variableName)
+	return variables, err
+}

@@ -15,7 +15,7 @@ type TakeOutgoingSequenceFlowsOperation struct {
 func (take TakeOutgoingSequenceFlowsOperation) Run() (err error) {
 	currentFlowElement := take.Execution.GetCurrentFlowElement()
 	if currentFlowElement.GetOutgoing() != nil {
-		err = take.handleFlowNode()
+		err = take.handleFlowNode(currentFlowElement)
 	} else {
 		take.handleSequenceFlow()
 	}
@@ -23,22 +23,9 @@ func (take TakeOutgoingSequenceFlowsOperation) Run() (err error) {
 }
 
 // 处理节点
-func (take TakeOutgoingSequenceFlowsOperation) handleFlowNode() (err error) {
+func (take TakeOutgoingSequenceFlowsOperation) handleFlowNode(currentFlowElement delegate.FlowElement) (err error) {
 	execution := take.Execution
-	currentFlowElement := execution.GetCurrentFlowElement()
 	executionEntityManager := entitymanager.GetExecutionEntityManager()
-
-	if err = take.handleActivityEndByExecutionId(currentFlowElement); err != nil {
-		return
-	}
-
-	if err = executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil); err != nil {
-		return
-	}
-
-	if err = executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
-		return
-	}
 
 	var defaultSequenceFlowId string
 
@@ -63,6 +50,28 @@ func (take TakeOutgoingSequenceFlowsOperation) handleFlowNode() (err error) {
 				outgoingSequenceFlows = append(outgoingSequenceFlows, flowElement)
 			}
 		}
+	}
+
+	recordActivityEnd := true
+
+	if len(outgoingSequenceFlows) == 0 {
+		recordActivityEnd = false
+	} else if getter, ok := currentFlowElement.(model.LoopCharacteristicsGetter); ok && getter.HasMultiInstanceLoopCharacteristics() {
+			recordActivityEnd = false
+	}
+
+	if recordActivityEnd {
+		if err = take.handleActivityEndByExecutionId(currentFlowElement); err != nil {
+			return
+		}
+	}
+
+	if err = executionEntityManager.DeleteRelatedDataForExecution(execution.GetExecutionId(), nil); err != nil {
+		return
+	}
+
+	if err = executionEntityManager.DeleteExecution(execution.GetExecutionId()); err != nil {
+		return
 	}
 
 	if len(outgoingSequenceFlows) == 0 {

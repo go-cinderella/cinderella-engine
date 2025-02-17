@@ -30,6 +30,17 @@ func (defineManager VariableDataManager) SelectByExecutionIdAndName(name string,
 	return variable.Variable{}, false, nil
 }
 
+func (defineManager VariableDataManager) SelectByExecutionIdsAndName(executionIds []string, name string) ([]variable.Variable, error) {
+	var result []variable.Variable
+
+	variableQuery := contextutil.GetQuery().ActRuVariable
+	if err := variableQuery.Where(variableQuery.ExecutionID.In(executionIds...)).Where(variableQuery.Name.Eq(name)).Fetch(&result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (variableManager VariableDataManager) SelectByTaskIdAndName(name string, taskId string) (variable.Variable, bool, error) {
 	var result []variable.Variable
 
