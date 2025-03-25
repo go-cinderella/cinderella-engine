@@ -132,8 +132,8 @@ github.com/ulikunitz/xz v0.5.8/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oW
 github.com/ulikunitz/xz v0.5.9/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oWt/14=
 github.com/ulikunitz/xz v0.5.11 h1:kpFauv27b6ynzBNT/Xy+1k+fK4WswhN/6PN5WhFAGw8=
 github.com/ulikunitz/xz v0.5.11/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oWt/14=
-github.com/unionj-cloud/toolkit v0.0.5 h1:dVg8Hw6U1zDbJfO134N9OTl0T28Af1WfK7GKcjX4ABI=
-github.com/unionj-cloud/toolkit v0.0.5/go.mod h1:9qQQLm/cpDh2X2g+e+5NpVYbeZOAZnrxTtJOiS9nF9o=
+github.com/unionj-cloud/toolkit v0.0.6 h1:SXtuUVDB5C0OVNQzC6SaamG4FD65x/9Ziuaoq53250M=
+github.com/unionj-cloud/toolkit v0.0.6/go.mod h1:9qQQLm/cpDh2X2g+e+5NpVYbeZOAZnrxTtJOiS9nF9o=
 github.com/wubin1989/datatypes v0.0.2 h1:a2ZiuWjqiYHRS+lkvan8QymxYtB1yvwJHf0kE7mqAnk=
 github.com/wubin1989/datatypes v0.0.2/go.mod h1:ifZrSL9ZeEfOqWxCvAx6ugbiMYcMPRyY2mSgN8qRdKE=
 github.com/wubin1989/dbresolver v0.0.2 h1:nxZJa7TSPRWvrHyshbBhoiHFt3/cagHi1qOySrCyqjE=
