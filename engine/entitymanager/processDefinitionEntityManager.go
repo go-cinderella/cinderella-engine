@@ -2,9 +2,12 @@ package entitymanager
 
 import (
 	"errors"
+
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
+	"github.com/go-cinderella/cinderella-engine/engine/dto/procdef"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"github.com/wubin1989/gorm"
@@ -106,4 +109,19 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) Insert(proc
 
 	processDefinitionEntity := processDefinitionEntityManager.getProcessDefinitionEntity(*processDefinition)
 	return processDefinitionEntity, nil
+}
+
+func (processDefinitionEntityManager ProcessDefinitionEntityManager) List(listRequest procdef.ListRequest) (result []ProcessDefinitionEntity, total int32, err error) {
+	processDefinitionDataManager := datamanager.GetProcessDefinitionDataManager()
+	processDefinitions, total, err := processDefinitionDataManager.List(listRequest)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	result = lo.Map(processDefinitions, func(processDefinition datamanager.ProcdefDTO, _ int) ProcessDefinitionEntity {
+		entity := processDefinitionEntityManager.getProcessDefinitionEntity(processDefinition.ActReProcdef)
+		entity.DeployTime = processDefinition.DeployTime_
+		return entity
+	})
+	return result, total, nil
 }

@@ -1,5 +1,7 @@
 package entitymanager
 
+import "time"
+
 type ProcessDefinitionEntity struct {
 	AbstractEntity
 	Name            string
@@ -10,6 +12,7 @@ type ProcessDefinitionEntity struct {
 	DeploymentId    string
 	ResourceName    string
 	ResourceContent []byte
+	DeployTime      time.Time
 }
 
 func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetKey(key string) {
