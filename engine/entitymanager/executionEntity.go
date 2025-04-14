@@ -271,6 +271,20 @@ func (execution ExecutionEntity) doSetVariablesLocal(variables map[string]interf
 	return nil
 }
 
+func (execution *ExecutionEntity) SetActive(active bool) error {
+	executionDataManager := datamanager.GetExecutionDataManager()
+	return executionDataManager.UpdateActive(execution.GetExecutionId(), active)
+}
+
+func (execution *ExecutionEntity) IsActive() bool {
+	executionDataManager := datamanager.GetExecutionDataManager()
+	isActive, err := executionDataManager.IsActive(execution.GetExecutionId())
+	if err != nil {
+		return false
+	}
+	return isActive
+}
+
 func CreateChildExecution(parentExecution delegate.DelegateExecution) ExecutionEntity {
 	newExecution := ExecutionEntity{
 		ProcessInstanceId:   parentExecution.GetProcessInstanceId(),

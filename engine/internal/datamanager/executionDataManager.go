@@ -165,3 +165,25 @@ func (executionDataManager *ExecutionDataManager) MigrateProcessInstanceBusiness
 	_, err := executionQuery.Where(executionQuery.ProcDefID.Eq(procDefId), executionQuery.BusinessStatus.Eq(oldActivityId), executionQuery.ParentID.IsNull()).Updates(updateExample)
 	return err
 }
+
+func (executionDataManager *ExecutionDataManager) UpdateActive(id string, isActive bool) error {
+	executionQuery := contextutil.GetQuery().ActRuExecution
+	updateExample := model.ActRuExecution{
+		IsActive_: &isActive,
+	}
+	_, err := executionQuery.Where(executionQuery.ID.Eq(id)).Updates(updateExample)
+	return err
+}
+
+func (executionDataManager *ExecutionDataManager) IsActive(id string) (bool, error) {
+	executionQuery := contextutil.GetQuery().ActRuExecution
+	instance := model.ActRuExecution{}
+	if err := executionQuery.Where(executionQuery.ID.Eq(id)).Fetch(&instance); err != nil {
+		return false, err
+	}
+
+	if instance.IsActive_ != nil {
+		return *instance.IsActive_, nil
+	}
+	return false, nil
+}

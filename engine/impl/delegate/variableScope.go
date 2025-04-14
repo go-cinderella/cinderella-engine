@@ -12,4 +12,6 @@ type VariableScope interface {
 	SetProcessVariables(variables map[string]interface{}) error
 
 	RemoveVariablesLocal(variableNames []string) error
+
+	SetVariablesLocal(variables map[string]interface{}) error
 }

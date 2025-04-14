@@ -1,5 +1,6 @@
 package delegate
 
+// DelegateExecution 执行实例接口
 type DelegateExecution interface {
 	VariableScope
 	// Deprecated:
@@ -42,4 +43,7 @@ type DelegateExecution interface {
 
 	// SetMultiInstanceRoot changes whether this execution is a multi instance root or not.
 	SetMultiInstanceRoot(isMultiInstanceRoot bool)
+	
+	SetActive(active bool) error
+	IsActive() bool
 }
