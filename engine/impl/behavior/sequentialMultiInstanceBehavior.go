@@ -119,3 +119,15 @@ func (s SequentialMultiInstanceBehavior) continueSequentialMultiInstance(executi
 
 	return s.ExecuteOriginalBehavior(execution, multiInstanceRootExecution, loopCounter)
 }
+
+// ContinueSequentialMultiInstance 继续执行顺序多实例
+// 提供给外部命令调用的公开方法
+func (s SequentialMultiInstanceBehavior) ContinueSequentialMultiInstance(execution delegate.DelegateExecution, loopCounter int, multiInstanceRootExecution delegate.DelegateExecution) error {
+	return s.continueSequentialMultiInstance(execution, loopCounter, multiInstanceRootExecution)
+}
+
+// GetLoopVariable 获取循环变量
+// 提供给外部命令调用的公开方法
+func (s SequentialMultiInstanceBehavior) GetLoopVariable(execution delegate.DelegateExecution, variableName string) (int, error) {
+	return s.getLoopVariable(execution, variableName)
+}

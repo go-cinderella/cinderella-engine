@@ -11,7 +11,7 @@ import (
 type ParallelGatewayActivityBehavior struct {
 }
 
-// 包容网关
+// 并行网关
 func (parallel ParallelGatewayActivityBehavior) Execute(execution delegate.DelegateExecution) error {
 	return parallel.Leave(execution)
 }
