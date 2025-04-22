@@ -4,6 +4,7 @@ package delegate
 type BaseElement interface {
 	GetId() string
 	GetName() string
+	GetCategory() string
 	GetHandlerType() string
 }
 
