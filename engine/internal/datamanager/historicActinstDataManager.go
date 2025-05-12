@@ -125,7 +125,7 @@ func (historicActinstManager HistoricActinstDataManager) List(listRequest histor
 
 	if stringutils.IsNotEmpty(listRequest.ActivityType) {
 		if strings.Contains(listRequest.ActivityType, ",") {
-			do = do.Where(actHiActinstQ.ActType.In(strings.Split(listRequest.ActivityType, ",")...))
+			do = do.Where(actHiActinstQ.ActType.In(stringutils.Split(listRequest.ActivityType, ",")...))
 		} else {
 			do = do.Where(actHiActinstQ.ActType.Eq(listRequest.ActivityType))
 		}
@@ -133,7 +133,7 @@ func (historicActinstManager HistoricActinstDataManager) List(listRequest histor
 
 	if stringutils.IsNotEmpty(listRequest.ActivityId) {
 		if strings.Contains(listRequest.ActivityId, ",") {
-			do = do.Where(actHiActinstQ.ActID.In(strings.Split(listRequest.ActivityId, ",")...))
+			do = do.Where(actHiActinstQ.ActID.In(stringutils.Split(listRequest.ActivityId, ",")...))
 		} else {
 			do = do.Where(actHiActinstQ.ActID.Eq(listRequest.ActivityId))
 		}

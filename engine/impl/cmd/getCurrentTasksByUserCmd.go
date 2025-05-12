@@ -10,9 +10,9 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/samber/lo"
+	"github.com/unionj-cloud/toolkit/stringutils"
 	"math"
 	"slices"
-	"strings"
 )
 
 var _ engine.Command = (*GetCurrentTasksByUserCmd)(nil)
@@ -93,7 +93,7 @@ func (g GetCurrentTasksByUserCmd) Execute(commandContext engine.Context) (interf
 		candidateUsersEl := userTask.CandidateUsers
 		if candidateUsersEl != nil && !utils.IsExpr(*candidateUsersEl) {
 			candidateUsersStr := *candidateUsersEl
-			candidateUsers := strings.Split(candidateUsersStr, ",")
+			candidateUsers := stringutils.Split(candidateUsersStr, ",")
 			if g.UserId != nil && slices.Contains(candidateUsers, *g.UserId) {
 				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
 				continue
@@ -114,7 +114,7 @@ func (g GetCurrentTasksByUserCmd) Execute(commandContext engine.Context) (interf
 		candidateGroupsEl := userTask.CandidateGroups
 		if candidateGroupsEl != nil && !utils.IsExpr(*candidateGroupsEl) {
 			candidateGroupsStr := *candidateGroupsEl
-			candidateGroups := strings.Split(candidateGroupsStr, ",")
+			candidateGroups := stringutils.Split(candidateGroupsStr, ",")
 			if len(g.Groups) > 0 && len(lo.Intersect(candidateGroups, g.Groups)) > 0 {
 				taskDefKeys = append(taskDefKeys, *item.TaskDefKey_)
 				continue

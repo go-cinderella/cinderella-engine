@@ -9,7 +9,6 @@ import (
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
-	"strings"
 )
 
 type MultiInstanceActivity interface {
@@ -214,7 +213,7 @@ func (f AbstractMultiInstanceActivityBehavior) resolveAndValidateCollection(exec
 		output := utils.GetStringSliceFromExpression(variables, collection)
 		return output, nil
 	} else {
-		output := strings.Split(collection, ",")
+		output := stringutils.Split(collection, ",")
 		return output, nil
 	}
 }

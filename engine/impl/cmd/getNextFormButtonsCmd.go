@@ -9,7 +9,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/samber/lo"
 	"github.com/unionj-cloud/toolkit/stringutils"
-	"strings"
 )
 
 var _ engine.Command = (*GetNextFormButtonsCmd)(nil)
@@ -69,7 +68,7 @@ func (g GetNextFormButtonsCmd) Execute(commandContext engine.Context) (interface
 		return &UserTaskFormButton{
 			ActionValue:     &item.Id,
 			ActionName:      &item.Name,
-			CandidateGroups: lo.Ternary(stringutils.IsNotEmpty(item.FormButtonEventDefinition.CandidateGroups), strings.Split(item.FormButtonEventDefinition.CandidateGroups, ","), []string{}),
+			CandidateGroups: lo.Ternary(stringutils.IsNotEmpty(item.FormButtonEventDefinition.CandidateGroups), stringutils.Split(item.FormButtonEventDefinition.CandidateGroups, ","), []string{}),
 			OpenConfirm:     &item.FormButtonEventDefinition.OpenConfirm,
 			OpenForm:        &item.FormButtonEventDefinition.OpenForm,
 			FormKey:         &formKey,

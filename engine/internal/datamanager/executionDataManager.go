@@ -17,7 +17,7 @@ type ExecutionDataManager struct {
 	abstract.DataManager
 }
 
-// 创建流程实例
+// CreateProcessInstance 创建流程实例
 func (executionDataManager *ExecutionDataManager) CreateProcessInstance(processInstance *model.ActRuExecution) error {
 	if err := executionDataManager.Insert(processInstance); err != nil {
 		log.Infoln("create processInstance err", err)

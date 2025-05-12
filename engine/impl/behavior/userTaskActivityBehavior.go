@@ -11,7 +11,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/samber/lo"
 	"github.com/unionj-cloud/toolkit/stringutils"
-	"strings"
 	"time"
 )
 
@@ -129,7 +128,7 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 		if utils.IsExpr(candidateUsers) {
 			users = utils.GetStringSliceFromExpression(variables, candidateUsers)
 		} else {
-			users = strings.Split(candidateUsers, ",")
+			users = stringutils.Split(candidateUsers, ",")
 			userSlices := lo.Map[string, []string](users, func(item string, index int) []string {
 				if !utils.IsExpr(item) {
 					return []string{item}
@@ -179,7 +178,7 @@ func handleAssignments(user model.UserTask, task entitymanager.TaskEntity, execu
 		if utils.IsExpr(candidateGroups) {
 			groups = utils.GetStringSliceFromExpression(variables, candidateGroups)
 		} else {
-			groups = strings.Split(candidateGroups, ",")
+			groups = stringutils.Split(candidateGroups, ",")
 			groupSlices := lo.Map[string, []string](groups, func(item string, index int) []string {
 				if !utils.IsExpr(item) {
 					return []string{item}
