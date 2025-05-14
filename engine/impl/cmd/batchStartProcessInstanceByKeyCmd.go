@@ -24,6 +24,7 @@ var _ engine.Command = (*BatchStartProcessInstanceByKeyCmd)(nil)
 type BatchStartProcessInstanceByKeyCmd struct {
 	ProcessDefinitionKey string
 	ProcessInstanceId    string
+	StartActivityId      string
 	TenantId             string
 	UserId               string
 	Ctx                  context.Context
@@ -54,20 +55,23 @@ func (receiver BatchStartProcessInstanceByKeyCmd) Execute(commandContext engine.
 		return entitymanager.ExecutionEntity{}, errors.WithStack(err)
 	}
 
-	flowElementList := lo.Filter(process.FlowElementList, func(item delegate.FlowElement, index int) bool {
-		switch item.(type) {
-		case *bpmn_model.UserTask, *bpmn_model.ServiceTask:
-			return true
-		default:
-			return false
+	startActivityId := receiver.StartActivityId
+	if stringutils.IsEmpty(startActivityId) {
+		flowElementList := lo.Filter(process.FlowElementList, func(item delegate.FlowElement, index int) bool {
+			switch item.(type) {
+			case *bpmn_model.UserTask, *bpmn_model.ServiceTask:
+				return true
+			default:
+				return false
+			}
+		})
+
+		if len(flowElementList) == 0 {
+			return entitymanager.ExecutionEntity{}, nil
 		}
-	})
 
-	if len(flowElementList) == 0 {
-		return entitymanager.ExecutionEntity{}, nil
+		startActivityId = flowElementList[0].GetId()
 	}
-
-	startActivityName := flowElementList[0].GetId()
 
 	// 默认从开始节点开始流程流转
 	flowElement := process.InitialFlowElement
@@ -103,7 +107,7 @@ func (receiver BatchStartProcessInstanceByKeyCmd) Execute(commandContext engine.
 		processInstance.IsMiRoot_ = lo.ToPtr(false)
 		processInstance.SuspensionState_ = lo.ToPtr(int32(1))
 		processInstance.IsCountEnabled_ = lo.ToPtr(true)
-		processInstance.BusinessStatus_ = &startActivityName
+		processInstance.BusinessStatus_ = &startActivityId
 
 		processInstanceSaves = append(processInstanceSaves, &processInstance)
 
@@ -118,7 +122,7 @@ func (receiver BatchStartProcessInstanceByKeyCmd) Execute(commandContext engine.
 		historicProcess.StartUserID_ = processInstance.StartUserID_
 		historicProcess.StartActID_ = processInstance.StartActID_
 		historicProcess.SuperProcessInstanceID_ = processInstance.SuperExec_
-		historicProcess.BusinessStatus_ = &startActivityName
+		historicProcess.BusinessStatus_ = &startActivityId
 
 		historicProcessSaves = append(historicProcessSaves, &historicProcess)
 
