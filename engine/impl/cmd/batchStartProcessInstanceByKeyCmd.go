@@ -25,6 +25,7 @@ type BatchStartProcessInstanceByKeyCmd struct {
 	ProcessDefinitionKey string
 	ProcessInstanceId    string
 	StartActivityId      string
+	StartActivityName    string
 	TenantId             string
 	UserId               string
 	Ctx                  context.Context
@@ -70,7 +71,19 @@ func (receiver BatchStartProcessInstanceByKeyCmd) Execute(commandContext engine.
 			return entitymanager.ExecutionEntity{}, nil
 		}
 
-		startActivityId = flowElementList[0].GetId()
+		if stringutils.IsNotEmpty(receiver.StartActivityName) {
+			filtered := lo.Filter(flowElementList, func(item delegate.FlowElement, index int) bool {
+				return item.GetName() == receiver.StartActivityName
+			})
+
+			if len(filtered) > 0 {
+				startActivityId = filtered[0].GetId()
+			}
+		}
+
+		if stringutils.IsEmpty(startActivityId) {
+			startActivityId = flowElementList[0].GetId()
+		}
 	}
 
 	// 默认从开始节点开始流程流转
