@@ -21,6 +21,7 @@ type DeploymentCmd struct {
 	Key           string
 	TenantId      string
 	Bytes         []byte
+	Description   *string
 	Ctx           context.Context
 	Transactional bool
 }
@@ -57,7 +58,7 @@ func (receiver DeploymentCmd) Execute(ctx engine.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	processDefinition := model.ActReProcdef{Name_: &receiver.Name, Key_: receiver.Key, DeploymentID_: &deployment.ID_, ResourceName_: &resourceName, ProcessID_: processId}
+	processDefinition := model.ActReProcdef{Name_: &receiver.Name, Key_: receiver.Key, DeploymentID_: &deployment.ID_, ResourceName_: &resourceName, ProcessID_: processId, Description_: receiver.Description}
 	result, err := processDefinitionEntityManager.Insert(&processDefinition)
 	if err != nil {
 		return nil, err

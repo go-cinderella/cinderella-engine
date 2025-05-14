@@ -34,6 +34,8 @@ type ActReProcdef struct {
 	DerivedVersion_       *int32  `gorm:"column:derived_version_;type:integer;not null;default:0" json:"derived_version_"`
 	EngineVersion_        *string `gorm:"column:engine_version_;type:varchar(255)" json:"engine_version_"`
 	ProcessID_            string  `gorm:"column:process_id_;type:varchar(255)" json:"process_id_"`
+	CreatedBy_            *string `gorm:"column:created_by_;type:varchar" json:"created_by_"`
+	CreatedByName_        *string `gorm:"column:created_by_name_;type:varchar" json:"created_by_name_"`
 }
 
 // TableName ActReProcdef's table name

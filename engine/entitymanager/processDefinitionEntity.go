@@ -1,6 +1,8 @@
 package entitymanager
 
-import "time"
+import (
+	"time"
+)
 
 type ProcessDefinitionEntity struct {
 	AbstractEntity
@@ -13,6 +15,8 @@ type ProcessDefinitionEntity struct {
 	ResourceName    string
 	ResourceContent []byte
 	DeployTime      time.Time
+	CreatedBy       string
+	CreatedByName   string
 }
 
 func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetKey(key string) {
@@ -33,6 +37,14 @@ func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetDeploymentId(depl
 
 func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetVersion(version int) {
 	processDefinitionEntityImpl.Version = version
+}
+
+func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetCreatedBy(createdBy string) {
+	processDefinitionEntityImpl.CreatedBy = createdBy
+}
+
+func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetCreatedByName(createdByName string) {
+	processDefinitionEntityImpl.CreatedByName = createdByName
 }
 
 func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetCategory(category string) {

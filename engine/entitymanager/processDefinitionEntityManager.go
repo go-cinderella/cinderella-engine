@@ -24,6 +24,8 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) getProcessD
 	processDefinitionEntity.SetDescription(cast.ToString(processDefinition.Description_))
 	processDefinitionEntity.SetKey(processDefinition.Key_)
 	processDefinitionEntity.SetVersion(int(processDefinition.Version_))
+	processDefinitionEntity.SetCreatedBy(cast.ToString(processDefinition.CreatedBy_))
+	processDefinitionEntity.SetCreatedByName(cast.ToString(processDefinition.CreatedByName_))
 	processDefinitionEntity.SetCategory(cast.ToString(processDefinition.Category_))
 	processDefinitionEntity.SetDeploymentId(cast.ToString(processDefinition.DeploymentID_))
 	processDefinitionEntity.SetResourceName(cast.ToString(processDefinition.ResourceName_))

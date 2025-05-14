@@ -1,11 +1,18 @@
 package db
 
 import (
+	"fmt"
 	"github.com/go-cinderella/cinderella-engine/engine/runtime"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/pressly/goose/v3"
+	"github.com/samber/do"
+	"github.com/unionj-cloud/toolkit/stringutils"
 	"github.com/wubin1989/gorm"
+	"strings"
 	"sync"
 )
+
+const GooseTableName = goose.DefaultTablename + "_act"
 
 var txHolder *sync.Map
 
@@ -27,4 +34,20 @@ func DB() *gorm.DB {
 		return nil
 	}
 	return db.(*gorm.DB)
+}
+
+func GetTableName(database, table string) string {
+	var tableName string
+
+	if stringutils.IsNotEmpty(database) {
+		tableName = fmt.Sprintf("%s.%s", database, table)
+	} else {
+		tableName = table
+	}
+
+	db := do.MustInvoke[*gorm.DB](nil)
+
+	var builder strings.Builder
+	db.Dialector.QuoteTo(&builder, tableName)
+	return builder.String()
 }

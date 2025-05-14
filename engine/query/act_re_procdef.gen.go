@@ -46,6 +46,8 @@ func newActReProcdef(db *gorm.DB, opts ...gormgen.DOOption) actReProcdef {
 	_actReProcdef.DerivedVersion = field.NewInt32(tableName, "derived_version_")
 	_actReProcdef.EngineVersion = field.NewString(tableName, "engine_version_")
 	_actReProcdef.ProcessID = field.NewString(tableName, "process_id_")
+	_actReProcdef.CreatedBy = field.NewString(tableName, "created_by_")
+	_actReProcdef.CreatedByName = field.NewString(tableName, "created_by_name_")
 
 	_actReProcdef.fillFieldMap()
 
@@ -75,6 +77,8 @@ type actReProcdef struct {
 	DerivedVersion       field.Int32
 	EngineVersion        field.String
 	ProcessID            field.String
+	CreatedBy            field.String
+	CreatedByName        field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -110,6 +114,8 @@ func (a *actReProcdef) updateTableName(table string) *actReProcdef {
 	a.DerivedVersion = field.NewInt32(table, "derived_version_")
 	a.EngineVersion = field.NewString(table, "engine_version_")
 	a.ProcessID = field.NewString(table, "process_id_")
+	a.CreatedBy = field.NewString(table, "created_by_")
+	a.CreatedByName = field.NewString(table, "created_by_name_")
 
 	a.fillFieldMap()
 
@@ -166,6 +172,8 @@ func (a *actReProcdef) fillFieldMap() {
 	a.fieldMap["derived_version_"] = a.DerivedVersion
 	a.fieldMap["engine_version_"] = a.EngineVersion
 	a.fieldMap["process_id_"] = a.ProcessID
+	a.fieldMap["created_by_"] = a.CreatedBy
+	a.fieldMap["created_by_name_"] = a.CreatedByName
 }
 
 func (a actReProcdef) Clone(db *gorm.DB) actReProcdef {
