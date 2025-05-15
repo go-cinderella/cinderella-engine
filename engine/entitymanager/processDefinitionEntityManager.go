@@ -34,10 +34,21 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) getProcessD
 func (processDefinitionEntityManager ProcessDefinitionEntityManager) FindProcessDefinitionById(processDefinitionId string) (ProcessDefinitionEntity, error) {
 	processDefinition := model.ActReProcdef{}
 	processDefinitionDataManager := datamanager.GetProcessDefinitionDataManager()
-	if err := processDefinitionDataManager.FindById(processDefinitionId, &processDefinition); err != nil {
+	var err error
+	if err = processDefinitionDataManager.FindById(processDefinitionId, &processDefinition); err != nil {
 		return ProcessDefinitionEntity{}, err
 	}
 	processDefinitionEntity := processDefinitionEntityManager.getProcessDefinitionEntity(processDefinition)
+
+	var resource model.ActGeBytearray
+	resourceDataManager := datamanager.GetResourceDataManager()
+	resource, err = resourceDataManager.FindResourceByDeploymentIdAndResourceName(processDefinitionEntity.GetDeploymentId(), processDefinitionEntity.GetResourceName())
+	if err != nil {
+		return ProcessDefinitionEntity{}, err
+	}
+
+	processDefinitionEntity.SetResourceContent(*resource.Bytes_)
+	
 	return processDefinitionEntity, nil
 }
 
@@ -121,7 +132,7 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) List(listRe
 
 	lo.ForEachWhile(processDefinitions, func(processDefinition datamanager.ProcdefDTO, index int) (goon bool) {
 		entity := processDefinitionEntityManager.getProcessDefinitionEntity(processDefinition.ActReProcdef)
-		entity.DeployTime = processDefinition.DeployTime_
+		entity.SetDeployTime(processDefinition.DeployTime_)
 
 		var resource model.ActGeBytearray
 		resourceDataManager := datamanager.GetResourceDataManager()

@@ -107,3 +107,13 @@ func (historicTaskManager HistoricTaskDataManager) MigrateNameAndTaskDefKey(proc
 	_, err := taskQuery.Where(taskQuery.ProcDefID.Eq(procDefId), taskQuery.TaskDefKey.Eq(oldActivityId)).Updates(&updateExample)
 	return err
 }
+
+func (historicTaskManager HistoricTaskDataManager) MigrateProcDefID(oldProcDefId, newProcDefId string) error {
+	taskQuery := contextutil.GetQuery().ActHiTaskinst
+	updateExample := model.ActHiTaskinst{
+		ProcDefID_: &newProcDefId,
+	}
+
+	_, err := taskQuery.Where(taskQuery.ProcDefID.Eq(oldProcDefId)).Updates(&updateExample)
+	return err
+}

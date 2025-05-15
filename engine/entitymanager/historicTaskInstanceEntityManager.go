@@ -18,6 +18,12 @@ func (historicTaskInstanceEntityManager HistoricTaskInstanceEntityManager) Recor
 	return err
 }
 
+func (historicTaskInstanceEntityManager HistoricTaskInstanceEntityManager) MigrateProcDefID(oldProcessDefinitionEntity, newProcessDefinitionEntity ProcessDefinitionEntity) error {
+	historicTaskDataManager := datamanager.GetHistoricTaskDataManager()
+	err := historicTaskDataManager.MigrateProcDefID(oldProcessDefinitionEntity.GetId(), newProcessDefinitionEntity.GetId())
+	return err
+}
+
 func (historicTaskInstanceEntityManager HistoricTaskInstanceEntityManager) List(listRequest historictask.ListRequest) ([]HistoricTaskInstanceEntity, error) {
 	historicTaskDataManager := datamanager.GetHistoricTaskDataManager()
 	hiTaskinsts, err := historicTaskDataManager.List(listRequest)

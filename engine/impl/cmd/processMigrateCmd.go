@@ -47,7 +47,7 @@ type ProcessMigrateCmd struct {
 func (g ProcessMigrateCmd) Execute(commandContext engine.Context) (interface{}, error) {
 	// 获取流程定义实体管理器
 	processDefinitionEntityManager := entitymanager.GetProcessDefinitionEntityManager()
-	
+
 	// 查找旧部署ID对应的流程定义
 	oldProcessDefinitionEntity, err := processDefinitionEntityManager.FindByDeploymentId(g.OldDeploymentId)
 	if err != nil {
@@ -62,7 +62,7 @@ func (g ProcessMigrateCmd) Execute(commandContext engine.Context) (interface{}, 
 
 	// 获取执行实体管理器
 	executionEntityManager := entitymanager.GetExecutionEntityManager()
-	
+
 	// 迁移流程实例的流程定义ID和起始活动ID
 	err = executionEntityManager.MigrateProcessInstanceProcDefIdAndStartActId(oldProcessDefinitionEntity, newProcessDefinitionEntity)
 	if err != nil {
@@ -77,16 +77,25 @@ func (g ProcessMigrateCmd) Execute(commandContext engine.Context) (interface{}, 
 
 	// 获取任务实体管理器
 	taskEntityManager := entitymanager.GetTaskEntityManager()
-	
+
 	// 迁移任务的流程定义ID
 	err = taskEntityManager.MigrateProcDefID(oldProcessDefinitionEntity, newProcessDefinitionEntity)
 	if err != nil {
 		return nil, err
 	}
 
+	// 获取历史任务实体管理器
+	histTaskEntityManager := entitymanager.GetHistoricTaskInstanceEntityManager()
+
+	// 迁移历史任务的流程定义ID
+	err = histTaskEntityManager.MigrateProcDefID(oldProcessDefinitionEntity, newProcessDefinitionEntity)
+	if err != nil {
+		return nil, err
+	}
+
 	// 获取历史活动实例实体管理器
 	historicActivityInstanceEntityManager := entitymanager.GetHistoricActivityInstanceEntityManager()
-	
+
 	// 迁移历史活动实例的流程定义ID
 	err = historicActivityInstanceEntityManager.MigrateProcDefID(oldProcessDefinitionEntity, newProcessDefinitionEntity)
 	if err != nil {

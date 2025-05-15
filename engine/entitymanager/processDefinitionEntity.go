@@ -35,6 +35,10 @@ func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetDeploymentId(depl
 	processDefinitionEntityImpl.DeploymentId = deploymentId
 }
 
+func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetDeployTime(deployTime time.Time) {
+	processDefinitionEntityImpl.DeployTime = deployTime
+}
+
 func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetVersion(version int) {
 	processDefinitionEntityImpl.Version = version
 }
