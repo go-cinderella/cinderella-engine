@@ -1,0 +1,125 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 代码风格规则
+
+本文档定义了项目的代码风格规则。
+
+## 方法接收器命名
+
+方法接收器名称应简短且有意义，通常使用类型名称的首字母小写。
+
+```go
+// 正确示例
+func (user UserTask) GetType() string
+func (process Process) GetFlowElements() []FlowElement
+func (task *Task) SetName(name string)
+
+// 错误示例
+func (u UserTask) GetType() string
+func (self Process) GetFlowElements() []FlowElement
+func (this *Task) SetName(name string)
+```
+
+## 错误处理检查
+
+每个返回错误的函数调用后应立即检查错误。
+
+```go
+// 正确示例
+activitiConstructor, err := GetConstructorByName(processKey)
+if err != nil {
+    return err
+}
+
+// 错误示例
+activitiConstructor, err := GetConstructorByName(processKey)
+constructor := activitiConstructor(entity) // 未检查错误
+```
+
+## 互斥锁使用检查
+
+使用互斥锁时应立即使用defer解锁。
+
+```go
+// 正确示例
+func RegisterConstructor(name string, constructor ActivitiConstructor) error {
+    lock.Lock()
+    defer lock.Unlock()
+    // 函数实现...
+}
+
+// 错误示例
+func RegisterConstructor(name string, constructor ActivitiConstructor) error {
+    lock.Lock()
+    // 函数实现...
+    lock.Unlock() // 未使用defer，可能在提前返回时忘记解锁
+}
+```
+
+## import组织规范
+
+import应分组排列：标准库、第三方库、内部库。
+
+```go
+// 正确示例
+import (
+    // 标准库
+    "encoding/xml"
+    "reflect"
+    "sync"
+    
+    // 第三方库
+    log "github.com/sirupsen/logrus"
+    "github.com/spf13/cast"
+    
+    // 内部库
+    "github.com/go-cinderella/cinderella-engine/engine/constant"
+    "github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
+)
+```
+
+## JSON标签命名
+
+JSON标签应使用小写字母，可包含下划线。
+
+```go
+// 正确示例
+type VariableRequest struct {
+    Name  string `json:"name"`
+    Type  string `json:"type"`
+    Scope string `json:"scope,omitempty"`
+    Value any    `json:"value,omitempty"`
+}
+
+// 错误示例
+type VariableRequest struct {
+    Name  string `json:"Name"`
+    Type  string `json:"Type"`
+}
+```
+
+## 表名函数规范
+
+表名函数应返回正确格式的表名，考虑数据库名前缀配置。
+
+```go
+// 正确示例
+func (*ActRuTask) TableName() string {
+    var TableNameActRuTask string
+
+    if stringutils.IsNotEmpty(config.G_Config.Db.Name) {
+        TableNameActRuTask = fmt.Sprintf("%s.act_ru_task", config.G_Config.Db.Name)
+    } else {
+        TableNameActRuTask = "act_ru_task"
+    }
+
+    return TableNameActRuTask
+}
+```
+
+可以参考以下文件中的实现:
+- [engine/internal/model/act_ru_task.gen.go](mdc:engine/internal/model/act_ru_task.gen.go)
+- [engine/impl/handler/iActiviti.go](mdc:engine/impl/handler/iActiviti.go)

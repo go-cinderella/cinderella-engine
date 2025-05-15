@@ -1,0 +1,85 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# BPMN模型实现规则
+
+本文档定义了BPMN模型实现的规则和最佳实践。
+
+## 元素接口实现检查
+
+每个BPMN元素类型必须正确实现相应的接口。使用以下方式进行接口实现验证：
+
+```go
+var _ delegate.BaseElement = (*UserTask)(nil)
+var _ delegate.FlowElement = (*UserTask)(nil)
+var _ delegate.BaseHandlerType = (*UserTask)(nil)
+```
+
+可以参考以下文件中的实现:
+- [engine/impl/bpmn/model/userTask.go](mdc:engine/impl/bpmn/model/userTask.go)
+- [engine/impl/bpmn/model/serviceTask.go](mdc:engine/impl/bpmn/model/serviceTask.go)
+
+## XML标签命名
+
+XML标签应使用小写字母命名，与BPMN规范保持一致。
+
+```go
+// 正确示例
+type UserTask struct {
+    XMLName         xml.Name `xml:"userTask"`
+    Assignee        *string  `xml:"assignee,attr"`
+    FormKey         *string  `xml:"formKey,attr"`
+}
+
+// 错误示例
+type UserTask struct {
+    XMLName         xml.Name `xml:"UserTask"`
+    Assignee        *string  `xml:"Assignee,attr"`
+}
+```
+
+## BPMN元素类型检查
+
+所有BPMN元素必须实现GetType方法，返回正确的元素类型常量。
+
+```go
+func (user UserTask) GetType() string {
+    return constant.ELEMENT_TASK_USER
+}
+```
+
+## Clone方法实现
+
+所有FlowElement实现必须提供Clone方法，以创建元素副本。
+
+```go
+func (user UserTask) Clone() delegate.FlowElement {
+    userCopy := user
+    return &userCopy
+}
+```
+
+## 实现等价判断方法
+
+实现类型间的等价比较方法，用于流程定义更新时的比较：
+
+```go
+func (user *UserTask) ActivityEqual(otherUser interface{}) bool {
+    // 实现等价判断逻辑
+}
+```
+
+## 处理器构造函数注册
+
+服务任务处理器必须通过RegisterConstructor正确注册到全局映射中：
+
+```go
+func RegisterConstructor(name string, constructor ActivitiConstructor) error {
+    // 构造函数注册逻辑
+}
+```
+
+可以参考以下文件的实现:
+- [engine/impl/handler/iActiviti.go](mdc:engine/impl/handler/iActiviti.go)

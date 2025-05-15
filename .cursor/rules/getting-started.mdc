@@ -1,0 +1,44 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Cinderella引擎入门指南
+
+本文档提供了Cinderella BPMN引擎的入门指南。
+
+## 项目概述
+
+Cinderella Engine是一个基于Go语言实现的轻量级BPMN 2.0工作流引擎。它支持多种任务类型、网关、事件和多实例处理等功能。
+
+详细介绍请参考：[README.md](mdc:README.md)
+
+## 开发环境设置
+
+1. 确保安装了Go 1.22.2或更高版本
+2. 克隆仓库：`git clone https://github.com/go-cinderella/cinderella-engine.git`
+3. 安装依赖：`go mod download`
+
+## 代码规范
+
+开发时请遵循项目的代码规范，详情参考：
+
+- [命名约定](.cursor/rules/naming-conventions.mdc)
+- [BPMN模型实现规则](.cursor/rules/bpmn-implementation.mdc)
+- [代码风格规则](.cursor/rules/code-style.mdc)
+- [项目结构指南](.cursor/rules/project-structure.mdc)
+
+## 贡献流程
+
+1. Fork项目仓库
+2. 创建特性分支：`git checkout -b feature/your-feature-name`
+3. 提交更改：`git commit -am 'Add new feature'`
+4. 推送到分支：`git push origin feature/your-feature-name`
+5. 提交Pull Request
+
+## 常见文件位置
+
+- BPMN模型定义：[engine/impl/bpmn/model/](mdc:engine/impl/bpmn/model/)
+- 流程解析组件：[engine/impl/bpmn/parse/](mdc:engine/impl/bpmn/parse/)
+- 数据模型定义：[engine/internal/model/](mdc:engine/internal/model/)
+- 引擎核心接口：[engine/](mdc:engine/)

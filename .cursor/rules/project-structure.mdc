@@ -1,0 +1,57 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 项目结构指南
+
+本文档描述了BPMN引擎项目的结构和关键组件。
+
+## 目录结构
+
+Cinderella引擎的主要目录结构如下：
+
+- `engine/` - 核心引擎实现
+  - `agenda/` - 流程执行计划管理
+  - `config/` - 引擎配置
+  - `constant/` - 常量定义
+  - `db/` - 数据库相关
+  - `dto/` - 数据传输对象
+  - `entitymanager/` - 实体管理
+  - `eventmanager/` - 事件管理
+  - `impl/` - 具体实现
+    - `bpmn/` - BPMN模型相关
+    - `behavior/` - 行为实现
+    - `cmd/` - 命令处理
+  - `internal/` - 内部实现
+    - `model/` - 数据模型
+    - `errs/` - 错误处理
+    - `utils/` - 工具类
+  - `query/` - 查询实现
+  - `runtime/` - 运行时环境
+  - `variable/` - 变量处理
+
+## 核心组件
+
+### BPMN模型
+
+BPMN模型定义了流程的基本结构和元素。所有模型相关的定义位于`engine/impl/bpmn/model`目录中。
+
+关键模型文件:
+- [engine/impl/bpmn/model/bpmnModel.go](mdc:engine/impl/bpmn/model/bpmnModel.go) - BPMN模型主类
+- [engine/impl/bpmn/model/process.go](mdc:engine/impl/bpmn/model/process.go) - 流程定义
+- [engine/impl/bpmn/model/flowNode.go](mdc:engine/impl/bpmn/model/flowNode.go) - 流节点基类
+
+### 流程解析
+
+流程解析组件负责将BPMN XML解析为内存中的对象模型。
+
+关键解析文件:
+- [engine/impl/bpmn/parse/deployer/bpmnDeployer.go](mdc:engine/impl/bpmn/parse/deployer/bpmnDeployer.go) - BPMN部署器
+
+### 服务处理器
+
+服务处理器负责执行服务任务。
+
+关键处理器文件:
+- [engine/impl/handler/iActiviti.go](mdc:engine/impl/handler/iActiviti.go) - 处理器接口

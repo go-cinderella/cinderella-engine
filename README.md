@@ -101,6 +101,19 @@ import "github.com/go-cinderella/cinderella-engine/engine"
 
 欢迎提交 Issue 和 Pull Request。
 
+### 代码规范
+
+项目使用 Cursor 规则进行代码风格和质量检查。我们为开发者提供了详细的规范文档：
+
+- [Cursor规则总览](.cursor-rules.md) - 规则文档索引
+- [命名约定](.cursor-naming-conventions.md) - 定义了包、接口、结构体、变量和常量的命名规范
+- [BPMN模型实现规则](.cursor-bpmn-implementation.md) - 定义了BPMN模型元素的实现要求
+- [代码风格规则](.cursor-code-style.md) - 定义了代码格式、错误处理和其他风格要求
+- [项目结构指南](.cursor-project-structure.md) - 描述项目目录结构和主要组件
+- [入门指南](.cursor-getting-started.md) - 提供开发环境设置和贡献流程的指南
+
+请确保您的代码符合这些规则，以保持项目代码的一致性和质量。
+
 ## 许可证
 
 [License Name] // TODO: 添加许可证信息 
