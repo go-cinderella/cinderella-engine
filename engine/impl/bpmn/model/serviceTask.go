@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"reflect"
 )
 
 var _ delegate.BaseHandlerType = (*ServiceTask)(nil)
@@ -13,16 +12,15 @@ var _ delegate.FlowElement = (*ServiceTask)(nil)
 
 type ServiceTask struct {
 	Task
-	XMLName           xml.Name          `xml:"serviceTask"`
-	TaskType          string            `xml:"type,attr"`
-	ExtensionElements *ExtensionElement `xml:"extensionElements"`
+	XMLName  xml.Name `xml:"serviceTask"`
+	TaskType string   `xml:"type,attr"`
 }
 
 func (serviceTask ServiceTask) GetType() string {
 	return constant.ELEMENT_TASK_SERVICE
 }
 
-func (serviceTask *ServiceTask) Equal(otherServiceTask interface{}) bool {
+func (serviceTask *ServiceTask) ActivityEqual(otherServiceTask interface{}) bool {
 	if otherServiceTask == nil {
 		return serviceTask == nil
 	}
@@ -43,15 +41,11 @@ func (serviceTask *ServiceTask) Equal(otherServiceTask interface{}) bool {
 		return false
 	}
 
-	if serviceTask.DefaultBaseElement != other.DefaultBaseElement {
+	if !serviceTask.Activity.ActivityEqual(other.Activity) {
 		return false
 	}
 
 	if serviceTask.TaskType != other.TaskType {
-		return false
-	}
-
-	if !reflect.DeepEqual(serviceTask.ExtensionElements, other.ExtensionElements) {
 		return false
 	}
 

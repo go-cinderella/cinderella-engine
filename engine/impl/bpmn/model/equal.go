@@ -1,5 +1,5 @@
 package model
 
 type IEqual interface {
-	Equal(other interface{}) bool
+	ActivityEqual(other interface{}) bool
 }

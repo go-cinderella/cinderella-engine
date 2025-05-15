@@ -5,7 +5,6 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/spf13/cast"
-	"reflect"
 )
 
 var _ delegate.BaseHandlerType = (*UserTask)(nil)
@@ -14,13 +13,12 @@ var _ delegate.FlowElement = (*UserTask)(nil)
 
 type UserTask struct {
 	Task
-	XMLName           xml.Name          `xml:"userTask"`
-	Assignee          *string           `xml:"assignee,attr"`
-	FormKey           *string           `xml:"formKey,attr"`
-	CandidateUsers    *string           `xml:"candidateUsers,attr"`
-	CandidateGroups   *string           `xml:"candidateGroups,attr"`
-	DueDate           *string           `xml:"dueDate,attr"`
-	ExtensionElements *ExtensionElement `xml:"extensionElements"`
+	XMLName         xml.Name `xml:"userTask"`
+	Assignee        *string  `xml:"assignee,attr"`
+	FormKey         *string  `xml:"formKey,attr"`
+	CandidateUsers  *string  `xml:"candidateUsers,attr"`
+	CandidateGroups *string  `xml:"candidateGroups,attr"`
+	DueDate         *string  `xml:"dueDate,attr"`
 }
 
 func (user UserTask) GetType() string {
@@ -39,7 +37,7 @@ func (user UserTask) GetAssignee() *string {
 	return user.Assignee
 }
 
-func (user *UserTask) Equal(otherUser interface{}) bool {
+func (user *UserTask) ActivityEqual(otherUser interface{}) bool {
 	if otherUser == nil {
 		return user == nil
 	}
@@ -60,7 +58,7 @@ func (user *UserTask) Equal(otherUser interface{}) bool {
 		return false
 	}
 
-	if user.DefaultBaseElement != other.DefaultBaseElement {
+	if !user.Activity.ActivityEqual(other.Activity) {
 		return false
 	}
 
@@ -81,14 +79,6 @@ func (user *UserTask) Equal(otherUser interface{}) bool {
 	}
 
 	if cast.ToString(user.DueDate) != cast.ToString(other.DueDate) {
-		return false
-	}
-
-	if !reflect.DeepEqual(user.MultiInstance, other.MultiInstance) {
-		return false
-	}
-
-	if !reflect.DeepEqual(user.ExtensionElements, other.ExtensionElements) {
 		return false
 	}
 

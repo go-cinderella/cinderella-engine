@@ -1,12 +1,11 @@
 package entitymanager
 
 import (
-	"errors"
-
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/procdef"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
@@ -117,13 +116,29 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) List(listRe
 	processDefinitionDataManager := datamanager.GetProcessDefinitionDataManager()
 	processDefinitions, total, err := processDefinitionDataManager.List(listRequest)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, errors.WithStack(err)
 	}
 
-	result = lo.Map(processDefinitions, func(processDefinition datamanager.ProcdefDTO, _ int) ProcessDefinitionEntity {
+	lo.ForEachWhile(processDefinitions, func(processDefinition datamanager.ProcdefDTO, index int) (goon bool) {
 		entity := processDefinitionEntityManager.getProcessDefinitionEntity(processDefinition.ActReProcdef)
 		entity.DeployTime = processDefinition.DeployTime_
-		return entity
+
+		var resource model.ActGeBytearray
+		resourceDataManager := datamanager.GetResourceDataManager()
+		resource, err = resourceDataManager.FindResourceByDeploymentIdAndResourceName(entity.GetDeploymentId(), entity.GetResourceName())
+		if err != nil {
+			return false
+		}
+
+		entity.SetResourceContent(*resource.Bytes_)
+		result = append(result, entity)
+
+		return true
 	})
+
+	if err != nil {
+		return nil, 0, errors.WithStack(err)
+	}
+
 	return result, total, nil
 }

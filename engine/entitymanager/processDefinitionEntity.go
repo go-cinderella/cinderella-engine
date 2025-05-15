@@ -55,6 +55,10 @@ func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetResourceName(reso
 	processDefinitionEntityImpl.ResourceName = resourceName
 }
 
+func (processDefinitionEntityImpl *ProcessDefinitionEntity) SetResourceContent(resourceContent []byte) {
+	processDefinitionEntityImpl.ResourceContent = resourceContent
+}
+
 func (processDefinitionEntityImpl *ProcessDefinitionEntity) GetKey() string {
 	return processDefinitionEntityImpl.Key
 }
