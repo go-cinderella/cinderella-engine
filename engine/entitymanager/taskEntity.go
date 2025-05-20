@@ -1,9 +1,9 @@
 package entitymanager
 
 import (
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	bpmn_model "github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/variable"
 	"time"
 )

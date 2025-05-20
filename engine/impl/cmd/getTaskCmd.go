@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"github.com/go-cinderella/cinderella-engine/engine"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 )
 
 var _ engine.Command = (*GetTaskCmd)(nil)

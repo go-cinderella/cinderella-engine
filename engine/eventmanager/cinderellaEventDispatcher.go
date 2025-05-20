@@ -1,6 +1,6 @@
 package eventmanager
 
-import "github.com/go-cinderella/cinderella-engine/engine/internal/errs"
+import "github.com/go-cinderella/cinderella-engine/engine/errs"
 
 type CinderellaEventDispatcher struct {
 	EventListeners []CinderellaEventListener

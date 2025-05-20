@@ -2,8 +2,8 @@ package datamanager
 
 import (
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager/abstract"
-	. "github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager/abstract"
+	. "github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/unionj-cloud/toolkit/stringutils"
 )
 

@@ -1,8 +1,8 @@
 package entitymanager
 
 import (
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/jinzhu/copier"
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"

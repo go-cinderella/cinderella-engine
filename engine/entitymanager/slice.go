@@ -1,4 +1,4 @@
-package utils
+package entitymanager
 
 import (
 	"sort"

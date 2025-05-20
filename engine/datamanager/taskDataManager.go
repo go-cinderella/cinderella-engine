@@ -2,10 +2,10 @@ package datamanager
 
 import (
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager/abstract"
 	"github.com/go-cinderella/cinderella-engine/engine/db"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/task"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager/abstract"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 	log "github.com/sirupsen/logrus"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	gormgen "github.com/wubin1989/gen"

@@ -1,7 +1,7 @@
 package entitymanager
 
 import (
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/spf13/cast"
 )
 

@@ -1,8 +1,8 @@
 package datamanager
 
 import (
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager/abstract"
 	"github.com/go-cinderella/cinderella-engine/engine/db"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager/abstract"
 	"github.com/go-cinderella/cinderella-engine/engine/variable"
 	"github.com/unionj-cloud/toolkit/copier"
 	"github.com/wubin1989/gorm/clause"

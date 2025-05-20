@@ -7,7 +7,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/bpmn/model"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	. "github.com/go-cinderella/cinderella-engine/engine/impl/handler"
-	model2 "github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	model2 "github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/samber/lo"
 	"github.com/unionj-cloud/toolkit/stringutils"

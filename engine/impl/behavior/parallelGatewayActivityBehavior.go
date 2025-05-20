@@ -2,8 +2,8 @@ package behavior
 
 import (
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/utils"
 	"github.com/spf13/cast"
 )

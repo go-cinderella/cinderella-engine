@@ -1,10 +1,10 @@
 package entitymanager
 
 import (
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/historicactinst"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"time"

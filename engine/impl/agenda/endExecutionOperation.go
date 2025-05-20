@@ -1,9 +1,9 @@
 package agenda
 
 import (
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
 )
 
 type EndExecutionOperation struct {

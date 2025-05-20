@@ -10,14 +10,13 @@ import (
 	"github.com/unionj-cloud/toolkit/stringutils"
 
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/execution"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/historicactinst"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/request"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/converter"
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/utils"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/go-cinderella/cinderella-engine/engine/variable"
 )
 
@@ -182,7 +181,7 @@ func (executionEntityManager ExecutionEntityManager) GetTopKValueFromChildExecut
 		return item.GetValue()
 	})
 
-	return utils.GetTopKValues(variableValues, k), nil
+	return GetTopKValues(variableValues, k), nil
 }
 
 func (executionEntityManager ExecutionEntityManager) CollectChildren(executionId string) ([]ExecutionEntity, error) {

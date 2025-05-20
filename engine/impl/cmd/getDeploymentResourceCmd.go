@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-cinderella/cinderella-engine/engine"
 	"github.com/go-cinderella/cinderella-engine/engine/entitymanager"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/errs"
+	"github.com/go-cinderella/cinderella-engine/engine/errs"
 	"github.com/unionj-cloud/toolkit/stringutils"
 )
 

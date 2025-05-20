@@ -2,9 +2,9 @@ package entitymanager
 
 import (
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/procdef"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
@@ -48,7 +48,7 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) FindProcess
 	}
 
 	processDefinitionEntity.SetResourceContent(*resource.Bytes_)
-	
+
 	return processDefinitionEntity, nil
 }
 

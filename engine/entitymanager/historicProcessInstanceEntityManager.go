@@ -2,9 +2,9 @@ package entitymanager
 
 import (
 	"errors"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/historicprocess"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"

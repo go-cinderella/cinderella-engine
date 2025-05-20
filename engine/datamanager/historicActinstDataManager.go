@@ -3,9 +3,9 @@ package datamanager
 import (
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
+	"github.com/go-cinderella/cinderella-engine/engine/datamanager/abstract"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/historicactinst"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/datamanager/abstract"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/samber/lo"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"github.com/wubin1989/gen/field"

@@ -1,6 +1,6 @@
 package task
 
-import "github.com/go-cinderella/cinderella-engine/engine/internal/model"
+import "github.com/go-cinderella/cinderella-engine/engine/model"
 
 type TaskDTO struct {
 	model.ActRuTask

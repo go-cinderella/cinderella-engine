@@ -2,7 +2,7 @@ package abstract
 
 import (
 	"github.com/go-cinderella/cinderella-engine/engine/db"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 )
 
 type DataManager struct {

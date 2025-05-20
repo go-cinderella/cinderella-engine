@@ -3,7 +3,7 @@ package contextutil
 import (
 	"container/list"
 	"github.com/go-cinderella/cinderella-engine/engine"
-	"github.com/go-cinderella/cinderella-engine/engine/internal/errs"
+	"github.com/go-cinderella/cinderella-engine/engine/errs"
 	"github.com/go-cinderella/cinderella-engine/engine/runtime"
 	"sync"
 )

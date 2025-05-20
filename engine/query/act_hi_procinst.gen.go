@@ -16,7 +16,7 @@ import (
 
 	"github.com/wubin1989/dbresolver"
 
-	"github.com/go-cinderella/cinderella-engine/engine/internal/model"
+	"github.com/go-cinderella/cinderella-engine/engine/model"
 )
 
 func newActHiProcinst(db *gorm.DB, opts ...gormgen.DOOption) actHiProcinst {
