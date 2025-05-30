@@ -1,13 +1,16 @@
 package entitymanager
 
 import (
+	"errors"
 	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/task"
+	"github.com/go-cinderella/cinderella-engine/engine/errs"
 	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/jinzhu/copier"
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
+	"github.com/wubin1989/gorm"
 )
 
 type TaskEntityManager struct {
@@ -18,7 +21,10 @@ func (taskEntityManager TaskEntityManager) FindById(id string) (TaskEntity, erro
 	taskDataManager := datamanager.GetTaskDataManager()
 	err := taskDataManager.FindById(id, &task)
 	if err != nil {
-		return TaskEntity{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return TaskEntity{}, errs.ErrTaskNotFound
+		}
+		return TaskEntity{}, errs.ErrInternalError
 	}
 	var taskEntity TaskEntity
 	taskEntity.SetAssignee(task.Assignee_)
@@ -32,6 +38,9 @@ func (taskEntityManager TaskEntityManager) FindById(id string) (TaskEntity, erro
 	executionDataManager := datamanager.GetExecutionDataManager()
 	execution := &model.ActRuExecution{}
 	if err = executionDataManager.FindById(*task.ExecutionID_, execution); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return TaskEntity{}, errs.ErrExecutionNotFound
+		}
 		return TaskEntity{}, err
 	}
 	executionEntity := ExecutionEntity{}

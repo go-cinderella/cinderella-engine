@@ -4,6 +4,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/procdef"
+	"github.com/go-cinderella/cinderella-engine/engine/errs"
 	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
@@ -36,7 +37,10 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) FindProcess
 	processDefinitionDataManager := datamanager.GetProcessDefinitionDataManager()
 	var err error
 	if err = processDefinitionDataManager.FindById(processDefinitionId, &processDefinition); err != nil {
-		return ProcessDefinitionEntity{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProcessDefinitionEntity{}, errs.ErrProcessDefinitionNotFound
+		}
+		return ProcessDefinitionEntity{}, errs.ErrInternalError
 	}
 	processDefinitionEntity := processDefinitionEntityManager.getProcessDefinitionEntity(processDefinition)
 

@@ -1,9 +1,12 @@
 package entitymanager
 
 import (
+	"errors"
 	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
+	"github.com/go-cinderella/cinderella-engine/engine/errs"
 	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/spf13/cast"
+	"github.com/wubin1989/gorm"
 )
 
 type DeploymentEntityManager struct {
@@ -14,7 +17,10 @@ func (deploymentEntityManager DeploymentEntityManager) FindById(deploymentId str
 	deployment := model.ActReDeployment{}
 	err := dataManager.FindById(deploymentId, &deployment)
 	if err != nil {
-		return DeploymentEntity{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return DeploymentEntity{}, errs.ErrDeploymentNotFound
+		}
+		return DeploymentEntity{}, errs.ErrInternalError
 	}
 	deploymentEntity := DeploymentEntity{}
 	deploymentEntity.ProcessId = deployment.ProcessID_

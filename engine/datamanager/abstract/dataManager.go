@@ -15,7 +15,7 @@ func (dataManagers DataManager) Insert(data interface{}) error {
 }
 
 func (dataManagers DataManager) FindById(id string, data interface{}) error {
-	err := db.DB().Where(`"id_" = ?`, id).Find(data).Error
+	err := db.DB().Where(`"id_" = ?`, id).First(data).Error
 	return err
 }
 func (dataManagers DataManager) Delete(id string) error {

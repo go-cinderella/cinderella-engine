@@ -2,12 +2,10 @@ package entitymanager
 
 import (
 	"errors"
+	"github.com/go-cinderella/cinderella-engine/engine/errs"
+	"github.com/wubin1989/gorm"
 	"math"
 	"strings"
-
-	"github.com/samber/lo"
-	"github.com/spf13/cast"
-	"github.com/unionj-cloud/toolkit/stringutils"
 
 	"github.com/go-cinderella/cinderella-engine/engine/constant"
 	"github.com/go-cinderella/cinderella-engine/engine/datamanager"
@@ -18,6 +16,8 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/impl/delegate"
 	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/go-cinderella/cinderella-engine/engine/variable"
+	"github.com/samber/lo"
+	"github.com/spf13/cast"
 )
 
 type ExecutionEntityManager struct {
@@ -27,12 +27,12 @@ func (executionEntityManager ExecutionEntityManager) FindById(executionId string
 	executionDataManager := datamanager.GetExecutionDataManager()
 	var execution model.ActRuExecution
 	if err := executionDataManager.FindById(executionId, &execution); err != nil {
-		return ExecutionEntity{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ExecutionEntity{}, errs.ErrExecutionNotFound
+		}
+		return ExecutionEntity{}, errs.ErrInternalError
 	}
-	if stringutils.IsEmpty(execution.ID_) {
-		return ExecutionEntity{}, errors.New("execution not found")
-	}
-
+	
 	entityImpl := ExecutionEntity{}
 	entityImpl.SetId(execution.ID_)
 	entityImpl.SetProcessDefinitionId(*execution.ProcDefID_)

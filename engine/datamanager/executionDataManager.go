@@ -1,6 +1,10 @@
 package datamanager
 
 import (
+	"errors"
+	"github.com/go-cinderella/cinderella-engine/engine/errs"
+	"strings"
+
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
 	"github.com/go-cinderella/cinderella-engine/engine/datamanager/abstract"
 	"github.com/go-cinderella/cinderella-engine/engine/dto/execution"
@@ -10,7 +14,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/unionj-cloud/toolkit/stringutils"
 	"github.com/wubin1989/gen/field"
-	"strings"
+	"github.com/wubin1989/gorm"
 )
 
 type ExecutionDataManager struct {
@@ -44,12 +48,14 @@ func (executionDataManager *ExecutionDataManager) RecordBusinessStatus(processIn
 	return err
 }
 
-// 查询流程实例
+// GetProcessInstance 查询流程实例
 func (executionDataManager *ExecutionDataManager) GetProcessInstance(processInstanceId string) (model.ActRuExecution, error) {
 	instance := model.ActRuExecution{}
 	if err := executionDataManager.FindById(processInstanceId, &instance); err != nil {
-		log.Infoln("create processInstance err", err)
-		return model.ActRuExecution{}, nil
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.ActRuExecution{}, errs.ErrProcessInstanceNotFound
+		}
+		return model.ActRuExecution{}, errs.ErrInternalError
 	}
 	return instance, nil
 }
