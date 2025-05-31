@@ -19,6 +19,7 @@ func (error CinderellaError) Error() string {
 
 var (
 	ErrProcessInstanceNotFound         = errors.New("process instance not found")
+	ErrResourceNotFound                = errors.New("resource not found")
 	ErrHistoricProcessInstanceNotFound = errors.New("history process instance not found")
 	ErrProcessDefinitionNotFound       = errors.New("process definition not found")
 	ErrTaskNotFound                    = errors.New("task not found")

@@ -38,10 +38,10 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) FindProcess
 	processDefinitionDataManager := datamanager.GetProcessDefinitionDataManager()
 	var err error
 	if err = processDefinitionDataManager.FirstById(processDefinitionId, &processDefinition); err != nil {
+		zlogger.Error().Err(err).Msgf("get process definition err: %s, processDefinitionId: %s", err, processDefinitionId)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ProcessDefinitionEntity{}, errs.ErrProcessDefinitionNotFound
 		}
-		zlogger.Error().Err(err).Msgf("get process definition err %s", err)
 		return ProcessDefinitionEntity{}, errs.ErrInternalError
 	}
 	processDefinitionEntity := processDefinitionEntityManager.getProcessDefinitionEntity(processDefinition)

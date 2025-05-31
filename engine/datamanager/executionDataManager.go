@@ -50,13 +50,14 @@ func (executionDataManager *ExecutionDataManager) RecordBusinessStatus(processIn
 }
 
 // GetProcessInstance 查询流程实例
+// It may raise errs.ErrProcessInstanceNotFound or errs.ErrInternalError error
 func (executionDataManager *ExecutionDataManager) GetProcessInstance(processInstanceId string) (model.ActRuExecution, error) {
 	instance := model.ActRuExecution{}
 	if err := executionDataManager.FirstById(processInstanceId, &instance); err != nil {
+		zlogger.Error().Err(err).Msgf("get process instance err: %s, processInstanceId: %s", err, processInstanceId)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.ActRuExecution{}, errs.ErrProcessInstanceNotFound
 		}
-		zlogger.Error().Err(err).Msgf("get process instance err %s", err)
 		return model.ActRuExecution{}, errs.ErrInternalError
 	}
 	return instance, nil

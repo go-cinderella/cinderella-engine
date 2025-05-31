@@ -22,10 +22,10 @@ func (taskEntityManager TaskEntityManager) FindById(id string) (TaskEntity, erro
 	taskDataManager := datamanager.GetTaskDataManager()
 	err := taskDataManager.FirstById(id, &task)
 	if err != nil {
+		zlogger.Error().Err(err).Msgf("get task err: %s, taskId: %s", err, id)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return TaskEntity{}, errs.ErrTaskNotFound
 		}
-		zlogger.Error().Err(err).Msgf("get task err %s", err)
 		return TaskEntity{}, errs.ErrInternalError
 	}
 	var taskEntity TaskEntity
@@ -40,10 +40,10 @@ func (taskEntityManager TaskEntityManager) FindById(id string) (TaskEntity, erro
 	executionDataManager := datamanager.GetExecutionDataManager()
 	execution := &model.ActRuExecution{}
 	if err = executionDataManager.FirstById(*task.ExecutionID_, execution); err != nil {
+		zlogger.Error().Err(err).Msgf("get execution err: %s, executionId: %s", err, *task.ExecutionID_)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return TaskEntity{}, errs.ErrExecutionNotFound
 		}
-		zlogger.Error().Err(err).Msgf("get execution err %s", err)
 		return TaskEntity{}, errs.ErrInternalError
 	}
 	executionEntity := ExecutionEntity{}

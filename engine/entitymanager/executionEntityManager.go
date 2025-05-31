@@ -28,10 +28,10 @@ func (executionEntityManager ExecutionEntityManager) FindById(executionId string
 	executionDataManager := datamanager.GetExecutionDataManager()
 	var execution model.ActRuExecution
 	if err := executionDataManager.FirstById(executionId, &execution); err != nil {
+		zlogger.Error().Err(err).Msgf("get execution err: %s, executionId: %s", err, executionId)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ExecutionEntity{}, errs.ErrExecutionNotFound
 		}
-		zlogger.Error().Err(err).Msgf("get execution err %s", err)
 		return ExecutionEntity{}, errs.ErrInternalError
 	}
 

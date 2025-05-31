@@ -18,10 +18,10 @@ func (deploymentEntityManager DeploymentEntityManager) FindById(deploymentId str
 	deployment := model.ActReDeployment{}
 	err := dataManager.FirstById(deploymentId, &deployment)
 	if err != nil {
+		zlogger.Error().Err(err).Msgf("get deployment err: %s, deploymentId: %s", err, deploymentId)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return DeploymentEntity{}, errs.ErrDeploymentNotFound
 		}
-		zlogger.Error().Err(err).Msgf("get deployment err %s", err)
 		return DeploymentEntity{}, errs.ErrInternalError
 	}
 	deploymentEntity := DeploymentEntity{}
@@ -40,7 +40,7 @@ func (deploymentEntityManager DeploymentEntityManager) FindById(deploymentId str
 	resourceDataManager := datamanager.GetResourceDataManager()
 	resource, err := resourceDataManager.FindResourceByDeploymentIdAndResourceName(deployment.ID_, cast.ToString(deployment.Name_)+".bpmn20.xml")
 	if err != nil {
-		panic(err)
+		return deploymentEntity, err
 	}
 	resourceEntity := ResourceEntity{}
 	resourceEntity.SetName(cast.ToString(resource.Name_))

@@ -19,10 +19,10 @@ func (historicProcessInstanceEntityManager HistoricProcessInstanceEntityManager)
 	processDataManager := datamanager.GetHistoricProcessDataManager()
 	historicProcessInst := model.ActHiProcinst{}
 	if err := processDataManager.FirstById(historicProcessInstanceId, &historicProcessInst); err != nil {
+		zlogger.Error().Err(err).Msgf("get history process instance err: %s, historicProcessInstanceId: %s", err, historicProcessInstanceId)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return HistoricProcessInstanceEntity{}, errs.ErrHistoricProcessInstanceNotFound
 		}
-		zlogger.Error().Err(err).Msgf("get history process instance err %s", err)
 		return HistoricProcessInstanceEntity{}, errs.ErrInternalError
 	}
 	historicProcessInstanceEntity := toHistoricProcessInstanceEntity(datamanager.ActHiProcinstDTO{
