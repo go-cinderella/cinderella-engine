@@ -36,6 +36,7 @@ func (taskEntityManager TaskEntityManager) FindById(id string) (TaskEntity, erro
 	taskEntity.SetTaskDefineKey(cast.ToString(task.TaskDefKey_))
 	taskEntity.SetTaskDefineName(cast.ToString(task.Name_))
 	taskEntity.SetExecutionId(cast.ToString(task.ExecutionID_))
+	taskEntity.ProcessDefinitionId = cast.ToString(task.ProcDefID_)
 
 	executionDataManager := datamanager.GetExecutionDataManager()
 	execution := &model.ActRuExecution{}
