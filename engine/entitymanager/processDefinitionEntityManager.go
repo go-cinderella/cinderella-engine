@@ -10,6 +10,7 @@ import (
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
+	"github.com/unionj-cloud/toolkit/zlogger"
 	"github.com/wubin1989/gorm"
 	"github.com/wubin1989/gorm/clause"
 )
@@ -36,10 +37,11 @@ func (processDefinitionEntityManager ProcessDefinitionEntityManager) FindProcess
 	processDefinition := model.ActReProcdef{}
 	processDefinitionDataManager := datamanager.GetProcessDefinitionDataManager()
 	var err error
-	if err = processDefinitionDataManager.FindById(processDefinitionId, &processDefinition); err != nil {
+	if err = processDefinitionDataManager.FirstById(processDefinitionId, &processDefinition); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ProcessDefinitionEntity{}, errs.ErrProcessDefinitionNotFound
 		}
+		zlogger.Error().Err(err).Msgf("get process definition err %s", err)
 		return ProcessDefinitionEntity{}, errs.ErrInternalError
 	}
 	processDefinitionEntity := processDefinitionEntityManager.getProcessDefinitionEntity(processDefinition)

@@ -3,6 +3,7 @@ package entitymanager
 import (
 	"errors"
 	"github.com/go-cinderella/cinderella-engine/engine/errs"
+	"github.com/unionj-cloud/toolkit/zlogger"
 	"github.com/wubin1989/gorm"
 	"math"
 	"strings"
@@ -26,13 +27,14 @@ type ExecutionEntityManager struct {
 func (executionEntityManager ExecutionEntityManager) FindById(executionId string) (ExecutionEntity, error) {
 	executionDataManager := datamanager.GetExecutionDataManager()
 	var execution model.ActRuExecution
-	if err := executionDataManager.FindById(executionId, &execution); err != nil {
+	if err := executionDataManager.FirstById(executionId, &execution); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ExecutionEntity{}, errs.ErrExecutionNotFound
 		}
+		zlogger.Error().Err(err).Msgf("get execution err %s", err)
 		return ExecutionEntity{}, errs.ErrInternalError
 	}
-	
+
 	entityImpl := ExecutionEntity{}
 	entityImpl.SetId(execution.ID_)
 	entityImpl.SetProcessDefinitionId(*execution.ProcDefID_)

@@ -14,7 +14,8 @@ func (dataManagers DataManager) Insert(data interface{}) error {
 	return err
 }
 
-func (dataManagers DataManager) FindById(id string, data interface{}) error {
+// FirstById will raise gorm.ErrRecordNotFound if no record found
+func (dataManagers DataManager) FirstById(id string, data interface{}) error {
 	err := db.DB().Where(`"id_" = ?`, id).First(data).Error
 	return err
 }

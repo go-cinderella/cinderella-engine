@@ -8,6 +8,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
+	"github.com/unionj-cloud/toolkit/zlogger"
 	"github.com/wubin1989/gorm"
 )
 
@@ -17,10 +18,11 @@ type HistoricProcessInstanceEntityManager struct {
 func (historicProcessInstanceEntityManager HistoricProcessInstanceEntityManager) FindById(historicProcessInstanceId string) (HistoricProcessInstanceEntity, error) {
 	processDataManager := datamanager.GetHistoricProcessDataManager()
 	historicProcessInst := model.ActHiProcinst{}
-	if err := processDataManager.FindById(historicProcessInstanceId, &historicProcessInst); err != nil {
+	if err := processDataManager.FirstById(historicProcessInstanceId, &historicProcessInst); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return HistoricProcessInstanceEntity{}, errs.ErrHistoricProcessInstanceNotFound
 		}
+		zlogger.Error().Err(err).Msgf("get history process instance err %s", err)
 		return HistoricProcessInstanceEntity{}, errs.ErrInternalError
 	}
 	historicProcessInstanceEntity := toHistoricProcessInstanceEntity(datamanager.ActHiProcinstDTO{

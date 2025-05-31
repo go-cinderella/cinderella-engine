@@ -10,6 +10,7 @@ import (
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
+	"github.com/unionj-cloud/toolkit/zlogger"
 	"github.com/wubin1989/gorm"
 )
 
@@ -19,11 +20,12 @@ type TaskEntityManager struct {
 func (taskEntityManager TaskEntityManager) FindById(id string) (TaskEntity, error) {
 	task := model.ActRuTask{}
 	taskDataManager := datamanager.GetTaskDataManager()
-	err := taskDataManager.FindById(id, &task)
+	err := taskDataManager.FirstById(id, &task)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return TaskEntity{}, errs.ErrTaskNotFound
 		}
+		zlogger.Error().Err(err).Msgf("get task err %s", err)
 		return TaskEntity{}, errs.ErrInternalError
 	}
 	var taskEntity TaskEntity
@@ -37,11 +39,12 @@ func (taskEntityManager TaskEntityManager) FindById(id string) (TaskEntity, erro
 
 	executionDataManager := datamanager.GetExecutionDataManager()
 	execution := &model.ActRuExecution{}
-	if err = executionDataManager.FindById(*task.ExecutionID_, execution); err != nil {
+	if err = executionDataManager.FirstById(*task.ExecutionID_, execution); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return TaskEntity{}, errs.ErrExecutionNotFound
 		}
-		return TaskEntity{}, err
+		zlogger.Error().Err(err).Msgf("get execution err %s", err)
+		return TaskEntity{}, errs.ErrInternalError
 	}
 	executionEntity := ExecutionEntity{}
 	executionEntity.SetId(execution.ID_)

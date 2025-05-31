@@ -6,6 +6,7 @@ import (
 	"github.com/go-cinderella/cinderella-engine/engine/errs"
 	"github.com/go-cinderella/cinderella-engine/engine/model"
 	"github.com/spf13/cast"
+	"github.com/unionj-cloud/toolkit/zlogger"
 	"github.com/wubin1989/gorm"
 )
 
@@ -15,11 +16,12 @@ type DeploymentEntityManager struct {
 func (deploymentEntityManager DeploymentEntityManager) FindById(deploymentId string) (DeploymentEntity, error) {
 	dataManager := datamanager.GetDeploymentDataManager()
 	deployment := model.ActReDeployment{}
-	err := dataManager.FindById(deploymentId, &deployment)
+	err := dataManager.FirstById(deploymentId, &deployment)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return DeploymentEntity{}, errs.ErrDeploymentNotFound
 		}
+		zlogger.Error().Err(err).Msgf("get deployment err %s", err)
 		return DeploymentEntity{}, errs.ErrInternalError
 	}
 	deploymentEntity := DeploymentEntity{}

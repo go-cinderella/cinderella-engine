@@ -3,6 +3,7 @@ package datamanager
 import (
 	"errors"
 	"github.com/go-cinderella/cinderella-engine/engine/errs"
+	"github.com/unionj-cloud/toolkit/zlogger"
 	"strings"
 
 	"github.com/go-cinderella/cinderella-engine/engine/contextutil"
@@ -51,10 +52,11 @@ func (executionDataManager *ExecutionDataManager) RecordBusinessStatus(processIn
 // GetProcessInstance 查询流程实例
 func (executionDataManager *ExecutionDataManager) GetProcessInstance(processInstanceId string) (model.ActRuExecution, error) {
 	instance := model.ActRuExecution{}
-	if err := executionDataManager.FindById(processInstanceId, &instance); err != nil {
+	if err := executionDataManager.FirstById(processInstanceId, &instance); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.ActRuExecution{}, errs.ErrProcessInstanceNotFound
 		}
+		zlogger.Error().Err(err).Msgf("get process instance err %s", err)
 		return model.ActRuExecution{}, errs.ErrInternalError
 	}
 	return instance, nil
