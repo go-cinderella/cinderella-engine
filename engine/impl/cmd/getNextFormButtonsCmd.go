@@ -11,16 +11,16 @@ import (
 	"github.com/unionj-cloud/toolkit/stringutils"
 )
 
-var _ engine.Command = (*GetNextFormButtonsCmd)(nil)
+var _ engine.Command = (*GetFormButtonsCmd)(nil)
 
-type GetNextFormButtonsCmd struct {
+type GetFormButtonsCmd struct {
 	Ctx                 context.Context
 	ProcessDefinitionId string
 	TaskDefinitionKey   string
 	Transactional       bool
 }
 
-func (g GetNextFormButtonsCmd) IsTransactional() bool {
+func (g GetFormButtonsCmd) IsTransactional() bool {
 	return g.Transactional
 }
 
@@ -33,7 +33,7 @@ type UserTaskFormButton struct {
 	FormKey         *string
 }
 
-func (g GetNextFormButtonsCmd) Execute(commandContext engine.Context) (interface{}, error) {
+func (g GetFormButtonsCmd) Execute(commandContext engine.Context) (interface{}, error) {
 	result, err := GetDeploymentResourceCmd{ProcessDefinitionId: g.ProcessDefinitionId, Ctx: g.Ctx}.Execute(commandContext)
 	if err != nil {
 		return nil, err
@@ -76,6 +76,6 @@ func (g GetNextFormButtonsCmd) Execute(commandContext engine.Context) (interface
 	}), nil
 }
 
-func (g GetNextFormButtonsCmd) Context() context.Context {
+func (g GetFormButtonsCmd) Context() context.Context {
 	return g.Ctx
 }
